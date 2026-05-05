@@ -75,7 +75,15 @@ function setupEventListeners() {
 
 function toggleLoading(show) {
     const loader = document.getElementById('loading-overlay');
-    if (loader) loader.style.display = show ? 'flex' : 'none';
+    if (loader) {
+        if (show) {
+            loader.classList.remove('d-none');
+            loader.classList.add('d-flex');
+        } else {
+            loader.classList.remove('d-flex');
+            loader.classList.add('d-none');
+        }
+    }
 }
 
 // Logic Helpers
