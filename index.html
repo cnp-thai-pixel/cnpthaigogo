@@ -12,6 +12,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -23,10 +24,13 @@
             if (typeof firebase !== 'undefined') {
                 const app = firebase.initializeApp(window.firebaseAppConfig);
                 const db = firebase.firestore();
+                const auth = firebase.auth();
                 
-                // Helper for api.js to use Firestore
-                const helpers = {
-                    get: async (path) => {
+                // Sign in anonymously to satisfy Firestore Rules
+                auth.signInAnonymously().then(() => {
+                    // Helper for api.js to use Firestore
+                    const helpers = {
+                        get: async (path) => {
                         try {
                             if (path === 'config') {
                                 const doc = await db.collection('config').doc('main').get();
@@ -80,6 +84,13 @@
                 if (window.notifyFirebaseReady) {
                     window.notifyFirebaseReady(app, db, helpers);
                 }
+                }).catch(error => {
+                    console.error("Auth Error:", error);
+                    // Still notify ready so app doesn't hang forever
+                    if (window.notifyFirebaseReady) {
+                        window.notifyFirebaseReady(app, db, null);
+                    }
+                });
             }
         });
     </script>
