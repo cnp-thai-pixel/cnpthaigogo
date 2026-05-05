@@ -100,45 +100,53 @@
         <p class="font-outfit font-weight-bold">กำลังเตรียมความพร้อม...</p>
     </div>
 
-    <div class="container-fluid p-0">
-        <div class="row g-0 min-vh-100">
-            <!-- Sidebar Navigation -->
-            <nav class="col-md-3 col-lg-2 sidebar p-4 d-flex flex-column">
-                <div class="mb-5 px-2">
-                    <h4 id="brand-title" class="font-outfit font-weight-bold mb-1">Thai Queue Pro</h4>
-                    <p id="brand-subtitle" class="small opacity-75 mb-0">Hanka Pitthayakhom School</p>
+    <div class="d-flex flex-column min-vh-100">
+        <!-- Top Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark top-navbar shadow-sm">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <div class="brand-text">
+                        <div id="brand-title" class="font-outfit font-weight-bold mb-0">Thai Queue Pro</div>
+                        <div id="brand-subtitle" class="opacity-75 small">Hanka Pitthayakhom School</div>
+                    </div>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto nav-links gap-2 mt-3 mt-lg-0">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link-custom active" data-view="dashboard">
+                                <i class="fas fa-home me-2"></i> หน้าหลัก
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link-custom" data-view="events">
+                                <i class="fas fa-calendar-check me-2"></i> จัดการออกงาน
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link-custom" data-view="trainings">
+                                <i class="fas fa-graduation-cap me-2"></i> จัดการอบรม
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link-custom" data-view="teachers">
+                                <i class="fas fa-users me-2"></i> บุคลากร
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link-custom" data-view="history">
+                                <i class="fas fa-history me-2"></i> ประวัติงาน
+                            </a>
+                        </li>
+                    </ul>
                 </div>
+            </div>
+        </nav>
 
-                <div class="nav-links flex-grow-1">
-                    <a href="#" class="nav-link-custom active" data-view="dashboard">
-                        <span class="mr-3"><i class="fas fa-th-large"></i></span>
-                        <span>หน้าหลัก</span>
-                    </a>
-                    <a href="#" class="nav-link-custom" data-view="events">
-                        <span class="mr-3"><i class="fas fa-calendar-check"></i></span>
-                        <span>จัดการออกงาน</span>
-                    </a>
-                    <a href="#" class="nav-link-custom" data-view="trainings">
-                        <span class="mr-3"><i class="fas fa-graduation-cap"></i></span>
-                        <span>จัดการอบรม</span>
-                    </a>
-                    <a href="#" class="nav-link-custom" data-view="teachers">
-                        <span class="mr-3"><i class="fas fa-users"></i></span>
-                        <span>บุคลากร</span>
-                    </a>
-                    <a href="#" class="nav-link-custom" data-view="history">
-                        <span class="mr-3"><i class="fas fa-history"></i></span>
-                        <span>ประวัติงาน</span>
-                    </a>
-                </div>
-
-                <div class="mt-auto pt-4 border-top border-white-50 opacity-75 small">
-                    v2.0 Premium Edition
-                </div>
-            </nav>
-
-            <!-- Main Content Area -->
-            <main class="col-md-9 col-lg-10 p-4 p-md-5 overflow-auto" style="height: 100vh;">
+        <!-- Main Content Area -->
+        <main class="flex-grow-1 p-4 p-md-5 mx-auto w-100" style="max-width: 1400px;">
                 <!-- Status Banner / Toast -->
                 <div id="status-toast" class="alert alert-info glass mb-4" style="display: none;"></div>
 
@@ -288,7 +296,6 @@
                     </div>
                 </div>
             </main>
-        </div>
     </div>
 
     <!-- Modals (Simplified for brevity, to be populated by JS) -->
