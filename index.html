@@ -141,7 +141,10 @@
                             </a>
                         </li>
                     </ul>
-                    <div class="d-flex ms-lg-3 mt-3 mt-lg-0">
+                    <div class="d-flex ms-lg-3 mt-3 mt-lg-0 gap-2">
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="location.reload()" title="รีเฟรชข้อมูล">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                         <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="toggleAdmin()" id="admin-btn">
                             <i class="fas fa-lock me-1"></i> เข้าสู่ระบบ Admin
                         </button>
@@ -236,9 +239,14 @@
                 <div id="events-view" class="view d-none animate-fade-in">
                     <div class="d-flex justify-content-between align-items-center mb-5">
                         <h2 class="font-weight-bold mb-0">รายการออกงาน</h2>
-                        <button class="btn btn-premium btn-premium-primary admin-only" onclick="openEventModal()">
-                            <i class="fas fa-plus"></i> เพิ่มงานใหม่
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-premium btn-premium-secondary" onclick="window.print()">
+                                <i class="fas fa-print"></i> พิมพ์รายงาน
+                            </button>
+                            <button class="btn btn-premium btn-premium-primary admin-only" onclick="openEventModal()">
+                                <i class="fas fa-plus"></i> เพิ่มงานใหม่
+                            </button>
+                        </div>
                     </div>
                     <div id="events-cards" class="row"></div>
                 </div>
@@ -247,9 +255,14 @@
                 <div id="trainings-view" class="view d-none animate-fade-in">
                     <div class="d-flex justify-content-between align-items-center mb-5">
                         <h2 class="font-weight-bold mb-0">รายการอบรม</h2>
-                        <button class="btn btn-premium btn-premium-primary admin-only" onclick="openTrainingModal()">
-                            <i class="fas fa-plus"></i> เพิ่มอบรมใหม่
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-premium btn-premium-secondary" onclick="window.print()">
+                                <i class="fas fa-print"></i> พิมพ์รายงาน
+                            </button>
+                            <button class="btn btn-premium btn-premium-primary admin-only" onclick="openTrainingModal()">
+                                <i class="fas fa-plus"></i> เพิ่มอบรมใหม่
+                            </button>
+                        </div>
                     </div>
                     <div id="trainings-cards" class="row"></div>
                 </div>
@@ -258,9 +271,14 @@
                 <div id="teachers-view" class="view d-none animate-fade-in">
                     <div class="d-flex justify-content-between align-items-center mb-5">
                         <h2 class="font-weight-bold mb-0">รายชื่อบุคลากร</h2>
-                        <button class="btn btn-premium btn-premium-secondary admin-only" onclick="openTeacherModal()">
-                            <i class="fas fa-user-plus"></i> เพิ่มครูใหม่
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-premium btn-premium-secondary" onclick="window.print()">
+                                <i class="fas fa-print"></i> พิมพ์รายชื่อ
+                            </button>
+                            <button class="btn btn-premium btn-premium-primary admin-only" onclick="openTeacherModal()">
+                                <i class="fas fa-user-plus"></i> เพิ่มครูใหม่
+                            </button>
+                        </div>
                     </div>
                     <div class="card-premium overflow-hidden">
                         <div class="table-responsive">

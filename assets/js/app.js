@@ -23,8 +23,8 @@ function toggleAdmin() {
         window.isAdmin = false;
         alert('ออกจากโหมด Admin แล้ว (ดูได้อย่างเดียว)');
     } else {
-        const pin = prompt('กรุณาใส่รหัสผ่าน Admin (ใช้ 1234 สำหรับทดสอบ):');
-        if (pin === '1234') {
+        const pin = prompt('กรุณาใส่รหัสผ่าน Admin:');
+        if (pin === 'thai1234') {
             localStorage.setItem('isAdmin', 'true');
             window.isAdmin = true;
             alert('เข้าสู่โหมด Admin สำเร็จ (แก้ไขข้อมูลได้)');

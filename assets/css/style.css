@@ -269,3 +269,29 @@ body:not(.admin-mode) .admin-only {
         margin-top: 0.5rem;
     }
 }
+
+/* Print Styles */
+@media print {
+    .top-navbar, .btn, #status-toast, .admin-only {
+        display: none !important;
+    }
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    .card-premium {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        break-inside: avoid;
+    }
+    main {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+    .badge-status {
+        border: 1px solid #aaa;
+        background: transparent !important;
+        color: black !important;
+    }
+}
