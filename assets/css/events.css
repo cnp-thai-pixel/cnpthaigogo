@@ -1,0 +1,121 @@
+/* ========================================
+   DETAILED EVENT CARDS (ออกงาน)
+   ======================================== */
+.event-card-detailed {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.event-card-detailed:hover {
+    box-shadow: var(--shadow);
+}
+
+.event-card-detailed .card-top {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.event-card-detailed .card-status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.event-card-detailed .card-title-main {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.event-card-detailed .info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.event-card-detailed .info-item i {
+    color: var(--primary);
+    width: 14px;
+    text-align: center;
+}
+
+.event-card-detailed .assigned-section {
+    padding: 16px 20px;
+    background: #FAFAFA;
+    flex-grow: 1;
+}
+
+.event-card-detailed .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.event-card-detailed .teacher-list-small {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.event-card-detailed .teacher-item-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+}
+
+.event-card-detailed .teacher-name-mini {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-card-detailed .card-bottom-actions {
+    display: flex;
+    border-top: 1px solid var(--border-light);
+}
+
+.event-card-detailed .card-bottom-actions button {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.event-card-detailed .card-bottom-actions button:not(:last-child) {
+    border-right: 1px solid var(--border-light);
+}
+
+.event-card-detailed .card-bottom-actions button:hover {
+    background: var(--surface-alt);
+}
+
+.event-card-detailed .card-bottom-actions .btn-edit { color: #606060; }
+.event-card-detailed .card-bottom-actions .btn-assign { color: var(--secondary); }
+.event-card-detailed .card-bottom-actions .btn-delete { color: var(--primary); }

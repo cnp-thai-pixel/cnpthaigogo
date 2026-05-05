@@ -282,42 +282,67 @@ function renderQueueCards(type, containerId) {
         const name = getItemName(item);
         const id   = getItemId(item);
         const statusClass = item.status === 'assigned' ? 'badge-assigned' : item.status === 'completed' ? 'badge-completed' : 'badge-pending';
-        const statusText  = item.status === 'assigned' ? 'จัดคิวแล้ว' : item.status === 'completed' ? 'สำเร็จ' : 'รอจัดคิว';
-        const icon = type === 'duty' ? 'fa-calendar-alt' : 'fa-graduation-cap';
-
-        const firstTeacher = (item.assignedTeachers || [])[0];
-        const teacher = firstTeacher ? getTeacherById(firstTeacher) : null;
-        const avatarHtml = teacher
-            ? createTeacherAvatar(teacher)
-            : `<div class="teacher-avatar teacher-avatar-sm bg-secondary text-white d-flex align-items-center justify-content-center" style="width:36px;height:36px;font-size:12px;border-radius:50%;">?</div>`;
+        const statusText  = item.status === 'assigned' ? 'จัดคิวแล้ว' : item.status === 'completed' ? 'สำเร็จ' : 'กำลังจัดคิว';
+        
+        const assignedIds = item.assignedTeachers || [];
+        const teachers = assignedIds.map(tid => getTeacherById(tid)).filter(Boolean);
 
         return `
-        <div class="col-sm-6 col-lg-4 col-xl-3 mb-2">
-          <div class="event-card animate-fade-in">
-            <div class="event-card-thumb">
-              <div class="thumb-icon"><i class="fas ${icon}"></i></div>
-              ${item.time ? `<div class="thumb-time">${item.time}</div>` : ''}
-              <div class="thumb-badge"><span class="badge-status ${statusClass}">${statusText}</span></div>
+        <div class="col-12 col-lg-6 col-xl-4">
+          <div class="event-card-detailed animate-fade-in">
+            <div class="card-top">
+              <div class="card-status-row">
+                <span class="badge-status ${statusClass}" style="font-size:10px;">ประเภทงาน: ออกเวร</span>
+                <span class="badge-status ${statusClass}">${statusText}</span>
+              </div>
+              <div class="card-title-main">${name}</div>
+              <div class="info-item"><i class="fas fa-calendar-alt"></i> ${formatDateThai(item.date)}</div>
+              <div class="info-item"><i class="fas fa-clock"></i> ${item.time || 'ไม่ระบุเวลา'}</div>
+              <div class="info-item"><i class="fas fa-map-marker-alt"></i> ${item.location || 'ไม่ระบุสถานที่'}</div>
             </div>
-            <div class="event-card-body">
-              <div style="width:36px;height:36px;flex-shrink:0;">${avatarHtml}</div>
-              <div class="event-card-meta">
-                <div class="event-card-title">${name}</div>
-                <div class="event-card-detail">
-                  <div>${item.location || '-'}</div>
-                  <div>${formatDateThai(item.date)}</div>
-                </div>
+            <div class="assigned-section">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="section-label">ครูที่ได้รับมอบหมาย</div>
+                <div class="extra-small fw-bold text-muted">${teachers.length} / ${item.requiredQuota || 1} คน</div>
+              </div>
+              <div class="teacher-list-small">
+                ${teachers.map(t => `
+                  <div class="teacher-item-mini">
+                    <div style="width:24px;height:24px;">${createTeacherAvatar(t)}</div>
+                    <div class="teacher-name-mini">${t.name}</div>
+                  </div>
+                `).join('') || '<div class="text-muted extra-small py-2">ยังไม่มีการจัดคิว</div>'}
               </div>
             </div>
-            <div class="event-card-actions admin-only">
-              <button class="btn-rb btn-rb-ghost btn-sm flex-grow-1" onclick="editItem(${id}, '${type}')">แก้ไข</button>
-              ${item.status === 'pending'
-                ? `<button class="btn-rb btn-rb-red btn-sm flex-grow-1" onclick="openAutoAssignModal(${id}, '${type}')">จัดคิว</button>`
-                : `<button class="btn-rb btn-rb-ghost btn-sm flex-grow-1" onclick="openSubstitutionModal(${id}, '${type}')">แทนคน</button>`}
+            <div class="card-bottom-actions admin-only">
+              <button class="btn-edit" onclick="editItem(${id}, '${type}')">
+                <i class="fas fa-edit"></i> แก้ไข
+              </button>
+              <button class="btn-assign" onclick="openAutoAssignModal(${id}, '${type}')">
+                <i class="fas fa-user-plus"></i> จัดคิว
+              </button>
+              <button class="btn-delete" onclick="deleteItem(${id}, '${type}')">
+                <i class="fas fa-trash-alt"></i> ลบ
+              </button>
             </div>
           </div>
         </div>`;
     }).join('');
+}
+
+function deleteItem(id, type) {
+    if (!confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')) return;
+    
+    if (type === 'training') {
+        window.trainings = window.trainings.filter(t => t.trainingId !== id);
+    } else {
+        window.events = window.events.filter(e => e.eventId !== id);
+    }
+    
+    persistAllData();
+    renderQueueCards(type, type === 'training' ? 'trainings-cards' : 'events-cards');
+    renderDashboard();
+    showFirebaseStatus('success', 'ลบข้อมูลเรียบร้อยแล้ว');
 }
 
 /* ─── Teachers Table ─────────────────────────── */
