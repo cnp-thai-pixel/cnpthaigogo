@@ -2,23 +2,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary: #D1A7B2; /* Soft Pink / Mauve */
-    --primary-light: #E8D3D8;
-    --secondary: #7D5A50; /* Warm Brown / Dark Mauve */
-    --accent: #F4E8EA;
-    --success: #A8C69F; /* Pastel Green */
-    --warning: #f59e0b;
-    --danger: #e27d60;
+    --primary: #FF3366; /* Vibrant Bright Pink */
+    --primary-light: #FFE5EC;
+    --secondary: #1E293B; /* Modern Slate Dark */
+    --accent: #FFB3C6;
+    --success: #10B981; /* Vibrant Emerald Green */
+    --warning: #F59E0B;
+    --danger: #EF4444;
     --surface: #ffffff;
-    --background: #fdfafb;
-    --text: #4a3b38;
-    --text-muted: #8a7a76;
-    --glass: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(209, 167, 178, 0.3);
-    --shadow-sm: 0 2px 4px 0 rgba(125, 90, 80, 0.05);
-    --shadow: 0 4px 10px -1px rgba(125, 90, 80, 0.08), 0 2px 4px -1px rgba(125, 90, 80, 0.04);
-    --shadow-lg: 0 10px 20px -3px rgba(125, 90, 80, 0.1), 0 4px 6px -2px rgba(125, 90, 80, 0.05);
-    --radius: 12px;
+    --background: #F8FAFC;
+    --text: #334155;
+    --text-muted: #64748B;
+    --glass: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 51, 102, 0.15);
+    --shadow-sm: 0 2px 4px 0 rgba(30, 41, 59, 0.05);
+    --shadow: 0 4px 6px -1px rgba(30, 41, 59, 0.08), 0 2px 4px -1px rgba(30, 41, 59, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(30, 41, 59, 0.1), 0 4px 6px -2px rgba(30, 41, 59, 0.05);
+    --radius: 16px;
 }
 
 body {
@@ -222,6 +222,11 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
 
 .modal-body-premium {
     padding: 2rem;
+}
+
+/* Admin Mode Toggles */
+body:not(.admin-mode) .admin-only {
+    display: none !important;
 }
 
 /* Responsive fixes */

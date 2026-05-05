@@ -69,7 +69,7 @@ function renderUrgentEvents() {
                 <h6 class="mb-1 font-weight-bold">${e.eventName}</h6>
                 <p class="mb-0 text-muted small"><i class="far fa-calendar-alt mr-1"></i> ${formatDateThai(e.date)} | ${e.time}</p>
             </div>
-            <button class="btn btn-sm btn-premium-primary" onclick="openAutoAssignModal(${e.eventId}, 'duty')">จัดคิว</button>
+            <button class="btn btn-sm btn-premium-primary admin-only" onclick="openAutoAssignModal(${e.eventId}, 'duty')">จัดคิว</button>
         </div>
     `).join('');
 }
@@ -111,7 +111,7 @@ function renderQueueCards(type, containerId) {
                             }).join('')}
                         </div>
 
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 admin-only">
                             <button class="btn btn-sm btn-premium-secondary flex-grow-1" onclick="editItem(${item.eventId || item.trainingId}, '${type}')">แก้ไข</button>
                             ${item.status === 'pending' 
                                 ? `<button class="btn btn-sm btn-premium-primary flex-grow-1" onclick="openAutoAssignModal(${item.eventId || item.trainingId}, '${type}')">จัดคิว</button>`
@@ -142,7 +142,7 @@ function renderTeachersTable() {
             <td class="text-center"><span class="badge badge-pill btn-premium-secondary">${getTeacherQueueScore(t, 'duty')}</span></td>
             <td class="text-center"><span class="badge badge-pill btn-premium-primary">${getTeacherQueueScore(t, 'training')}</span></td>
             <td class="text-center">${t.totalDuties || 0}</td>
-            <td class="text-right">
+            <td class="text-right admin-only">
                 <button class="btn btn-sm btn-light" onclick="editTeacher(${t.teacherId})"><i class="fas fa-edit"></i></button>
             </td>
         </tr>

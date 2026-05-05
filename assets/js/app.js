@@ -9,11 +9,52 @@ window.events = [];
 window.trainings = [];
 window.activityLog = [];
 window.dataInitialized = false;
+window.isAdmin = localStorage.getItem('isAdmin') === 'true';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    updateAdminUI();
     await loadInitialData();
     setupEventListeners();
 });
+
+function toggleAdmin() {
+    if (window.isAdmin) {
+        localStorage.removeItem('isAdmin');
+        window.isAdmin = false;
+        alert('ออกจากโหมด Admin แล้ว (ดูได้อย่างเดียว)');
+    } else {
+        const pin = prompt('กรุณาใส่รหัสผ่าน Admin (ใช้ 1234 สำหรับทดสอบ):');
+        if (pin === '1234') {
+            localStorage.setItem('isAdmin', 'true');
+            window.isAdmin = true;
+            alert('เข้าสู่โหมด Admin สำเร็จ (แก้ไขข้อมูลได้)');
+        } else {
+            if (pin) alert('รหัสผ่านไม่ถูกต้อง');
+            return;
+        }
+    }
+    updateAdminUI();
+    showView(document.querySelector('.nav-link-custom.active').getAttribute('data-view'));
+}
+
+function updateAdminUI() {
+    const btn = document.getElementById('admin-btn');
+    if (window.isAdmin) {
+        document.body.classList.add('admin-mode');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-unlock me-1"></i> ออกจากระบบ Admin';
+            btn.classList.replace('btn-outline-light', 'btn-light');
+            btn.classList.add('text-danger');
+        }
+    } else {
+        document.body.classList.remove('admin-mode');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-lock me-1"></i> เข้าสู่ระบบ Admin';
+            btn.classList.replace('btn-light', 'btn-outline-light');
+            btn.classList.remove('text-danger');
+        }
+    }
+}
 
 async function loadInitialData() {
     toggleLoading(true);
