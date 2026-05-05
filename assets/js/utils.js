@@ -55,22 +55,22 @@ const teacherPhotos = {
 
 function createTeacherAvatar(teacher, large = false) {
     const name = teacher?.name || '';
-    const sizeClass = large ? 'teacher-avatar teacher-avatar-large' : 'teacher-avatar';
-    
-    // Find the correct photo by checking if the teacher's name contains the key
+    const size = large ? 'width:80px;height:80px;font-size:28px;' : 'width:100%;height:100%;font-size:16px;';
+    const cls  = 'teacher-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold';
+
+    // Find matching photo key
     let photoKey = null;
     for (const key of Object.keys(teacherPhotos)) {
-        if (name.includes(key)) {
-            photoKey = key;
-            break;
-        }
+        if (name.includes(key)) { photoKey = key; break; }
     }
     const photo = photoKey ? teacherPhotos[photoKey] : null;
-    
+
     if (photo) {
-        return `<img src="${photo}" class="${sizeClass}" alt="${name}" onerror="this.outerHTML='<div class=\'${sizeClass}\'>${name.charAt(0)}</div>'">`;
+        return `<img src="${photo}" class="${cls}" alt="${name}"
+            style="${size}object-fit:cover;border-radius:50%;flex-shrink:0;"
+            onerror="this.outerHTML='<div class=\\'${cls}\\' style=\\'${size}background:#0F0F0F;color:#fff;flex-shrink:0;\\'>${name.charAt(0) || '?'}</div>'">`; 
     }
-    return `<div class="${sizeClass}">${name ? name.charAt(0) : '?'}</div>`;
+    return `<div class="${cls}" style="${size}background:#0F0F0F;color:#fff;flex-shrink:0;">${name ? name.charAt(0) : '?'}</div>`;
 }
 
 function safeDate(value) {

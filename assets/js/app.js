@@ -57,21 +57,30 @@ function updateAdminUI() {
 }
 
 async function loadInitialData() {
+    // Safety: force-hide loader after 8s no matter what
+    const safetyTimer = setTimeout(() => toggleLoading(false), 8000);
     toggleLoading(true);
     try {
-        // Wait for Firebase to be ready (up to 5 seconds)
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject('Firebase Timeout'), 5000));
         try {
             await Promise.race([window.firebaseReadyPromise, timeoutPromise]);
         } catch (e) {
-            console.warn('Firebase connection timed out or not available, using fallback data.');
+            console.warn('Firebase timeout or unavailable — using fallback data.');
         }
 
         if (canUseDirectFirebase()) {
-            const data = await fetchInitialDataDirect();
-            applyInitialData(data);
+            try {
+                const data = await fetchInitialDataDirect();
+                applyInitialData(data);
+            } catch (fetchErr) {
+                console.error('Firestore fetch error:', fetchErr);
+                applyInitialData({
+                    teachers: createDefaultTeachers(),
+                    events: createDefaultEvents(),
+                    trainings: createDefaultTrainings()
+                });
+            }
         } else {
-            // Fallback to defaults if no firebase
             applyInitialData({
                 teachers: createDefaultTeachers(),
                 events: createDefaultEvents(),
@@ -80,11 +89,11 @@ async function loadInitialData() {
         }
     } catch (error) {
         console.error('Init error:', error);
-        showFirebaseStatus('error', 'ไม่สามารถโหลดข้อมูลได้');
     } finally {
+        clearTimeout(safetyTimer);
         toggleLoading(false);
         window.dataInitialized = true;
-        showView('dashboard');
+        try { showView('dashboard'); } catch(e) { console.error('showView error:', e); }
     }
 }
 
@@ -124,22 +133,7 @@ function toggleLoading(show) {
     }
 }
 
-// Override createTeacherAvatar for large size compatibility
-const _origCreateTeacherAvatar = createTeacherAvatar;
-function createTeacherAvatar(teacher, large = false) {
-    const sizeStyle = large ? 'width:80px;height:80px;font-size:28px;' : 'width:100%;height:100%;font-size:inherit;';
-    const name = teacher?.name || '';
-    let photoKey = null;
-    for (const key of Object.keys(teacherPhotos || {})) {
-        if (name.includes(key)) { photoKey = key; break; }
-    }
-    const photo = photoKey ? teacherPhotos[photoKey] : null;
-    const cls = `teacher-avatar${large ? ' teacher-avatar-xl' : ''}` + ' rounded-circle d-flex align-items-center justify-content-center';
-    if (photo) {
-        return `<img src="${photo}" class="${cls}" alt="${name}" style="${sizeStyle}object-fit:cover;border-radius:50%;" onerror="this.outerHTML='<div class=\'${cls}\' style=\'${sizeStyle}background:var(--text-primary);color:#fff;\'>${name.charAt(0)}</div>'">`;
-    }
-    return `<div class="${cls}" style="${sizeStyle}background:var(--text-primary);color:#fff;">${name ? name.charAt(0) : '?'}</div>`;
-}
+// createTeacherAvatar is defined in utils.js — no override needed here
 
 // Logic Helpers
 function getTeacherById(id) {
