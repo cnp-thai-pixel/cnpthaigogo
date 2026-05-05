@@ -238,6 +238,32 @@ body:not(.admin-mode) .admin-only {
     display: none !important;
 }
 
+/* Sidebar Collapsing */
+.sidebar {
+    transition: margin 0.3s ease-in-out;
+    z-index: 1050;
+}
+
+.sidebar.collapsed {
+    margin-left: -280px;
+}
+
+/* Overlay for mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1040;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
 /* Responsive fixes */
 .table th, .table td {
     padding: 1.25rem 1rem;
@@ -252,11 +278,18 @@ body:not(.admin-mode) .admin-only {
 
 @media (max-width: 991px) {
     .d-flex.min-vh-100 {
-        flex-direction: column !important;
+        flex-direction: row !important; /* Keep row so sidebar can slide in */
     }
+    
     .sidebar {
-        width: 100% !important;
-        height: auto !important;
+        position: fixed;
+        height: 100vh !important;
+        margin-left: -280px; /* Hidden by default on mobile */
+        width: 280px !important;
+    }
+    
+    .sidebar.show {
+        margin-left: 0; /* Shown on mobile when toggled */
     }
     
     .nav-links {

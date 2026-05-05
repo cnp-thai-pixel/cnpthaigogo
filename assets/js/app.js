@@ -110,6 +110,14 @@ function setupEventListeners() {
             e.preventDefault();
             const view = link.getAttribute('data-view');
             showView(view);
+            
+            // Auto close sidebar on mobile after clicking a link
+            if (window.innerWidth <= 991 && typeof toggleSidebar === 'function') {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && sidebar.classList.contains('show')) {
+                    toggleSidebar();
+                }
+            }
         });
     });
 }
