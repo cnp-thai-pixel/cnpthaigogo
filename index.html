@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบจัดการออกงานครู | Thai Queue Pro</title>
-    
+
     <!-- CSS Dependencies -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,70 +20,70 @@
 <body>
     <script>
         // Firebase Initialization Bridge (Firestore)
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (typeof firebase !== 'undefined') {
                 const app = firebase.initializeApp(window.firebaseAppConfig);
                 const db = firebase.firestore();
                 const auth = firebase.auth();
-                
+
                 // Sign in anonymously to satisfy Firestore Rules
                 auth.signInAnonymously().then(() => {
                     // Helper for api.js to use Firestore
                     const helpers = {
                         get: async (path) => {
-                        try {
-                            if (path === 'config') {
-                                const doc = await db.collection('config').doc('main').get();
-                                return doc.exists ? doc.data() : null;
+                            try {
+                                if (path === 'config') {
+                                    const doc = await db.collection('config').doc('main').get();
+                                    return doc.exists ? doc.data() : null;
+                                }
+                                const snapshot = await db.collection(path).get();
+                                const data = [];
+                                snapshot.forEach(doc => data.push(doc.data()));
+                                return data.length > 0 ? data : null;
+                            } catch (e) {
+                                console.error("Firestore Get Error:", e);
+                                return null;
                             }
-                            const snapshot = await db.collection(path).get();
-                            const data = [];
-                            snapshot.forEach(doc => data.push(doc.data()));
-                            return data.length > 0 ? data : null;
-                        } catch (e) {
-                            console.error("Firestore Get Error:", e);
-                            return null;
-                        }
-                    },
-                    put: async (path, data) => {
-                        try {
-                            if (path === 'config') {
-                                return db.collection('config').doc('main').set(data);
+                        },
+                        put: async (path, data) => {
+                            try {
+                                if (path === 'config') {
+                                    return db.collection('config').doc('main').set(data);
+                                }
+
+                                // If data is an array, save each item as a document in the collection
+                                if (Array.isArray(data)) {
+                                    const batch = db.batch();
+                                    data.forEach((item, index) => {
+                                        if (!item) return;
+
+                                        // Determine document ID based on collection type
+                                        let docId = null;
+                                        if (path === 'teachers' && item.teacherId) docId = item.teacherId.toString();
+                                        else if (path === 'events' && item.eventId) docId = item.eventId.toString();
+                                        else if (path === 'trainings' && item.trainingId) docId = item.trainingId.toString();
+                                        else if (path === 'activityLog') docId = item.timestamp ? item.timestamp.toString() : (Date.now() + index).toString();
+                                        else docId = (Date.now() + index).toString();
+
+                                        const docRef = db.collection(path).doc(docId);
+                                        batch.set(docRef, item);
+                                    });
+                                    return batch.commit();
+                                } else {
+                                    // Fallback if data is not an array
+                                    return db.collection('appData').doc(path).set(data);
+                                }
+                            } catch (e) {
+                                console.error("Firestore Put Error:", e);
+                                throw e;
                             }
-                            
-                            // If data is an array, save each item as a document in the collection
-                            if (Array.isArray(data)) {
-                                const batch = db.batch();
-                                data.forEach((item, index) => {
-                                    if (!item) return;
-                                    
-                                    // Determine document ID based on collection type
-                                    let docId = null;
-                                    if (path === 'teachers' && item.teacherId) docId = item.teacherId.toString();
-                                    else if (path === 'events' && item.eventId) docId = item.eventId.toString();
-                                    else if (path === 'trainings' && item.trainingId) docId = item.trainingId.toString();
-                                    else if (path === 'activityLog') docId = item.timestamp ? item.timestamp.toString() : (Date.now() + index).toString();
-                                    else docId = (Date.now() + index).toString();
-                                    
-                                    const docRef = db.collection(path).doc(docId);
-                                    batch.set(docRef, item);
-                                });
-                                return batch.commit();
-                            } else {
-                                // Fallback if data is not an array
-                                return db.collection('appData').doc(path).set(data);
-                            }
-                        } catch (e) {
-                            console.error("Firestore Put Error:", e);
-                            throw e;
-                        }
-                    },
-                    patch: async (path, data) => helpers.put(path, data)
-                };
-                
-                if (window.notifyFirebaseReady) {
-                    window.notifyFirebaseReady(app, db, helpers);
-                }
+                        },
+                        patch: async (path, data) => helpers.put(path, data)
+                    };
+
+                    if (window.notifyFirebaseReady) {
+                        window.notifyFirebaseReady(app, db, helpers);
+                    }
                 }).catch(error => {
                     console.error("Auth Error:", error);
                     // Still notify ready so app doesn't hang forever
@@ -95,7 +95,9 @@
         });
     </script>
     <!-- Loading Overlay -->
-    <div id="loading-overlay" class="position-fixed w-100 h-100 bg-white d-flex flex-column align-items-center justify-content-center" style="z-index: 9999;">
+    <div id="loading-overlay"
+        class="position-fixed w-100 h-100 bg-white d-flex flex-column align-items-center justify-content-center"
+        style="z-index: 9999;">
         <div class="spinner-border text-primary mb-3" role="status"></div>
         <p class="font-outfit font-weight-bold">กำลังเตรียมความพร้อม...</p>
     </div>
@@ -142,10 +144,12 @@
                         </li>
                     </ul>
                     <div class="d-flex ms-lg-3 mt-3 mt-lg-0 gap-2">
-                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="location.reload()" title="รีเฟรชข้อมูล">
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="location.reload()"
+                            title="รีเฟรชข้อมูล">
                             <i class="fas fa-sync-alt"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="toggleAdmin()" id="admin-btn">
+                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="toggleAdmin()"
+                            id="admin-btn">
                             <i class="fas fa-lock me-1"></i> เข้าสู่ระบบ Admin
                         </button>
                     </div>
@@ -155,170 +159,180 @@
 
         <!-- Main Content Area -->
         <main class="flex-grow-1 p-4 p-md-5 mx-auto w-100" style="max-width: 1400px;">
-                <!-- Status Banner / Toast -->
-                <div id="status-toast" class="alert alert-info glass mb-4" style="display: none;"></div>
+            <!-- Status Banner / Toast -->
+            <div id="status-toast" class="alert alert-info glass mb-4" style="display: none;"></div>
 
-                <!-- Dashboard View -->
-                <div id="dashboard-view" class="view animate-fade-in">
-                    <div class="d-flex justify-content-between align-items-center mb-5">
-                        <h2 class="font-weight-bold mb-0">แผงควบคุมหลัก</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-premium btn-premium-primary admin-only" onclick="openEventModal()">
-                                <i class="fas fa-plus"></i> เพิ่มงานใหม่
-                            </button>
-                        </div>
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view animate-fade-in">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h2 class="font-weight-bold mb-0">แผงควบคุมหลัก</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-premium btn-premium-primary admin-only" onclick="openEventModal()">
+                            <i class="fas fa-plus"></i> เพิ่มงานใหม่
+                        </button>
                     </div>
+                </div>
 
-                    <!-- Stats Row -->
-                        <div class="row g-4 mb-5">
-                        <div class="col-sm-6 col-xl-3">
-                            <div class="card-premium p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="p-3 rounded-circle bg-light mr-3 text-primary"><i class="fas fa-calendar-alt fa-lg"></i></div>
-                                    <span class="text-muted small font-weight-bold uppercase">งานออกเวรทั้งหมด</span>
-                                </div>
-                                <h2 id="total-events" class="mb-0 font-weight-bold">0</h2>
+                <!-- Stats Row -->
+                <div class="row g-4 mb-5">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card-premium h-100 p-0 border-0 shadow-md">
+                            <div class="p-3 d-flex align-items-center justify-content-between" style="background-color: var(--primary); border-radius: 8px 8px 0 0;">
+                                <span class="font-weight-bold text-white" style="letter-spacing: 0.5px; font-size: 0.85rem;">งานออกเวรทั้งหมด</span>
+                                <i class="fas fa-calendar-alt text-white opacity-75"></i>
                             </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <div class="card-premium p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="p-3 rounded-circle bg-light mr-3 text-success"><i class="fas fa-graduation-cap fa-lg"></i></div>
-                                    <span class="text-muted small font-weight-bold uppercase">งานอบรมทั้งหมด</span>
-                                </div>
-                                <h2 id="total-trainings" class="mb-0 font-weight-bold text-success">0</h2>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <div class="card-premium p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="p-3 rounded-circle bg-light mr-3 text-warning"><i class="fas fa-clock fa-lg"></i></div>
-                                    <span class="text-muted small font-weight-bold uppercase">รอการจัดคิว</span>
-                                </div>
-                                <h2 id="pending-events" class="mb-0 font-weight-bold text-warning">0</h2>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <div class="card-premium p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="p-3 rounded-circle bg-light mr-3 text-info"><i class="fas fa-user-friends fa-lg"></i></div>
-                                    <span class="text-muted small font-weight-bold uppercase">ครูทั้งหมด</span>
-                                </div>
-                                <h2 id="total-teachers" class="mb-0 font-weight-bold">0</h2>
+                            <div class="p-4 d-flex justify-content-between align-items-center bg-white" style="border-radius: 0 0 8px 8px;">
+                                <h2 id="total-events" class="mb-0 font-weight-bold display-5">0</h2>
                             </div>
                         </div>
                     </div>
-
-                    <div class="row g-4">
-                        <!-- Next Queue Summary -->
-                        <div class="col-lg-8">
-                            <div class="card-premium p-4 h-100">
-                                <h5 class="font-weight-bold mb-4"><i class="fas fa-list-ol mr-2 text-primary"></i> ลำดับคิวถัดไป</h5>
-                                
-                                <p class="small text-muted font-weight-bold mb-2">คิวออกงาน (Duty Queue)</p>
-                                <div id="next-queue-duty" class="queue-grid mb-4"></div>
-
-                                <p class="small text-muted font-weight-bold mb-2">คิวอบรม (Training Queue)</p>
-                                <div id="next-queue-training" class="queue-grid"></div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card-premium h-100 p-0 border-0 shadow-md">
+                            <div class="p-3 d-flex align-items-center justify-content-between" style="background-color: var(--accent); border-radius: 8px 8px 0 0;">
+                                <span class="font-weight-bold text-white" style="letter-spacing: 0.5px; font-size: 0.85rem;">งานอบรมทั้งหมด</span>
+                                <i class="fas fa-graduation-cap text-white opacity-75"></i>
+                            </div>
+                            <div class="p-4 d-flex justify-content-between align-items-center bg-white" style="border-radius: 0 0 8px 8px;">
+                                <h2 id="total-trainings" class="mb-0 font-weight-bold display-5" style="color: var(--accent)">0</h2>
                             </div>
                         </div>
-
-                        <!-- Urgent Events -->
-                        <div class="col-lg-4">
-                            <div class="card-premium p-4 h-100">
-                                <h5 class="font-weight-bold mb-4"><i class="fas fa-exclamation-circle mr-2 text-warning"></i> งานที่ต้องเร่งจัดคิว</h5>
-                                <div id="urgent-events" class="d-flex flex-column gap-3">
-                                    <!-- Dynamic Content -->
-                                </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card-premium h-100 p-0 border-0 shadow-md">
+                            <div class="p-3 d-flex align-items-center justify-content-between" style="background-color: var(--warning); border-radius: 8px 8px 0 0;">
+                                <span class="font-weight-bold text-white" style="letter-spacing: 0.5px; font-size: 0.85rem;">รอการจัดคิว</span>
+                                <i class="fas fa-clock text-white opacity-75"></i>
+                            </div>
+                            <div class="p-4 d-flex justify-content-between align-items-center bg-white" style="border-radius: 0 0 8px 8px;">
+                                <h2 id="pending-events" class="mb-0 font-weight-bold display-5" style="color: var(--warning)">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card-premium h-100 p-0 border-0 shadow-md">
+                            <div class="p-3 d-flex align-items-center justify-content-between" style="background-color: var(--info); border-radius: 8px 8px 0 0;">
+                                <span class="font-weight-bold text-white" style="letter-spacing: 0.5px; font-size: 0.85rem;">ครูทั้งหมด</span>
+                                <i class="fas fa-user-friends text-white opacity-75"></i>
+                            </div>
+                            <div class="p-4 d-flex justify-content-between align-items-center bg-white" style="border-radius: 0 0 8px 8px;">
+                                <h2 id="total-teachers" class="mb-0 font-weight-bold display-5" style="color: var(--info)">0</h2>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Events View -->
-                <div id="events-view" class="view d-none animate-fade-in">
-                    <div class="d-flex justify-content-between align-items-center mb-5">
-                        <h2 class="font-weight-bold mb-0">รายการออกงาน</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-premium btn-premium-secondary" onclick="window.print()">
-                                <i class="fas fa-print"></i> พิมพ์รายงาน
-                            </button>
-                            <button class="btn btn-premium btn-premium-primary admin-only" onclick="openEventModal()">
-                                <i class="fas fa-plus"></i> เพิ่มงานใหม่
-                            </button>
-                        </div>
-                    </div>
-                    <div id="events-cards" class="row"></div>
-                </div>
+                <div class="row g-4">
+                    <!-- Next Queue Summary -->
+                    <div class="col-lg-8">
+                        <div class="card-premium p-4 h-100">
+                            <h5 class="font-weight-bold mb-4"><i class="fas fa-list-ol mr-2 text-primary"></i>
+                                ลำดับคิวถัดไป</h5>
 
-                <!-- Trainings View -->
-                <div id="trainings-view" class="view d-none animate-fade-in">
-                    <div class="d-flex justify-content-between align-items-center mb-5">
-                        <h2 class="font-weight-bold mb-0">รายการอบรม</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-premium btn-premium-secondary" onclick="window.print()">
-                                <i class="fas fa-print"></i> พิมพ์รายงาน
-                            </button>
-                            <button class="btn btn-premium btn-premium-primary admin-only" onclick="openTrainingModal()">
-                                <i class="fas fa-plus"></i> เพิ่มอบรมใหม่
-                            </button>
-                        </div>
-                    </div>
-                    <div id="trainings-cards" class="row"></div>
-                </div>
+                            <p class="small text-muted font-weight-bold mb-2">คิวออกงาน (Duty Queue)</p>
+                            <div id="next-queue-duty" class="queue-grid mb-4"></div>
 
-                <!-- Teachers View -->
-                <div id="teachers-view" class="view d-none animate-fade-in">
-                    <div class="d-flex justify-content-between align-items-center mb-5">
-                        <h2 class="font-weight-bold mb-0">รายชื่อบุคลากร</h2>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-premium btn-premium-secondary" onclick="window.print()">
-                                <i class="fas fa-print"></i> พิมพ์รายชื่อ
-                            </button>
-                            <button class="btn btn-premium btn-premium-primary admin-only" onclick="openTeacherModal()">
-                                <i class="fas fa-user-plus"></i> เพิ่มครูใหม่
-                            </button>
+                            <p class="small text-muted font-weight-bold mb-2">คิวอบรม (Training Queue)</p>
+                            <div id="next-queue-training" class="queue-grid"></div>
                         </div>
                     </div>
-                    <div class="card-premium overflow-hidden">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th>ลำดับ</th>
-                                        <th>ชื่อ-นามสกุล</th>
-                                        <th>ตำแหน่ง</th>
-                                        <th class="text-center">คิวออกงาน</th>
-                                        <th class="text-center">คิวอบรม</th>
-                                        <th class="text-center">รวมงาน</th>
-                                        <th class="text-right admin-only">จัดการ</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="teachers-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- History View -->
-                <div id="history-view" class="view d-none animate-fade-in">
-                    <h2 class="font-weight-bold mb-5">ประวัติและบันทึกการปฏิบัติงาน</h2>
-                    <div class="row g-4">
-                        <div class="col-lg-6">
-                            <div class="card-premium p-4 h-100">
-                                <h5 class="mb-4">บันทึกกิจกรรมล่าสุด</h5>
-                                <div id="activity-log" class="small"></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="card-premium p-4 h-100">
-                                <h5 class="mb-4">สรุปสถิติการแทนงาน</h5>
-                                <div id="substitution-stats"></div>
+                    <!-- Urgent Events -->
+                    <div class="col-lg-4">
+                        <div class="card-premium p-4 h-100">
+                            <h5 class="font-weight-bold mb-4"><i
+                                    class="fas fa-exclamation-circle mr-2 text-warning"></i> งานที่ต้องเร่งจัดคิว</h5>
+                            <div id="urgent-events" class="d-flex flex-column gap-3">
+                                <!-- Dynamic Content -->
                             </div>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
+
+            <!-- Events View -->
+            <div id="events-view" class="view d-none animate-fade-in">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h2 class="font-weight-bold mb-0">รายการออกงาน</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-premium btn-premium-secondary" onclick="window.print()">
+                            <i class="fas fa-print"></i> พิมพ์รายงาน
+                        </button>
+                        <button class="btn btn-premium btn-premium-primary admin-only" onclick="openEventModal()">
+                            <i class="fas fa-plus"></i> เพิ่มงานใหม่
+                        </button>
+                    </div>
+                </div>
+                <div id="events-cards" class="row"></div>
+            </div>
+
+            <!-- Trainings View -->
+            <div id="trainings-view" class="view d-none animate-fade-in">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h2 class="font-weight-bold mb-0">รายการอบรม</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-premium btn-premium-secondary" onclick="window.print()">
+                            <i class="fas fa-print"></i> พิมพ์รายงาน
+                        </button>
+                        <button class="btn btn-premium btn-premium-primary admin-only" onclick="openTrainingModal()">
+                            <i class="fas fa-plus"></i> เพิ่มอบรมใหม่
+                        </button>
+                    </div>
+                </div>
+                <div id="trainings-cards" class="row"></div>
+            </div>
+
+            <!-- Teachers View -->
+            <div id="teachers-view" class="view d-none animate-fade-in">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h2 class="font-weight-bold mb-0">รายชื่อบุคลากร</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-premium btn-premium-secondary" onclick="window.print()">
+                            <i class="fas fa-print"></i> พิมพ์รายชื่อ
+                        </button>
+                        <button class="btn btn-premium btn-premium-primary admin-only" onclick="openTeacherModal()">
+                            <i class="fas fa-user-plus"></i> เพิ่มครูใหม่
+                        </button>
+                    </div>
+                </div>
+                <div class="card-premium overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>ลำดับ</th>
+                                    <th>ชื่อ-นามสกุล</th>
+                                    <th>ตำแหน่ง</th>
+                                    <th class="text-center">คิวออกงาน</th>
+                                    <th class="text-center">คิวอบรม</th>
+                                    <th class="text-center">รวมงาน</th>
+                                    <th class="text-right admin-only">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teachers-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History View -->
+            <div id="history-view" class="view d-none animate-fade-in">
+                <h2 class="font-weight-bold mb-5">ประวัติและบันทึกการปฏิบัติงาน</h2>
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card-premium p-4 h-100">
+                            <h5 class="mb-4">บันทึกกิจกรรมล่าสุด</h5>
+                            <div id="activity-log" class="small"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card-premium p-4 h-100">
+                            <h5 class="mb-4">สรุปสถิติการแทนงาน</h5>
+                            <div id="substitution-stats"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Modals (Simplified for brevity, to be populated by JS) -->
