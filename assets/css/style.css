@@ -44,37 +44,36 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
     letter-spacing: -0.02em;
 }
 
-/* Top Navbar */
-.top-navbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
+/* Sidebar Styling */
+.sidebar {
+    background-color: var(--primary);
+    color: white;
 }
 
-.top-navbar .navbar-brand .brand-text {
-    color: var(--primary);
+.sidebar .brand-text {
+    color: white;
 }
 
 .nav-link-custom {
     display: flex;
     align-items: center;
-    padding: 0.5rem 1rem !important;
-    color: var(--text-muted) !important;
+    padding: 0.75rem 1rem !important;
+    color: rgba(255, 255, 255, 0.7) !important;
     border-radius: var(--radius);
     transition: all 0.2s ease;
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
 }
 
 .nav-link-custom:hover {
-    background: #F1F5F9;
-    color: var(--primary) !important;
+    background: rgba(255, 255, 255, 0.1);
+    color: white !important;
 }
 
 .nav-link-custom.active {
-    background: #F1F5F9;
-    color: var(--primary) !important;
+    background: rgba(255, 255, 255, 0.15);
+    color: white !important;
     font-weight: 600;
 }
 
@@ -241,6 +240,14 @@ body:not(.admin-mode) .admin-only {
 
 /* Responsive fixes */
 @media (max-width: 991px) {
+    .d-flex.min-vh-100 {
+        flex-direction: column !important;
+    }
+    .sidebar {
+        width: 100% !important;
+        height: auto !important;
+    }
+    
     .nav-links {
         padding-top: 1rem;
         padding-bottom: 1rem;
@@ -248,7 +255,7 @@ body:not(.admin-mode) .admin-only {
     
     .nav-link-custom {
         margin-bottom: 0.5rem;
-        justify-content: center;
+        justify-content: flex-start;
     }
 
     #admin-btn {
@@ -259,7 +266,7 @@ body:not(.admin-mode) .admin-only {
 
 /* Print Styles */
 @media print {
-    .top-navbar, .btn, #status-toast, .admin-only {
+    .sidebar, .btn, #status-toast, .admin-only {
         display: none !important;
     }
     body {

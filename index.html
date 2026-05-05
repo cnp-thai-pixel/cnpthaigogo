@@ -102,63 +102,56 @@
         <p class="font-outfit font-weight-bold">กำลังเตรียมความพร้อม...</p>
     </div>
 
-    <div class="d-flex flex-column min-vh-100">
-        <!-- Top Navigation Bar -->
-        <nav class="navbar navbar-expand-lg navbar-dark top-navbar shadow-sm">
-            <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" href="#">
-                    <div class="brand-text">
-                        <div id="brand-title" class="font-outfit font-weight-bold mb-0">Thai Queue Pro</div>
-                        <div id="brand-subtitle" class="opacity-75 small">Hanka Pitthayakhom School</div>
-                    </div>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto nav-links gap-2 mt-3 mt-lg-0">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link-custom active" data-view="dashboard">
-                                <i class="fas fa-home me-2"></i> หน้าหลัก
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link-custom" data-view="events">
-                                <i class="fas fa-calendar-check me-2"></i> จัดการออกงาน
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link-custom" data-view="trainings">
-                                <i class="fas fa-graduation-cap me-2"></i> จัดการอบรม
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link-custom" data-view="teachers">
-                                <i class="fas fa-users me-2"></i> บุคลากร
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link-custom" data-view="history">
-                                <i class="fas fa-history me-2"></i> ประวัติงาน
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="d-flex ms-lg-3 mt-3 mt-lg-0 gap-2">
-                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="location.reload()"
-                            title="รีเฟรชข้อมูล">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="toggleAdmin()"
-                            id="admin-btn">
-                            <i class="fas fa-lock me-1"></i> เข้าสู่ระบบ Admin
-                        </button>
-                    </div>
-                </div>
+    <div class="d-flex min-vh-100">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar d-flex flex-column p-4 text-white shadow-lg" style="width: 280px; background-color: var(--primary);">
+            <div class="brand mb-5 mt-2">
+                <div id="brand-title" class="font-outfit font-weight-bold fs-4 mb-1">Thai Queue Pro</div>
+                <div id="brand-subtitle" class="opacity-75 small">Hanka Pitthayakhom</div>
             </div>
-        </nav>
+            
+            <ul class="nav nav-pills flex-column mb-auto nav-links gap-2">
+                <li class="nav-item">
+                    <a href="#" class="nav-link-custom text-white active" data-view="dashboard">
+                        <i class="fas fa-home me-3" style="width: 20px;"></i> หน้าหลัก
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link-custom text-white opacity-75" data-view="events">
+                        <i class="fas fa-calendar-check me-3" style="width: 20px;"></i> จัดการออกงาน
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link-custom text-white opacity-75" data-view="trainings">
+                        <i class="fas fa-graduation-cap me-3" style="width: 20px;"></i> จัดการอบรม
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link-custom text-white opacity-75" data-view="teachers">
+                        <i class="fas fa-users me-3" style="width: 20px;"></i> บุคลากร
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link-custom text-white opacity-75" data-view="history">
+                        <i class="fas fa-history me-3" style="width: 20px;"></i> ประวัติงาน
+                    </a>
+                </li>
+            </ul>
+            
+            <hr class="border-secondary mt-5 mb-4">
+            
+            <div class="d-flex flex-column gap-3">
+                <button class="btn btn-outline-light d-flex align-items-center justify-content-center" onclick="location.reload()" title="รีเฟรชข้อมูล">
+                    <i class="fas fa-sync-alt me-2"></i> รีเฟรชระบบ
+                </button>
+                <button class="btn btn-danger d-flex align-items-center justify-content-center" onclick="toggleAdmin()" id="admin-btn">
+                    <i class="fas fa-lock me-2"></i> เข้าสู่ระบบ Admin
+                </button>
+            </div>
+        </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-grow-1 p-4 p-md-5 mx-auto w-100" style="max-width: 1400px;">
+        <main class="flex-grow-1 p-4 p-md-5 mx-auto bg-light w-100" style="max-height: 100vh; overflow-y: auto;">
             <!-- Status Banner / Toast -->
             <div id="status-toast" class="alert alert-info glass mb-4" style="display: none;"></div>
 
