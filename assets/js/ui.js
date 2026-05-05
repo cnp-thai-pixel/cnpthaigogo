@@ -256,12 +256,12 @@ function renderTeacherQueueStrips() {
     // Training Queue
     const trainingSorted = [...teachers].sort((a, b) => getTeacherQueueScore(a, 'training') - getTeacherQueueScore(b, 'training'));
     trainingStrip.innerHTML = trainingSorted.map((t, i) => `
-        <div class="teacher-queue-card ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})" style="border-left: 3px solid var(--secondary);">
+        <div class="teacher-queue-card ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})" style="border-left: 4px solid var(--secondary);">
             <div class="rank-badge">${i + 1}</div>
             <div style="width:32px;height:32px;">${createTeacherAvatar(t)}</div>
             <div class="info">
                 <div class="name">${t.name}</div>
-                <div class="score" style="color:var(--secondary)"><span class="score-label">คะแนน:</span> ${getTeacherQueueScore(t, 'training')}</div>
+                <div class="score"><span class="score-label">คะแนน:</span> ${getTeacherQueueScore(t, 'training')}</div>
             </div>
         </div>
     `).join('');
@@ -616,7 +616,12 @@ function saveAssignment(id, type) {
     item.status = checked.length > 0 ? 'assigned' : 'pending';
     checked.forEach(tid => {
         const t = window.teachers.find(t => t.teacherId === tid);
-        if (t) { t.dutyQueueScore = (t.dutyQueueScore || 0) + 1; t.totalDuties = (t.totalDuties || 0) + 1; }
+        if (t) { 
+            const points = 15; // Standard assignment points
+            if (type === 'training') t.trainingQueueScore = (t.trainingQueueScore || 0) + points;
+            else t.dutyQueueScore = (t.dutyQueueScore || 0) + points;
+            t.totalDuties = (t.totalDuties || 0) + 1; 
+        }
     });
     persistAllData(); hideModal();
     renderQueueCards(type, type === 'training' ? 'trainings-cards' : 'events-cards');
@@ -646,10 +651,22 @@ function saveSubstitution(id, type) {
     if (!item) return;
     const outId = parseInt(document.getElementById('f-so')?.value);
     const inId  = parseInt(document.getElementById('f-si')?.value);
+    if (!outId || !inId) return;
+
     item.assignedTeachers = item.assignedTeachers.map(tid => tid === outId ? inId : tid);
+    
+    // Add points for substitute (+25)
+    const tIn = window.teachers.find(t => t.teacherId === inId);
+    if (tIn) {
+        if (type === 'training') tIn.trainingQueueScore = (tIn.trainingQueueScore || 0) + 25;
+        else tIn.dutyQueueScore = (tIn.dutyQueueScore || 0) + 25;
+        tIn.totalDuties = (tIn.totalDuties || 0) + 1;
+    }
+
     persistAllData(); hideModal();
     renderQueueCards(type, type === 'training' ? 'trainings-cards' : 'events-cards');
-    showFirebaseStatus('success', 'เปลี่ยนตัวครูสำเร็จ');
+    renderDashboard();
+    showFirebaseStatus('success', 'เปลี่ยนตัวครูสำเร็จ (+25 คะแนนสำหรับผู้แทน)');
 }
 function handleTeacherClick(id) { showTeacherDetail(id); }
 

@@ -296,20 +296,52 @@
                     </div>
 
                     <!-- Methodology Footer -->
-                    <div class="card-flat" style="background: #FFF5F5; border-color: #FFE0E0;">
-                        <div class="card-body-flat p-3">
-                            <div class="row g-3">
+                    <div class="card-flat mb-4" style="background: #FFF9F9; border: 1px solid #FFE0E0;">
+                        <div class="card-header-flat py-2" style="background: var(--primary); color: white; border: none;">
+                            <h6 class="mb-0 fw-bold small"><i class="fas fa-balance-scale me-2"></i>ระบบคะแนนความเป็นธรรม - วิธีการทำงาน</h6>
+                        </div>
+                        <div class="card-body-flat p-4">
+                            <div class="row g-4">
                                 <div class="col-md-4">
-                                    <h6 class="fw-bold extra-small text-uppercase text-danger mb-2"><i class="fas fa-info-circle me-1"></i>ระบบคะแนน (Scoring)</h6>
-                                    <p class="extra-small text-muted mb-0">ระบบจะให้คะแนน +1 ทุกครั้งที่ได้รับมอบหมายงาน ครูที่มีคะแนนน้อยที่สุดจะถูกจัดให้อยู่ในลำดับคิวแรกเพื่อความยุติธรรม</p>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:32px;height:32px;">🏁</div>
+                                        <h6 class="fw-bold mb-0">หลักการเริ่มต้น</h6>
+                                    </div>
+                                    <ul class="extra-small text-muted ps-3 mb-0">
+                                        <li class="mb-1">ครูเริ่มต้นด้วย 0 คะแนน</li>
+                                        <li class="mb-1">คะแนนน้อย = โอกาสได้งานมาก</li>
+                                        <li class="mb-1">ระบบเลือกครูที่มีคะแนนต่ำสุดก่อน</li>
+                                        <li>ยิ่งออกงานน้อย ยิ่งได้โอกาสมาก</li>
+                                    </ul>
                                 </div>
                                 <div class="col-md-4">
-                                    <h6 class="fw-bold extra-small text-uppercase text-danger mb-2"><i class="fas fa-tasks me-1"></i>การจัดมอบหมาย</h6>
-                                    <p class="extra-small text-muted mb-0">Admin สามารถกด "จัดคิว" เพื่อเลือกครูตามลำดับความสำคัญ หรือเปลี่ยนตัวได้หากติดภารกิจอื่น</p>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:32px;height:32px;">📈</div>
+                                        <h6 class="fw-bold mb-0">การได้คะแนน</h6>
+                                    </div>
+                                    <ul class="extra-small text-muted ps-3 mb-0">
+                                        <li class="mb-1">ออกงาน 1 ครั้ง = <strong>+15 คะแนน</strong></li>
+                                        <li class="mb-1">แทนคนอื่น = <strong>+25 คะแนน</strong></li>
+                                        <li class="mb-1">งานสำคัญพิเศษ = <strong>+20 คะแนน</strong></li>
+                                        <li>คะแนนสะสมตลอดปีการศึกษา</li>
+                                    </ul>
                                 </div>
                                 <div class="col-md-4">
-                                    <h6 class="fw-bold extra-small text-uppercase text-danger mb-2"><i class="fas fa-shield-alt me-1"></i>การบันทึกข้อมูล</h6>
-                                    <p class="extra-small text-muted mb-0">ข้อมูลทั้งหมดจะถูกซิงค์กับฐานข้อมูล Cloud แบบ Real-time เพื่อความถูกต้องและตรวจสอบย้อนหลังได้</p>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:32px;height:32px;">⚖️</div>
+                                        <h6 class="fw-bold mb-0">ความยุติธรรม</h6>
+                                    </div>
+                                    <ul class="extra-small text-muted ps-3 mb-0">
+                                        <li class="mb-1">จัดคิวอัตโนมัติตามคะแนนต่ำสุด</li>
+                                        <li class="mb-1">กระจายภาระงานอย่างเท่าเทียม</li>
+                                        <li class="mb-1">ป้องกันการออกงานซ้ำคนเดิม</li>
+                                        <li>โปร่งใส ตรวจสอบได้ทุกขั้นตอน</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 rounded bg-white border border-light text-center">
+                                <div class="small fw-bold text-danger">
+                                    <i class="fas fa-lightbulb me-2 text-warning"></i>หลักสำคัญ: ครูที่มีคะแนนน้อยที่สุดจะได้รับโอกาสออกงานก่อน เพื่อความเป็นธรรมในการกระจายภาระงาน
                                 </div>
                             </div>
                         </div>
