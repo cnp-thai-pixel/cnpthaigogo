@@ -11,28 +11,74 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
     <script>
-        // Firebase Initialization Bridge
+        // Firebase Initialization Bridge (Firestore)
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof firebase !== 'undefined') {
                 const app = firebase.initializeApp(window.firebaseAppConfig);
-                const database = firebase.database();
+                const db = firebase.firestore();
                 
-                // Helper for api.js
+                // Helper for api.js to use Firestore
                 const helpers = {
-                    get: (path) => database.ref(path).get().then(s => s.val()),
-                    put: (path, data) => database.ref(path).set(data),
-                    patch: (path, data) => database.ref(path).update(data)
+                    get: async (path) => {
+                        try {
+                            if (path === 'config') {
+                                const doc = await db.collection('config').doc('main').get();
+                                return doc.exists ? doc.data() : null;
+                            }
+                            const snapshot = await db.collection(path).get();
+                            const data = [];
+                            snapshot.forEach(doc => data.push(doc.data()));
+                            return data.length > 0 ? data : null;
+                        } catch (e) {
+                            console.error("Firestore Get Error:", e);
+                            return null;
+                        }
+                    },
+                    put: async (path, data) => {
+                        try {
+                            if (path === 'config') {
+                                return db.collection('config').doc('main').set(data);
+                            }
+                            
+                            // If data is an array, save each item as a document in the collection
+                            if (Array.isArray(data)) {
+                                const batch = db.batch();
+                                data.forEach((item, index) => {
+                                    if (!item) return;
+                                    
+                                    // Determine document ID based on collection type
+                                    let docId = null;
+                                    if (path === 'teachers' && item.teacherId) docId = item.teacherId.toString();
+                                    else if (path === 'events' && item.eventId) docId = item.eventId.toString();
+                                    else if (path === 'trainings' && item.trainingId) docId = item.trainingId.toString();
+                                    else if (path === 'activityLog') docId = item.timestamp ? item.timestamp.toString() : (Date.now() + index).toString();
+                                    else docId = (Date.now() + index).toString();
+                                    
+                                    const docRef = db.collection(path).doc(docId);
+                                    batch.set(docRef, item);
+                                });
+                                return batch.commit();
+                            } else {
+                                // Fallback if data is not an array
+                                return db.collection('appData').doc(path).set(data);
+                            }
+                        } catch (e) {
+                            console.error("Firestore Put Error:", e);
+                            throw e;
+                        }
+                    },
+                    patch: async (path, data) => helpers.put(path, data)
                 };
                 
                 if (window.notifyFirebaseReady) {
-                    window.notifyFirebaseReady(app, database, helpers);
+                    window.notifyFirebaseReady(app, db, helpers);
                 }
             }
         });
