@@ -127,9 +127,11 @@ function toggleLoading(show) {
     const loader = document.getElementById('loading-overlay');
     if (!loader) return;
     if (show) {
-        loader.style.display = 'flex';
+        loader.classList.remove('d-none');
+        loader.classList.add('d-flex');
     } else {
-        loader.style.display = 'none';
+        loader.classList.remove('d-flex');
+        loader.classList.add('d-none');
     }
 }
 
