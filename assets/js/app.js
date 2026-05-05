@@ -42,16 +42,16 @@ function updateAdminUI() {
     if (window.isAdmin) {
         document.body.classList.add('admin-mode');
         if (btn) {
-            btn.innerHTML = '<i class="fas fa-unlock me-1"></i> ออกจากระบบ Admin';
-            btn.classList.replace('btn-outline-danger', 'btn-danger');
-            btn.classList.add('text-white');
+            btn.innerHTML = '<i class="fas fa-unlock-alt me-1"></i> Admin (Unlocked)';
+            btn.classList.remove('btn-premium-accent');
+            btn.classList.add('btn-premium-secondary');
         }
     } else {
         document.body.classList.remove('admin-mode');
         if (btn) {
-            btn.innerHTML = '<i class="fas fa-lock me-1"></i> เข้าสู่ระบบ Admin';
-            btn.classList.replace('btn-danger', 'btn-outline-danger');
-            btn.classList.remove('text-white');
+            btn.innerHTML = '<i class="fas fa-lock me-1"></i> Admin (Locked)';
+            btn.classList.remove('btn-premium-secondary');
+            btn.classList.add('btn-premium-accent');
         }
     }
 }
@@ -110,14 +110,6 @@ function setupEventListeners() {
             e.preventDefault();
             const view = link.getAttribute('data-view');
             showView(view);
-            
-            // Auto close sidebar on mobile after clicking a link
-            if (window.innerWidth <= 991 && typeof toggleSidebar === 'function') {
-                const sidebar = document.getElementById('sidebar');
-                if (sidebar && sidebar.classList.contains('show')) {
-                    toggleSidebar();
-                }
-            }
         });
     });
 }

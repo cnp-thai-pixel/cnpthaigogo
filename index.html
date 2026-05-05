@@ -102,195 +102,175 @@
         <p class="font-outfit font-weight-bold">กำลังเตรียมความพร้อม...</p>
     </div>
 
-    <div class="d-flex min-vh-100">
-        <!-- Sidebar Overlay (Mobile) -->
-        <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
-        
-        <!-- Sidebar Navigation -->
-        <aside id="sidebar" class="sidebar d-flex flex-column p-4 text-white shadow-lg" style="width: 280px; background-color: var(--primary);">
-            <div class="brand mb-5 mt-2 d-flex justify-content-between align-items-center">
-                <div>
-                    <div id="brand-title" class="font-outfit font-weight-bold fs-4 mb-1">Thai Queue Pro</div>
-                    <div id="brand-subtitle" class="opacity-75 small">Hanka Pitthayakhom</div>
+    <div class="min-vh-100 d-flex flex-column">
+        <!-- Top Navigation Bar -->
+        <header class="top-navbar">
+            <div class="container-fluid h-100 px-4 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center h-100">
+                    <div class="brand-text me-5">
+                        <span id="brand-title" class="fw-bold">Thai Queue Pro</span>
+                        <div id="brand-subtitle" class="text-muted" style="font-size: 11px; margin-top: -5px;">Hanka Pitthayakhom</div>
+                    </div>
+                    
+                    <nav class="h-100 d-none d-lg-flex">
+                        <a href="#" class="nav-link-custom active" data-view="dashboard">หน้าหลัก</a>
+                        <a href="#" class="nav-link-custom" data-view="events">ออกงาน</a>
+                        <a href="#" class="nav-link-custom" data-view="trainings">อบรม</a>
+                        <a href="#" class="nav-link-custom" data-view="teachers">บุคลากร</a>
+                        <a href="#" class="nav-link-custom" data-view="history">บันทึกและประวัติ</a>
+                    </nav>
                 </div>
-                <button class="btn btn-link text-white d-lg-none p-0" onclick="toggleSidebar()"><i class="fas fa-times fa-lg"></i></button>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-premium btn-premium-secondary d-none d-md-flex" onclick="location.reload()">
+                        <i class="fas fa-sync-alt"></i> รีเฟรช
+                    </button>
+                    <button class="btn btn-premium btn-premium-accent" onclick="toggleAdmin()" id="admin-btn">
+                        <i class="fas fa-lock"></i> Admin
+                    </button>
+                    <button class="btn btn-link text-dark d-lg-none p-0" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                </div>
             </div>
-            
-            <ul class="nav nav-pills flex-column mb-auto nav-links gap-2">
-                <li class="nav-item">
-                    <a href="#" class="nav-link-custom text-white active" data-view="dashboard">
-                        <i class="fas fa-home me-3" style="width: 20px;"></i> หน้าหลัก
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link-custom text-white opacity-75" data-view="events">
-                        <i class="fas fa-calendar-check me-3" style="width: 20px;"></i> จัดการออกงาน
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link-custom text-white opacity-75" data-view="trainings">
-                        <i class="fas fa-graduation-cap me-3" style="width: 20px;"></i> จัดการอบรม
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link-custom text-white opacity-75" data-view="teachers">
-                        <i class="fas fa-users me-3" style="width: 20px;"></i> บุคลากร
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link-custom text-white opacity-75" data-view="history">
-                        <i class="fas fa-history me-3" style="width: 20px;"></i> ประวัติงาน
-                    </a>
-                </li>
-            </ul>
-            
-            <hr class="border-secondary mt-5 mb-4">
-            
-            <div class="d-flex flex-column gap-3">
-                <button class="btn btn-outline-light d-flex align-items-center justify-content-center" onclick="location.reload()" title="รีเฟรชข้อมูล">
-                    <i class="fas fa-sync-alt me-2"></i> รีเฟรชระบบ
-                </button>
-                <button class="btn btn-danger d-flex align-items-center justify-content-center" onclick="toggleAdmin()" id="admin-btn">
-                    <i class="fas fa-lock me-2"></i> เข้าสู่ระบบ Admin
-                </button>
+        </header>
+
+        <!-- Mobile Menu (Overlay) -->
+        <div id="mobile-menu" class="position-fixed w-100 h-100 bg-white shadow-lg d-none" style="z-index: 2000; top: 0; left: 0;">
+            <div class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">เมนู</h5>
+                    <button class="btn btn-link text-dark p-0" onclick="toggleMobileMenu()">
+                        <i class="fas fa-times fa-lg"></i>
+                    </button>
+                </div>
+                <div class="d-flex flex-column gap-3">
+                    <a href="#" class="nav-link-custom py-2" data-view="dashboard" onclick="toggleMobileMenu()">หน้าหลัก</a>
+                    <a href="#" class="nav-link-custom py-2" data-view="events" onclick="toggleMobileMenu()">ออกงาน</a>
+                    <a href="#" class="nav-link-custom py-2" data-view="trainings" onclick="toggleMobileMenu()">อบรม</a>
+                    <a href="#" class="nav-link-custom py-2" data-view="teachers" onclick="toggleMobileMenu()">บุคลากร</a>
+                    <a href="#" class="nav-link-custom py-2" data-view="history" onclick="toggleMobileMenu()">บันทึกและประวัติ</a>
+                </div>
             </div>
-        </aside>
+        </div>
 
         <!-- Main Content Area -->
-        <main class="flex-grow-1 p-4 p-md-5 mx-auto bg-light w-100 position-relative" style="max-height: 100vh; overflow-y: auto;">
-            <!-- Mobile/Desktop Toggle Header -->
-            <div class="d-flex align-items-center mb-4">
-                <button class="btn bg-white shadow-sm me-3 text-primary d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border);" onclick="toggleSidebar()">
-                    <i class="fas fa-bars fa-lg"></i>
-                </button>
-                <div class="d-lg-none font-outfit font-weight-bold fs-5 text-primary">Thai Queue Pro</div>
-            </div>
-
-            <script>
-                function toggleSidebar() {
-                    const sidebar = document.getElementById('sidebar');
-                    const overlay = document.getElementById('sidebar-overlay');
-                    if (window.innerWidth <= 991) {
-                        sidebar.classList.toggle('show');
-                        overlay.classList.toggle('show');
-                    } else {
-                        sidebar.classList.toggle('collapsed');
-                    }
-                }
-            </script>
-
+        <main class="flex-grow-1 p-4 p-md-5 mx-auto w-100" style="max-width: 1440px;">
             <!-- Status Banner / Toast -->
-            <div id="status-toast" class="alert alert-info glass mb-4" style="display: none;"></div>
+            <div id="status-toast" class="alert alert-info border-0 mb-4 d-none" style="background-color: var(--surface);"></div>
 
             <!-- Dashboard View -->
             <div id="dashboard-view" class="view animate-fade-in">
                 <!-- Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h2 class="font-weight-bold mb-1">ภาพรวมการออกงาน</h2>
-                        <p class="text-muted small mb-0">ข้อมูลสถิติการปฏิบัติงานของบุคลากรทั้งหมด</p>
+                        <h2 class="fw-bold mb-1">หน้าหลัก</h2>
+                        <p class="text-muted small mb-0">ภาพรวมการจัดการและคิวบุคลากร</p>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-premium btn-premium-primary admin-only" onclick="openEventModal()">
-                            <i class="fas fa-plus"></i> เพิ่มงานใหม่
-                        </button>
-                    </div>
+                    <button class="btn btn-premium btn-premium-accent admin-only" onclick="openEventModal()">
+                        <i class="fas fa-plus"></i> เพิ่มงานใหม่
+                    </button>
                 </div>
 
                 <!-- Stats Row -->
-                <div class="row g-4 mb-4">
+                <div class="row g-4 mb-5">
                     <div class="col-sm-6 col-xl-3">
-                        <div class="card-premium h-100 p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="font-weight-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">งานออกเวรทั้งหมด</span>
-                                <span class="stat-badge">+12%</span>
-                            </div>
-                            <h2 id="total-events" class="mb-0 font-weight-bold display-5">0</h2>
+                        <div class="stat-card">
+                            <div class="text-muted small fw-bold text-uppercase mb-1">งานทั้งหมด</div>
+                            <h2 id="total-events-combined" class="fw-bold mb-0">0</h2>
                         </div>
                     </div>
                     <div class="col-sm-6 col-xl-3">
-                        <div class="card-premium h-100 p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="font-weight-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">งานอบรมทั้งหมด</span>
-                                <span class="stat-badge">+5%</span>
-                            </div>
-                            <h2 id="total-trainings" class="mb-0 font-weight-bold display-5">0</h2>
+                        <div class="stat-card">
+                            <div class="text-muted small fw-bold text-uppercase mb-1">จัดคิวแล้ว</div>
+                            <h2 id="assigned-count" class="fw-bold mb-0 text-success">0</h2>
                         </div>
                     </div>
                     <div class="col-sm-6 col-xl-3">
-                        <div class="card-premium h-100 p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="font-weight-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">รอการจัดคิว</span>
-                                <span class="stat-badge bg-danger text-white">-2%</span>
-                            </div>
-                            <h2 id="pending-events" class="mb-0 font-weight-bold display-5">0</h2>
+                        <div class="stat-card">
+                            <div class="text-muted small fw-bold text-uppercase mb-1">รอจัดคิว</div>
+                            <h2 id="pending-count" class="fw-bold mb-0 text-danger">0</h2>
                         </div>
                     </div>
                     <div class="col-sm-6 col-xl-3">
-                        <div class="card-premium h-100 p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="font-weight-bold text-muted small text-uppercase" style="letter-spacing: 0.5px;">ครูทั้งหมด</span>
-                                <span class="stat-badge">+1</span>
-                            </div>
-                            <h2 id="total-teachers" class="mb-0 font-weight-bold display-5">0</h2>
+                        <div class="stat-card">
+                            <div class="text-muted small fw-bold text-uppercase mb-1">ครูทั้งหมด</div>
+                            <h2 id="total-teachers-count" class="fw-bold mb-0 text-primary">0</h2>
                         </div>
                     </div>
                 </div>
 
-                    <div class="row g-4 mb-4">
-                    <!-- Next Queue Summary -->
-                    <div class="col-lg-8">
-                        <div class="card-premium p-4 h-100 border-0 shadow-sm">
-                            <h5 class="font-weight-bold mb-4"><i class="fas fa-list-ol me-2 text-primary"></i> ลำดับคิวถัดไป</h5>
+                <!-- Latest Assignment Section (GAS Inspired) -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="card-premium p-4" style="background-color: var(--surface);">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold mb-0"><i class="fas fa-calendar-check me-2 text-primary"></i> งานล่าสุดที่จัดคิวแล้ว</h5>
+                                <span class="badge-status badge-assigned">LATEST</span>
+                            </div>
+                            <div id="latest-assigned-job" class="bg-white p-4 rounded-3 shadow-sm border border-light">
+                                <!-- Populated by JS -->
+                                <div class="text-center py-4 text-muted">กำลังดึงข้อมูล...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <p class="small text-muted font-weight-bold mb-2">คิวออกงาน (Duty Queue)</p>
-                            <div id="next-queue-duty" class="queue-grid mb-4"></div>
-
-                            <p class="small text-muted font-weight-bold mb-2">คิวอบรม (Training Queue)</p>
-                            <div id="next-queue-training" class="queue-grid"></div>
+                <div class="row g-4 mb-5">
+                    <!-- Urgent Assignments -->
+                    <div class="col-lg-6">
+                        <div class="card-premium p-4 h-100">
+                            <h5 class="fw-bold mb-4"><i class="fas fa-bolt me-2 text-warning"></i> งานที่ต้องจัดคิวเร่งด่วน</h5>
+                            <div id="urgent-events-list" class="d-flex flex-column gap-3">
+                                <!-- Dynamic Content -->
+                                <div class="text-center py-4 text-muted small">ไม่มีงานเร่งด่วน</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Urgent Events -->
-                    <div class="col-lg-4">
-                        <div class="card-premium p-4 h-100 border-0 shadow-sm">
-                            <h5 class="font-weight-bold mb-4"><i class="fas fa-exclamation-circle me-2 text-warning"></i> งานที่ต้องเร่งจัดคิว</h5>
-                            <div id="urgent-events" class="d-flex flex-column gap-3">
+                    <!-- Next in Queue -->
+                    <div class="col-lg-6">
+                        <div class="card-premium p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold mb-0"><i class="fas fa-users me-2 text-primary"></i> ครูที่ควรออกงานถัดไป</h5>
+                                <button class="btn btn-link btn-sm text-decoration-none" onclick="showView('teachers')">คิวทั้งหมด</button>
+                            </div>
+                            <div id="next-teachers-queue" class="d-flex flex-column gap-2">
                                 <!-- Dynamic Content -->
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- New Analytics Row -->
+                <!-- Analytics Row (Red Broadcast Style) -->
                 <div class="row g-4">
                     <div class="col-lg-7">
-                        <div class="card-premium p-4 h-100">
-                            <h5 class="font-weight-bold mb-1">ความถี่ในการรับงาน (Top 5)</h5>
-                            <p class="text-muted small mb-0">ข้อมูลรวมจากงานออกเวรและงานอบรม</p>
+                        <div class="card-premium p-4">
+                            <h5 class="fw-bold mb-1">ความถี่การรับงานสูงสุด (Top 5)</h5>
+                            <p class="text-muted small mb-4">สถิติจำนวนครั้งที่ได้รับมอบหมายงาน</p>
                             <div id="top-teachers-chart" class="vertical-bar-container">
                                 <!-- Bars populated by JS -->
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-5">
-                        <div class="card-premium p-4 h-100 d-flex flex-column">
-                            <h5 class="font-weight-bold mb-1">สัดส่วนประเภทงาน</h5>
-                            <p class="text-muted small mb-4">การกระจายตัวของประเภทงานทั้งหมด</p>
-                            <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
+                        <div class="card-premium p-4">
+                            <h5 class="fw-bold mb-1">สัดส่วนประเภทงาน</h5>
+                            <p class="text-muted small mb-4">การเปรียบเทียบงานออกเวรและงานอบรม</p>
+                            <div class="d-flex flex-column align-items-center">
                                 <div id="stat-doughnut" class="doughnut-chart mb-4">
                                     <div class="doughnut-chart-text">
-                                        <h3 id="stat-total-center" class="mb-0 font-weight-bold">0</h3>
-                                        <div class="small text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">TOTAL EVENTS</div>
+                                        <h3 id="stat-total-center" class="mb-0 fw-bold">0</h3>
+                                        <div class="small text-muted" style="font-size: 10px;">TOTAL</div>
                                     </div>
                                 </div>
                                 <div class="w-100 px-3">
                                     <div class="d-flex justify-content-between mb-2 small">
-                                        <div class="d-flex align-items-center"><span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:var(--primary);"></span> งานออกเวร</div>
+                                        <span><i class="fas fa-circle me-2" style="color: var(--primary);"></i> งานออกเวร</span>
                                         <strong id="stat-duty-percent">0%</strong>
                                     </div>
                                     <div class="d-flex justify-content-between small">
-                                        <div class="d-flex align-items-center"><span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:var(--secondary);"></span> งานอบรม</div>
+                                        <span><i class="fas fa-circle me-2" style="color: var(--secondary);"></i> งานอบรม</span>
                                         <strong id="stat-training-percent">0%</strong>
                                     </div>
                                 </div>
@@ -298,6 +278,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
                 <!-- Recent Transactions Row -->
                 <div class="row mt-4">

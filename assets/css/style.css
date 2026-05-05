@@ -2,14 +2,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap');
 
 :root {
-    /* Broadcast Pink Design System */
-    --primary: #E11D48; /* Broadcast Pink */
-    --primary-hover: #BE123C;
+    /* Red Broadcast Design System */
+    --primary: #FF0000; /* Broadcast Red */
+    --primary-hover: #CC0000;
     --secondary: #065FD4; /* Link Blue */
     --neutral: #606060; /* Gray 600 */
-    --background: #F8F9FA; /* Light gray background like the image */
-    --surface: #FFFFFF; /* White cards */
-    --surface-hover: #F2F2F2; /* Gray 100 */
+    --background: #FFFFFF; /* White */
+    --surface: #F2F2F2; /* Gray 100 */
+    --surface-hover: #E5E5E5; 
     --text-primary: #0F0F0F; /* Near Black */
     --text-secondary: #606060;
     --border: #E5E5E5;
@@ -18,13 +18,15 @@
     --warning: #FB8C00;
     --danger: #FF0000; 
     
-    /* Minimal Elevation */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+    /* Elevation */
+    --shadow-0: none;
+    --shadow-1: 0 1px 2px rgba(0,0,0,0.1);
+    --shadow-2: 0 4px 32px rgba(0,0,0,0.1);
+    --shadow-3: 0 8px 40px rgba(0,0,0,0.2);
     
     --radius-sm: 4px;
     --radius: 8px;
-    --radius-lg: 16px;
+    --radius-lg: 12px;
     --radius-pill: 9999px;
 }
 
@@ -35,6 +37,7 @@ body {
     margin: 0;
     min-height: 100vh;
     line-height: 1.5;
+    font-size: 14px;
 }
 
 h1, h2, h3, h4, h5, h6, .font-outfit {
@@ -43,91 +46,83 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
     color: var(--text-primary);
 }
 
-/* Sidebar Styling (Light Theme) */
-.sidebar {
-    background-color: #FFFFFF;
-    color: var(--text-primary);
-    border-right: 1px solid var(--border);
-    transition: margin 0.2s ease;
-    z-index: 1050;
+/* Top Navbar (Red Broadcast / GAS Style) */
+.top-navbar {
+    background: var(--background);
+    height: 56px;
+    box-shadow: var(--shadow-1);
+    z-index: 1030;
+    border-bottom: 1px solid var(--border);
 }
 
-.sidebar.collapsed {
-    margin-left: -280px;
-}
-
-.sidebar .brand-text {
+.top-navbar .brand-text {
     color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 500;
 }
 
 .nav-link-custom {
     display: flex;
     align-items: center;
-    padding: 0.8rem 1.25rem !important;
-    color: var(--text-secondary) !important;
-    border-radius: var(--radius-sm);
-    transition: background 0.15s ease, color 0.15s ease;
+    padding: 0 16px !important;
+    color: var(--text-primary) !important;
+    height: 100%;
+    transition: background 0.15s ease;
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 14px;
     font-weight: 500;
-    margin-bottom: 4px;
 }
 
 .nav-link-custom:hover {
-    background: var(--surface-hover);
-    color: var(--text-primary) !important;
+    background: var(--surface);
 }
 
 .nav-link-custom.active {
-    background: #FFF1F2; /* Very light pink */
-    color: var(--primary) !important;
+    background: var(--surface);
     font-weight: 700;
-    position: relative;
+    border-bottom: 3px solid var(--primary);
 }
 
-.nav-link-custom.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 10%;
-    height: 80%;
-    width: 4px;
-    background-color: var(--primary);
-    border-radius: 0 4px 4px 0;
-}
-
-/* Cards (Broadcast style: Bordered, no shadow) */
+/* Cards (Red Broadcast: No Shadow, No Border) */
 .card-premium {
+    background: var(--background);
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: none;
+    overflow: hidden;
+}
+
+/* Stat Cards */
+.stat-card {
     background: var(--surface);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
+    padding: 16px;
+    border: none;
 }
 
 /* Buttons */
 .btn-premium {
     border-radius: var(--radius-pill);
-    padding: 0.5rem 1.25rem;
+    padding: 0 16px;
     font-weight: 500;
+    font-size: 14px;
     transition: background 0.2s ease;
     border: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    min-height: 36px;
-    font-size: 0.9rem;
+    height: 36px;
 }
 
 .btn-premium-primary {
     background: var(--text-primary);
-    color: white;
+    color: var(--background);
 }
 
 .btn-premium-primary:hover {
     background: #272727;
-    color: white;
+    color: var(--background);
 }
 
 .btn-premium-secondary {
@@ -137,12 +132,12 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
 }
 
 .btn-premium-secondary:hover {
-    background: var(--surface-hover);
+    background: var(--surface);
 }
 
 .btn-premium-accent {
     background: var(--primary);
-    color: white;
+    color: var(--background);
 }
 
 .btn-premium-accent:hover {
@@ -151,9 +146,9 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
 
 /* Avatars (Bigger & Circular) */
 .avatar-ring {
-    padding: 2px;
+    padding: 0;
     border-radius: 50%;
-    background: var(--border);
+    background: transparent;
     display: inline-block;
 }
 
@@ -165,10 +160,9 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--background);
     font-weight: 500;
     font-size: 1.2rem;
-    border: 2px solid white;
     overflow: hidden;
     object-fit: cover;
 }
@@ -179,19 +173,19 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
     font-size: 1.75rem;
 }
 
-/* Status Badges (Broadcast Style) */
+/* Status Badges */
 .badge-status {
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 2px; /* Red Broadcast: 2px badges */
+    font-size: 12px;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
 }
 
-.badge-pending { background: #FFF3E0; color: #E65100; border: 1px solid #FFE0B2; }
-.badge-assigned { background: #E8F5E9; color: #1B5E20; border: 1px solid #C8E6C9; }
-.badge-completed { background: var(--surface-hover); color: var(--text-secondary); }
+.badge-pending { background: transparent; color: var(--warning); border: 1px solid var(--warning); }
+.badge-assigned { background: transparent; color: var(--success); border: 1px solid var(--success); }
+.badge-completed { background: var(--surface); color: var(--text-secondary); }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -201,26 +195,26 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
     background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #CCCCCC;
+    background: var(--border);
     border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #999999;
+    background: var(--neutral);
 }
 
 /* Queue Grid */
 .queue-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
+    gap: 16px;
 }
 
 .queue-item-mini {
     text-align: center;
-    padding: 1rem;
+    padding: 16px;
     border-radius: var(--radius-lg);
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: none;
     transition: background 0.15s ease;
     cursor: pointer;
 }
@@ -230,22 +224,22 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
 }
 
 .queue-item-mini.active {
-    border: 2px solid var(--text-primary);
+    border: 1px solid var(--text-primary);
     background: var(--surface);
 }
 
 /* Modal Styling */
 .modal-content-premium {
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    border-radius: var(--radius); /* Red Broadcast modals: 8px */
+    border: none;
+    box-shadow: var(--shadow-3);
 }
 
 .modal-header-premium {
     border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    padding: 1.25rem 1.5rem;
+    background: var(--background);
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: 16px 24px;
 }
 
 /* Admin Mode Toggles */
