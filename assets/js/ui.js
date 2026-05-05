@@ -416,12 +416,180 @@ function showTeacherDetail(teacherId) {
     new bootstrap.Modal(document.getElementById('universalModal')).show();
 }
 
-/* ─── Stub functions (prevent errors) ──────── */
-function openEventModal()          { showFirebaseStatus('info', 'ฟังก์ชันเพิ่มงานกำลังพัฒนา'); }
-function openTrainingModal()       { showFirebaseStatus('info', 'ฟังก์ชันเพิ่มอบรมกำลังพัฒนา'); }
-function openTeacherModal()        { showFirebaseStatus('info', 'ฟังก์ชันเพิ่มครูกำลังพัฒนา'); }
-function editItem(id, type)        { showFirebaseStatus('info', `แก้ไข ${type} #${id}`); }
-function editTeacher(id)           { showFirebaseStatus('info', `แก้ไขครู #${id}`); }
-function openAutoAssignModal(id, type)   { showFirebaseStatus('info', `จัดคิว ${type} #${id} (กำลังพัฒนา)`); }
-function openSubstitutionModal(id, type) { showFirebaseStatus('info', `แทนงาน ${type} #${id} (กำลังพัฒนา)`); }
-function handleTeacherClick(id)    { showTeacherDetail(id); }
+/* ─── Modal Helper ───────────────────────────── */
+function showModal(title, bodyHtml, footerHtml) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = bodyHtml;
+    const foot = document.getElementById('modalFooter');
+    if (foot) foot.innerHTML = footerHtml || '';
+    new bootstrap.Modal(document.getElementById('universalModal')).show();
+}
+function hideModal() {
+    const m = bootstrap.Modal.getInstance(document.getElementById('universalModal'));
+    if (m) m.hide();
+}
+
+/* ── Add/Edit Event ── */
+function openEventModal(id) {
+    const ev = id ? window.events.find(e => e.eventId == id) : null;
+    showModal(ev ? 'แก้ไขงานออกเวร' : 'เพิ่มงานออกเวรใหม่', `
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label fw-bold">ชื่อโครงการ / กิจกรรม</label>
+          <input id="f-en" class="form-control" value="${ev ? getItemName(ev) : ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">วันที่</label>
+          <input id="f-ed" type="date" class="form-control" value="${ev?.date || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">เวลา</label>
+          <input id="f-et" class="form-control" placeholder="09:00-12:00" value="${ev?.time || ''}"></div>
+        <div class="col-12"><label class="form-label fw-bold">สถานที่</label>
+          <input id="f-el" class="form-control" value="${ev?.location || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">จำนวนครูที่ต้องการ</label>
+          <input id="f-eq" type="number" min="1" class="form-control" value="${ev?.requiredQuota || 1}"></div>
+      </div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+       <button class="btn btn-danger" onclick="saveEvent(${id || 'null'})">บันทึก</button>`);
+}
+function saveEvent(id) {
+    const eventName = document.getElementById('f-en')?.value.trim();
+    if (!eventName) { alert('กรุณาใส่ชื่อกิจกรรม'); return; }
+    const existing = id ? window.events.find(e => e.eventId == id) : null;
+    const data = { eventId: id || Date.now(), eventName, date: document.getElementById('f-ed')?.value,
+        time: document.getElementById('f-et')?.value, location: document.getElementById('f-el')?.value,
+        requiredQuota: parseInt(document.getElementById('f-eq')?.value) || 1,
+        status: existing?.status || 'pending', assignedTeachers: existing?.assignedTeachers || [] };
+    if (id) { const i = window.events.findIndex(e => e.eventId == id); if (i >= 0) window.events[i] = data; }
+    else window.events.push(data);
+    persistAllData(); hideModal(); renderQueueCards('duty', 'events-cards');
+    showFirebaseStatus('success', 'บันทึกงานสำเร็จ');
+}
+function editItem(id, type) { type === 'training' ? openTrainingModal(id) : openEventModal(id); }
+
+/* ── Add/Edit Training ── */
+function openTrainingModal(id) {
+    const tr = id ? window.trainings.find(t => t.trainingId == id) : null;
+    showModal(tr ? 'แก้ไขงานอบรม' : 'เพิ่มงานอบรมใหม่', `
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label fw-bold">ชื่อโครงการ / หลักสูตร</label>
+          <input id="f-tn" class="form-control" value="${tr ? getItemName(tr) : ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">วันที่</label>
+          <input id="f-td" type="date" class="form-control" value="${tr?.date || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">เวลา</label>
+          <input id="f-tt" class="form-control" placeholder="09:00-16:00" value="${tr?.time || ''}"></div>
+        <div class="col-12"><label class="form-label fw-bold">สถานที่</label>
+          <input id="f-tl" class="form-control" value="${tr?.location || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">จำนวนครูที่ต้องการ</label>
+          <input id="f-tq" type="number" min="1" class="form-control" value="${tr?.requiredQuota || 1}"></div>
+      </div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+       <button class="btn btn-danger" onclick="saveTraining(${id || 'null'})">บันทึก</button>`);
+}
+function saveTraining(id) {
+    const trainingName = document.getElementById('f-tn')?.value.trim();
+    if (!trainingName) { alert('กรุณาใส่ชื่อการอบรม'); return; }
+    const existing = id ? window.trainings.find(t => t.trainingId == id) : null;
+    const data = { trainingId: id || Date.now(), trainingName, date: document.getElementById('f-td')?.value,
+        time: document.getElementById('f-tt')?.value, location: document.getElementById('f-tl')?.value,
+        requiredQuota: parseInt(document.getElementById('f-tq')?.value) || 1,
+        status: existing?.status || 'pending', assignedTeachers: existing?.assignedTeachers || [] };
+    if (id) { const i = window.trainings.findIndex(t => t.trainingId == id); if (i >= 0) window.trainings[i] = data; }
+    else window.trainings.push(data);
+    persistAllData(); hideModal(); renderQueueCards('training', 'trainings-cards');
+    showFirebaseStatus('success', 'บันทึกการอบรมสำเร็จ');
+}
+
+/* ── Add/Edit Teacher ── */
+function openTeacherModal(id) {
+    const t = id ? window.teachers.find(t => t.teacherId == id) : null;
+    showModal(t ? 'แก้ไขข้อมูลครู' : 'เพิ่มครูใหม่', `
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label fw-bold">ชื่อ-นามสกุล</label>
+          <input id="f-rn" class="form-control" value="${t?.name || ''}"></div>
+        <div class="col-12"><label class="form-label fw-bold">ตำแหน่ง</label>
+          <input id="f-rp" class="form-control" value="${t?.position || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">คะแนนเริ่มต้น (ออกงาน)</label>
+          <input id="f-rd" type="number" class="form-control" value="${t?.dutyQueueScore || 0}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">คะแนนเริ่มต้น (อบรม)</label>
+          <input id="f-rt" type="number" class="form-control" value="${t?.trainingQueueScore || 0}"></div>
+      </div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+       <button class="btn btn-danger" onclick="saveTeacher(${id || 'null'})">บันทึก</button>`);
+}
+function saveTeacher(id) {
+    const name = document.getElementById('f-rn')?.value.trim();
+    if (!name) { alert('กรุณาใส่ชื่อครู'); return; }
+    const existing = id ? window.teachers.find(t => t.teacherId == id) : null;
+    const data = { teacherId: id || Date.now(), name, position: document.getElementById('f-rp')?.value,
+        dutyQueueScore: parseInt(document.getElementById('f-rd')?.value) || 0,
+        trainingQueueScore: parseInt(document.getElementById('f-rt')?.value) || 0,
+        totalDuties: existing?.totalDuties || 0 };
+    if (id) { const i = window.teachers.findIndex(t => t.teacherId == id); if (i >= 0) window.teachers[i] = data; }
+    else window.teachers.push(data);
+    persistAllData(); hideModal(); renderTeachersTable();
+    showFirebaseStatus('success', 'บันทึกข้อมูลครูสำเร็จ');
+}
+function editTeacher(id) { openTeacherModal(id); }
+
+/* ── Auto Assign ── */
+function openAutoAssignModal(id, type) {
+    const list = type === 'training' ? window.trainings : window.events;
+    const item = list.find(e => (e.eventId || e.trainingId) == id);
+    if (!item) return;
+    const sorted = [...window.teachers].sort((a, b) => getTeacherQueueScore(a, type) - getTeacherQueueScore(b, type));
+    showModal('จัดคิวครู — ' + getItemName(item), `
+      <p class="text-muted small mb-3">ต้องการ <strong>${item.requiredQuota || 1}</strong> คน (เรียงตามลำดับคิว)</p>
+      <div>${sorted.map(t => `
+        <div class="d-flex align-items-center gap-3 p-2 rounded mb-1" style="border:1px solid var(--border);">
+          <input type="checkbox" class="form-check-input assign-cb" value="${t.teacherId}" id="cb-${t.teacherId}"
+            ${(item.assignedTeachers || []).includes(t.teacherId) ? 'checked' : ''}>
+          <div style="width:36px;height:36px;">${createTeacherAvatar(t)}</div>
+          <label class="flex-grow-1 fw-bold" for="cb-${t.teacherId}">${t.name}</label>
+          <span class="text-danger small">คิว: ${getTeacherQueueScore(t, type)}</span>
+        </div>`).join('')}</div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+       <button class="btn btn-danger" onclick="saveAssignment(${id},'${type}')">ยืนยัน</button>`);
+}
+function saveAssignment(id, type) {
+    const list = type === 'training' ? window.trainings : window.events;
+    const item = list.find(e => (e.eventId || e.trainingId) == id);
+    if (!item) return;
+    const checked = [...document.querySelectorAll('.assign-cb:checked')].map(cb => parseInt(cb.value));
+    item.assignedTeachers = checked;
+    item.status = checked.length > 0 ? 'assigned' : 'pending';
+    checked.forEach(tid => {
+        const t = window.teachers.find(t => t.teacherId === tid);
+        if (t) { t.dutyQueueScore = (t.dutyQueueScore || 0) + 1; t.totalDuties = (t.totalDuties || 0) + 1; }
+    });
+    persistAllData(); hideModal();
+    renderQueueCards(type, type === 'training' ? 'trainings-cards' : 'events-cards');
+    renderDashboard(); showFirebaseStatus('success', 'จัดคิวสำเร็จ');
+}
+
+/* ── Substitution ── */
+function openSubstitutionModal(id, type) {
+    const list = type === 'training' ? window.trainings : window.events;
+    const item = list.find(e => (e.eventId || e.trainingId) == id);
+    if (!item) return;
+    const assigned = (item.assignedTeachers || []).map(tid => window.teachers.find(t => t.teacherId === tid)).filter(Boolean);
+    const others   = window.teachers.filter(t => !assigned.find(a => a.teacherId === t.teacherId));
+    showModal('เปลี่ยนตัวครู — ' + getItemName(item), `
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label fw-bold">ครูที่จะเปลี่ยนออก</label>
+          <select id="f-so" class="form-select">${assigned.map(t => `<option value="${t.teacherId}">${t.name}</option>`).join('')}</select></div>
+        <div class="col-12"><label class="form-label fw-bold">ครูที่จะเข้าแทน</label>
+          <select id="f-si" class="form-select">${others.map(t => `<option value="${t.teacherId}">${t.name} (คิว: ${getTeacherQueueScore(t,type)})</option>`).join('')}</select></div>
+      </div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+       <button class="btn btn-primary" onclick="saveSubstitution(${id},'${type}')">ยืนยัน</button>`);
+}
+function saveSubstitution(id, type) {
+    const list = type === 'training' ? window.trainings : window.events;
+    const item = list.find(e => (e.eventId || e.trainingId) == id);
+    if (!item) return;
+    const outId = parseInt(document.getElementById('f-so')?.value);
+    const inId  = parseInt(document.getElementById('f-si')?.value);
+    item.assignedTeachers = item.assignedTeachers.map(tid => tid === outId ? inId : tid);
+    persistAllData(); hideModal();
+    renderQueueCards(type, type === 'training' ? 'trainings-cards' : 'events-cards');
+    showFirebaseStatus('success', 'เปลี่ยนตัวครูสำเร็จ');
+}
+function handleTeacherClick(id) { showTeacherDetail(id); }
+

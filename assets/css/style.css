@@ -272,9 +272,9 @@ a {
    ======================================== */
 #page-content {
     flex: 1;
-    padding: 28px 28px 48px;
-    max-width: 1400px;
+    padding: 20px 24px 48px;
     width: 100%;
+    min-width: 0;
 }
 
 .view-header {
