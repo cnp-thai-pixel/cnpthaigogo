@@ -1,0 +1,99 @@
+/* ========================================
+   TEACHER QUEUE STRIPS (Dashboard)
+   ======================================== */
+.queue-strip-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.queue-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 12px 4px;
+    scrollbar-width: none; /* Firefox */
+}
+
+.queue-strip::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.queue-strip-label {
+    min-width: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    background: var(--surface-alt);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.teacher-queue-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 160px;
+    flex-shrink: 0;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+}
+
+.teacher-queue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--primary);
+}
+
+.teacher-queue-card .rank-badge {
+    width: 20px;
+    height: 20px;
+    background: var(--surface-alt);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.teacher-queue-card.top-rank .rank-badge {
+    background: var(--primary);
+    color: white;
+}
+
+.teacher-queue-card .info {
+    flex: 1;
+    min-width: 0;
+}
+
+.teacher-queue-card .name {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.teacher-queue-card .score {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.teacher-queue-card .score-label {
+    font-size: 9px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}

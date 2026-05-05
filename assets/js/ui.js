@@ -76,6 +76,7 @@ function renderDashboard() {
     renderLatestAssignedJob();
     renderUrgentEvents();
     renderNextQueue();
+    renderTeacherQueueStrips(); // New
     renderDashboardStats();
 }
 
@@ -230,6 +231,40 @@ function renderDashboardStats() {
     setText('stat-doughnut-total', totalD + totalT);
     setText('stat-duty-pct',     `${pctD}%`);
     setText('stat-training-pct', `${pctT}%`);
+}
+
+function renderTeacherQueueStrips() {
+    const dutyStrip = document.getElementById('duty-queue-strip');
+    const trainingStrip = document.getElementById('training-queue-strip');
+    if (!dutyStrip || !trainingStrip) return;
+
+    const teachers = window.teachers || [];
+    
+    // Duty Queue
+    const dutySorted = [...teachers].sort((a, b) => getTeacherQueueScore(a, 'duty') - getTeacherQueueScore(b, 'duty'));
+    dutyStrip.innerHTML = dutySorted.map((t, i) => `
+        <div class="teacher-queue-card ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})">
+            <div class="rank-badge">${i + 1}</div>
+            <div style="width:32px;height:32px;">${createTeacherAvatar(t)}</div>
+            <div class="info">
+                <div class="name">${t.name}</div>
+                <div class="score"><span class="score-label">คะแนน:</span> ${getTeacherQueueScore(t, 'duty')}</div>
+            </div>
+        </div>
+    `).join('');
+
+    // Training Queue
+    const trainingSorted = [...teachers].sort((a, b) => getTeacherQueueScore(a, 'training') - getTeacherQueueScore(b, 'training'));
+    trainingStrip.innerHTML = trainingSorted.map((t, i) => `
+        <div class="teacher-queue-card ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})" style="border-left: 3px solid var(--secondary);">
+            <div class="rank-badge">${i + 1}</div>
+            <div style="width:32px;height:32px;">${createTeacherAvatar(t)}</div>
+            <div class="info">
+                <div class="name">${t.name}</div>
+                <div class="score" style="color:var(--secondary)"><span class="score-label">คะแนน:</span> ${getTeacherQueueScore(t, 'training')}</div>
+            </div>
+        </div>
+    `).join('');
 }
 
 /* ─── Event / Training Cards ─────────────────── */

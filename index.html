@@ -16,6 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
 
 <body>
@@ -163,6 +164,22 @@
                         <div class="view-subtitle">ภาพรวมการจัดการออกงานและอบรม</div>
                     </div>
 
+                    <!-- Teacher Queue Strips -->
+                    <div class="queue-strip-container animate-fade-in">
+                        <div class="d-flex align-items-center">
+                            <div class="queue-strip-label"><i class="fas fa-calendar-alt me-2"></i>คิวออกงาน</div>
+                            <div id="duty-queue-strip" class="queue-strip">
+                                <!-- Rendered JS -->
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="queue-strip-label"><i class="fas fa-graduation-cap me-2"></i>คิวอบรม</div>
+                            <div id="training-queue-strip" class="queue-strip">
+                                <!-- Rendered JS -->
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Stat Cards -->
                     <div class="row g-3 mb-4">
                         <div class="col-6 col-xl-3">
@@ -236,7 +253,7 @@
                     </div>
 
                     <!-- Analytics Row -->
-                    <div class="row g-4">
+                    <div class="row g-4 mb-4">
                         <div class="col-lg-7">
                             <div class="card-flat">
                                 <div class="card-header-flat">
@@ -272,6 +289,26 @@
                                             <strong id="stat-training-pct">0%</strong>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Methodology Footer -->
+                    <div class="card-flat" style="background: #FFF5F5; border-color: #FFE0E0;">
+                        <div class="card-body-flat p-3">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <h6 class="fw-bold extra-small text-uppercase text-danger mb-2"><i class="fas fa-info-circle me-1"></i>ระบบคะแนน (Scoring)</h6>
+                                    <p class="extra-small text-muted mb-0">ระบบจะให้คะแนน +1 ทุกครั้งที่ได้รับมอบหมายงาน ครูที่มีคะแนนน้อยที่สุดจะถูกจัดให้อยู่ในลำดับคิวแรกเพื่อความยุติธรรม</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="fw-bold extra-small text-uppercase text-danger mb-2"><i class="fas fa-tasks me-1"></i>การจัดมอบหมาย</h6>
+                                    <p class="extra-small text-muted mb-0">Admin สามารถกด "จัดคิว" เพื่อเลือกครูตามลำดับความสำคัญ หรือเปลี่ยนตัวได้หากติดภารกิจอื่น</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="fw-bold extra-small text-uppercase text-danger mb-2"><i class="fas fa-shield-alt me-1"></i>การบันทึกข้อมูล</h6>
+                                    <p class="extra-small text-muted mb-0">ข้อมูลทั้งหมดจะถูกซิงค์กับฐานข้อมูล Cloud แบบ Real-time เพื่อความถูกต้องและตรวจสอบย้อนหลังได้</p>
                                 </div>
                             </div>
                         </div>
