@@ -42,16 +42,16 @@ function updateAdminUI() {
     if (window.isAdmin) {
         document.body.classList.add('admin-mode');
         if (btn) {
-            btn.innerHTML = '<i class="fas fa-unlock-alt me-1"></i> Admin (Unlocked)';
-            btn.classList.remove('btn-premium-accent');
-            btn.classList.add('btn-premium-secondary');
+            btn.innerHTML = '<i class="fas fa-unlock-alt me-1"></i> Admin (ปลดล็อก)';
+            btn.classList.remove('btn-rb-red');
+            btn.classList.add('btn-rb-ghost');
         }
     } else {
         document.body.classList.remove('admin-mode');
         if (btn) {
-            btn.innerHTML = '<i class="fas fa-lock me-1"></i> Admin (Locked)';
-            btn.classList.remove('btn-premium-secondary');
-            btn.classList.add('btn-premium-accent');
+            btn.innerHTML = '<i class="fas fa-lock me-1"></i> Admin (ล็อก)';
+            btn.classList.remove('btn-rb-ghost');
+            btn.classList.add('btn-rb-red');
         }
     }
 }
@@ -116,15 +116,29 @@ function setupEventListeners() {
 
 function toggleLoading(show) {
     const loader = document.getElementById('loading-overlay');
-    if (loader) {
-        if (show) {
-            loader.classList.remove('d-none');
-            loader.classList.add('d-flex');
-        } else {
-            loader.classList.remove('d-flex');
-            loader.classList.add('d-none');
-        }
+    if (!loader) return;
+    if (show) {
+        loader.style.display = 'flex';
+    } else {
+        loader.style.display = 'none';
     }
+}
+
+// Override createTeacherAvatar for large size compatibility
+const _origCreateTeacherAvatar = createTeacherAvatar;
+function createTeacherAvatar(teacher, large = false) {
+    const sizeStyle = large ? 'width:80px;height:80px;font-size:28px;' : 'width:100%;height:100%;font-size:inherit;';
+    const name = teacher?.name || '';
+    let photoKey = null;
+    for (const key of Object.keys(teacherPhotos || {})) {
+        if (name.includes(key)) { photoKey = key; break; }
+    }
+    const photo = photoKey ? teacherPhotos[photoKey] : null;
+    const cls = `teacher-avatar${large ? ' teacher-avatar-xl' : ''}` + ' rounded-circle d-flex align-items-center justify-content-center';
+    if (photo) {
+        return `<img src="${photo}" class="${cls}" alt="${name}" style="${sizeStyle}object-fit:cover;border-radius:50%;" onerror="this.outerHTML='<div class=\'${cls}\' style=\'${sizeStyle}background:var(--text-primary);color:#fff;\'>${name.charAt(0)}</div>'">`;
+    }
+    return `<div class="${cls}" style="${sizeStyle}background:var(--text-primary);color:#fff;">${name ? name.charAt(0) : '?'}</div>`;
 }
 
 // Logic Helpers

@@ -1,37 +1,77 @@
 /**
- * UI Rendering & Interactivity
+ * UI Rendering — Red Broadcast Design System
+ * Fixed: undefined fields, new IDs, sidebar toggle
  */
+
+/* ─── Helpers ─────────────────────────────── */
+function getItemName(item) {
+    return item.title || item.eventName || item.trainingName || '(ไม่มีชื่อ)';
+}
+
+function getItemId(item) {
+    return item.eventId || item.trainingId || null;
+}
+
+/* ─── Navigation ───────────────────────────── */
+const VIEW_TITLES = {
+    dashboard: 'หน้าหลัก',
+    events:    'จัดการออกงาน',
+    trainings: 'จัดการอบรม',
+    teachers:  'บุคลากร',
+    history:   'บันทึกและประวัติ',
+};
 
 function showView(viewName) {
     document.querySelectorAll('.view').forEach(v => v.classList.add('d-none'));
     const target = document.getElementById(`${viewName}-view`);
-    if (target) target.classList.remove('d-none');
+    if (target) { target.classList.remove('d-none'); target.classList.add('animate-fade-in'); }
 
     document.querySelectorAll('.nav-link-custom').forEach(l => {
-        l.classList.remove('active');
-        if (l.getAttribute('data-view') === viewName) l.classList.add('active');
+        l.classList.toggle('active', l.getAttribute('data-view') === viewName);
     });
 
-    // Specific renders
+    const titleEl = document.getElementById('top-bar-title');
+    if (titleEl) titleEl.textContent = VIEW_TITLES[viewName] || viewName;
+
     if (viewName === 'dashboard') renderDashboard();
-    if (viewName === 'events') renderQueueCards('duty', 'events-cards');
+    if (viewName === 'events')    renderQueueCards('duty', 'events-cards');
     if (viewName === 'trainings') renderQueueCards('training', 'trainings-cards');
-    if (viewName === 'teachers') renderTeachersTable();
-    if (viewName === 'history') renderHistory();
+    if (viewName === 'teachers')  renderTeachersTable();
+    if (viewName === 'history')   renderHistory();
+
+    // Close sidebar on mobile
+    if (window.innerWidth <= 991) closeSidebar();
 }
 
+/* ─── Sidebar Toggle ────────────────────────── */
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (!sidebar) return;
+    if (window.innerWidth <= 991) {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+    }
+}
+
+function closeSidebar() {
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('sidebar-overlay')?.classList.remove('show');
+}
+
+/* ─── Dashboard ─────────────────────────────── */
 function renderDashboard() {
-    const totalD = window.events.length;
-    const totalT = window.trainings.length;
+    const totalD   = window.events.length;
+    const totalT   = window.trainings.length;
     const pendingD = window.events.filter(e => e.status === 'pending').length;
     const pendingT = window.trainings.filter(e => e.status === 'pending').length;
-    const assignedD = window.events.filter(e => e.status === 'assigned').length;
-    const assignedT = window.trainings.filter(e => e.status === 'assigned').length;
+    const assignedD= window.events.filter(e => e.status === 'assigned').length;
+    const assignedT= window.trainings.filter(e => e.status === 'assigned').length;
 
-    document.getElementById('total-events-combined').textContent = totalD + totalT;
-    document.getElementById('assigned-count').textContent = assignedD + assignedT;
-    document.getElementById('pending-count').textContent = pendingD + pendingT;
-    document.getElementById('total-teachers-count').textContent = window.teachers.length;
+    setText('stat-total',    totalD + totalT);
+    setText('stat-assigned', assignedD + assignedT);
+    setText('stat-pending',  pendingD + pendingT);
+    setText('stat-teachers', window.teachers.length);
 
     renderLatestAssignedJob();
     renderUrgentEvents();
@@ -39,176 +79,61 @@ function renderDashboard() {
     renderDashboardStats();
 }
 
+function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+}
+
 function renderLatestAssignedJob() {
     const container = document.getElementById('latest-assigned-job');
     if (!container) return;
 
     const allAssigned = [
-        ...window.events.filter(e => e.status === 'assigned').map(e => ({ ...e, type: 'duty' })),
-        ...window.trainings.filter(e => e.status === 'assigned').map(e => ({ ...e, type: 'training' }))
+        ...window.events.filter(e => e.status === 'assigned').map(e => ({ ...e, _type: 'duty' })),
+        ...window.trainings.filter(e => e.status === 'assigned').map(e => ({ ...e, _type: 'training' }))
     ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    if (allAssigned.length === 0) {
+    if (!allAssigned.length) {
         container.innerHTML = '<div class="text-center py-4 text-muted">ยังไม่มีงานที่จัดคิวแล้ว</div>';
         return;
     }
 
     const job = allAssigned[0];
-    const teachers = job.assignedTeachers.map(id => getTeacherById(id)).filter(t => t);
+    const name = getItemName(job);
+    const teachers = (job.assignedTeachers || []).map(id => getTeacherById(id)).filter(Boolean);
+    const isDuty = job._type === 'duty';
 
     container.innerHTML = `
-        <div class="row align-items-center">
-            <div class="col-md-7">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div class="bg-light rounded-circle p-3 text-primary">
-                        <i class="fas ${job.type === 'duty' ? 'fa-calendar-check' : 'fa-graduation-cap'} fa-2x"></i>
-                    </div>
-                    <div>
-                        <h4 class="fw-bold mb-1">${job.title}</h4>
-                        <div class="text-muted"><i class="fas fa-map-marker-alt me-2"></i>${job.location}</div>
-                    </div>
-                </div>
-                <div class="d-flex flex-wrap gap-4 text-muted small">
-                    <div><i class="fas fa-calendar me-2"></i>${formatDateThai(job.date)}</div>
-                    <div><i class="fas fa-clock me-2"></i>${job.time || 'ไม่ระบุเวลา'}</div>
-                    <div><i class="fas fa-tag me-2"></i>${job.type === 'duty' ? 'งานออกเวร' : 'งานอบรม'}</div>
-                </div>
+      <div class="latest-job-card">
+        <div class="row align-items-center g-4">
+          <div class="col-md-7">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="bg-white rounded-circle d-flex align-items-center justify-content-center text-danger shadow-sm" style="width:52px;height:52px;flex-shrink:0;">
+                <i class="fas ${isDuty ? 'fa-calendar-check' : 'fa-graduation-cap'} fa-lg"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-1">${name}</h5>
+                <div class="text-muted small"><i class="fas fa-map-marker-alt me-1"></i>${job.location || '-'}</div>
+              </div>
             </div>
-            <div class="col-md-5 mt-4 mt-md-0">
-                <div class="fw-bold mb-3 small text-uppercase text-muted">บุคลากรที่ได้รับมอบหมาย</div>
-                <div class="d-flex flex-wrap gap-3">
-                    ${teachers.map(t => `
-                        <div class="d-flex align-items-center gap-2 bg-light p-2 rounded-pill pe-3">
-                            <div style="width: 32px; height: 32px;">${createTeacherAvatar(t)}</div>
-                            <span class="small fw-bold">${t.name}</span>
-                        </div>
-                    `).join('')}
-                </div>
+            <div class="d-flex flex-wrap gap-4 text-muted small">
+              <div><i class="fas fa-calendar me-1"></i>${formatDateThai(job.date)}</div>
+              <div><i class="fas fa-clock me-1"></i>${job.time || 'ไม่ระบุเวลา'}</div>
+              <div><i class="fas fa-tag me-1"></i>${isDuty ? 'งานออกเวร' : 'งานอบรม'}</div>
             </div>
+          </div>
+          <div class="col-md-5">
+            <div class="fw-bold mb-2 extra-small text-uppercase text-muted">บุคลากรที่ได้รับมอบหมาย</div>
+            <div class="d-flex flex-wrap gap-2">
+              ${teachers.map(t => `
+                <div class="d-flex align-items-center gap-2 bg-white px-2 py-1 rounded-pill border border-light shadow-sm">
+                  <div style="width:28px;height:28px;">${createTeacherAvatar(t)}</div>
+                  <span class="small fw-bold">${t.name}</span>
+                </div>`).join('') || '<span class="text-muted small">ไม่มีข้อมูล</span>'}
+            </div>
+          </div>
         </div>
-    `;
-}
-
-function toggleMobileMenu() {
-    const menu = document.getElementById('mobile-menu');
-    menu.classList.toggle('d-none');
-}
-
-function renderDashboardStats() {
-    // Top 5 Teachers (Based on assigned events + trainings)
-    const teacherWorkloads = window.teachers.map(t => {
-        const dutyCount = window.events.filter(e => e.status === 'assigned' && e.assignedTeachers?.includes(t.teacherId)).length;
-        const trainingCount = window.trainings.filter(e => e.status === 'assigned' && e.assignedTeachers?.includes(t.teacherId)).length;
-        return {
-            name: `${t.prefix || ''}${t.firstName} ${t.lastName}`,
-            total: dutyCount + trainingCount,
-            dutyCount,
-            trainingCount,
-            avatarUrl: createTeacherAvatar(t)
-        };
-    }).sort((a, b) => b.total - a.total).slice(0, 5);
-
-    const maxTotal = teacherWorkloads.length > 0 ? Math.max(...teacherWorkloads.map(t => t.total), 1) : 1;
-    
-    const topTeachersContainer = document.getElementById('top-teachers-chart');
-    if (!topTeachersContainer) return;
-    
-    if (teacherWorkloads.length === 0 || teacherWorkloads.every(t => t.total === 0)) {
-        topTeachersContainer.innerHTML = '<div class="text-muted text-center py-4">ยังไม่มีข้อมูลการออกงาน</div>';
-    } else {
-        topTeachersContainer.innerHTML = teacherWorkloads.map(t => {
-            const height = (t.total / maxTotal) * 100;
-            return `
-                <div class="vertical-bar-group">
-                    <span class="small font-weight-bold text-muted">${t.total}</span>
-                    <div class="vertical-bar" style="height: ${height}%;"></div>
-                    ${t.avatarUrl.includes('div') ? t.avatarUrl.replace('teacher-avatar', 'teacher-avatar shadow-sm border border-light').replace('style="', 'style="width:36px;height:36px;font-size:0.9rem;') : `<img src="${t.avatarUrl}" class="rounded-circle shadow-sm" style="width:36px;height:36px;object-fit:cover;">`}
-                </div>
-            `;
-        }).join('');
-    }
-
-    // Proportion Stats
-    const totalD = window.events.length;
-    const totalT = window.trainings.length;
-    const totalAll = totalD + totalT || 1; // Prevent div by zero
-    
-    const pctD = Math.round((totalD / totalAll) * 100);
-    const pctT = totalAll > 1 ? Math.round((totalT / totalAll) * 100) : 0;
-
-    const statDoughnut = document.getElementById('stat-doughnut');
-    if(statDoughnut) {
-        statDoughnut.style.background = `conic-gradient(var(--primary) 0% ${pctD}%, var(--secondary) ${pctD}% ${pctD + pctT}%, var(--surface-hover) ${pctD + pctT}% 100%)`;
-        document.getElementById('stat-total-center').textContent = totalAll;
-        document.getElementById('stat-duty-percent').textContent = `${pctD}%`;
-        document.getElementById('stat-training-percent').textContent = `${pctT}%`;
-    }
-
-    // Recent Transactions (Updates)
-    const recentList = document.getElementById('recent-transactions-list');
-    if (recentList) {
-        const allEvents = [...window.events.map(e => ({...e, type: 'duty'})), ...window.trainings.map(e => ({...e, type: 'training'}))];
-        allEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
-        const recent = allEvents.slice(0, 5);
-        
-        if (recent.length === 0) {
-            recentList.innerHTML = '<div class="text-muted text-center py-3">ยังไม่มีรายการ</div>';
-        } else {
-            recentList.innerHTML = recent.map(r => {
-                const isDuty = r.type === 'duty';
-                const statusBadgeClass = r.status === 'assigned' ? 'badge-assigned' : (r.status === 'completed' ? 'badge-completed' : 'badge-pending');
-                const statusText = r.status === 'assigned' ? 'SUCCESS' : (r.status === 'completed' ? 'COMPLETED' : 'PENDING');
-                return `
-                    <div class="d-flex align-items-center justify-content-between border-bottom py-3" style="border-color: var(--border) !important;">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-ring">
-                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary" style="width:40px;height:40px;">
-                                    <i class="fas ${isDuty ? 'fa-calendar-check' : 'fa-graduation-cap'}"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="font-weight-bold text-dark">${r.title}</div>
-                                <div class="small text-muted">${formatDateThai(r.date)} &middot; ${isDuty ? 'งานออกเวร' : 'งานอบรม'}</div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center gap-4">
-                            <span class="badge-status ${statusBadgeClass}">${statusText}</span>
-                            <span class="font-weight-bold d-none d-md-block text-truncate" style="max-width: 150px;">${r.location || '-'}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-    }
-}
-
-function renderNextQueue() {
-    const container = document.getElementById('next-teachers-queue');
-    if (!container) return;
-
-    // Sort teachers by workload (lowest first)
-    const sortedTeachers = [...window.teachers].sort((a, b) => {
-        const scoreA = getTeacherQueueScore(a, 'duty') + getTeacherQueueScore(a, 'training');
-        const scoreB = getTeacherQueueScore(b, 'duty') + getTeacherQueueScore(b, 'training');
-        return scoreA - scoreB;
-    }).slice(0, 6);
-
-    container.innerHTML = sortedTeachers.map((t, i) => `
-        <div class="d-flex align-items-center justify-content-between p-3 border border-light rounded-3 animate-fade-in" style="animation-delay: ${i * 0.05}s">
-            <div class="d-flex align-items-center gap-3">
-                <div class="fw-bold text-muted small" style="width: 20px;">${i + 1}</div>
-                <div style="width: 40px; height: 40px;">${createTeacherAvatar(t)}</div>
-                <div>
-                    <div class="fw-bold small">${t.name}</div>
-                    <div class="text-muted extra-small">${t.position}</div>
-                </div>
-            </div>
-            <div class="text-end">
-                <div class="fw-bold text-primary small">${getTeacherQueueScore(t, 'duty') + getTeacherQueueScore(t, 'training')}</div>
-                <div class="text-muted extra-small">คะแนนรวม</div>
-            </div>
-        </div>
-    `).join('');
+      </div>`;
 }
 
 function renderUrgentEvents() {
@@ -216,251 +141,287 @@ function renderUrgentEvents() {
     if (!container) return;
 
     const urgent = [
-        ...window.events.filter(e => e.status === 'pending'),
-        ...window.trainings.filter(e => e.status === 'pending')
-    ].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5);
+        ...window.events.filter(e => e.status === 'pending').map(e => ({ ...e, _type: 'duty' })),
+        ...window.trainings.filter(e => e.status === 'pending').map(e => ({ ...e, _type: 'training' }))
+    ].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 6);
 
-    if (urgent.length === 0) {
-        container.innerHTML = '<div class="text-center py-4 text-muted small">ไม่มีงานที่ต้องจัดคิวเร่งด่วน</div>';
+    if (!urgent.length) {
+        container.innerHTML = '<div class="text-center py-4 text-muted small">ไม่มีงานที่ต้องจัดคิวเร่งด่วน ✓</div>';
         return;
     }
 
     container.innerHTML = urgent.map((e, i) => `
-        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 border-start border-warning border-4 animate-fade-in" style="animation-delay: ${i * 0.1}s">
-            <div class="d-flex align-items-center gap-3">
-                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center text-warning shadow-sm" style="width: 36px; height: 36px;">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div>
-                    <div class="fw-bold small">${e.title}</div>
-                    <div class="text-muted extra-small">${formatDateThai(e.date)} &middot; ${e.location}</div>
-                </div>
-            </div>
-            <button class="btn btn-premium btn-premium-accent btn-sm admin-only" onclick="openAutoAssignModal(${e.eventId || e.trainingId}, '${e.eventId ? 'duty' : 'training'}')">
-                จัดคิว
-            </button>
+      <div class="urgent-row animate-fade-in" style="animation-delay:${i * 0.05}s">
+        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center text-warning" style="width:34px;height:34px;flex-shrink:0;">
+          <i class="fas fa-clock small"></i>
         </div>
-    `).join('');
+        <div class="flex-grow-1 min-width-0">
+          <div class="fw-bold small text-truncate">${getItemName(e)}</div>
+          <div class="extra-small text-muted">${formatDateThai(e.date)} · ${e.location || '-'}</div>
+        </div>
+        <button class="btn-rb btn-rb-red btn-sm admin-only" onclick="openAutoAssignModal(${getItemId(e)}, '${e._type}')">จัดคิว</button>
+      </div>`).join('');
 }
 
+function renderNextQueue() {
+    const container = document.getElementById('next-teachers-queue');
+    if (!container) return;
+
+    const sorted = [...window.teachers].sort((a, b) => {
+        const sA = getTeacherQueueScore(a, 'duty') + getTeacherQueueScore(a, 'training');
+        const sB = getTeacherQueueScore(b, 'duty') + getTeacherQueueScore(b, 'training');
+        return sA - sB;
+    }).slice(0, 7);
+
+    if (!sorted.length) {
+        container.innerHTML = '<div class="text-center py-4 text-muted small">ยังไม่มีข้อมูลบุคลากร</div>';
+        return;
+    }
+
+    container.innerHTML = sorted.map((t, i) => `
+      <div class="queue-teacher-row animate-fade-in" style="animation-delay:${i * 0.04}s">
+        <div class="queue-rank">${i + 1}</div>
+        <div style="width:40px;height:40px;">${createTeacherAvatar(t)}</div>
+        <div class="flex-grow-1 min-width-0">
+          <div class="fw-bold small text-truncate">${t.name}</div>
+          <div class="extra-small text-muted text-truncate">${t.position || '-'}</div>
+        </div>
+        <div class="queue-score">${getTeacherQueueScore(t,'duty') + getTeacherQueueScore(t,'training')}</div>
+      </div>`).join('');
+}
+
+function renderDashboardStats() {
+    // Vertical Bar Chart
+    const workloads = window.teachers.map(t => ({
+        name: t.name,
+        total: window.events.filter(e => e.assignedTeachers?.includes(t.teacherId)).length
+             + window.trainings.filter(e => e.assignedTeachers?.includes(t.teacherId)).length,
+        avatar: createTeacherAvatar(t),
+    })).sort((a, b) => b.total - a.total).slice(0, 5);
+
+    const maxVal = Math.max(...workloads.map(w => w.total), 1);
+    const chartEl = document.getElementById('top-teachers-chart');
+    if (chartEl) {
+        if (!workloads.length || workloads.every(w => w.total === 0)) {
+            chartEl.innerHTML = '<div class="text-center w-100 text-muted small py-4">ยังไม่มีข้อมูลการออกงาน</div>';
+        } else {
+            chartEl.innerHTML = workloads.map(w => {
+                const h = Math.round((w.total / maxVal) * 100);
+                return `<div class="vertical-bar-group">
+                  <span class="extra-small fw-bold text-muted">${w.total}</span>
+                  <div class="vertical-bar" style="height:${h}%;"></div>
+                  <div style="width:36px;height:36px;">${w.avatar}</div>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    // Doughnut Chart
+    const totalD = window.events.length;
+    const totalT = window.trainings.length;
+    const total  = totalD + totalT || 1;
+    const pctD   = Math.round((totalD / total) * 100);
+    const pctT   = 100 - pctD;
+
+    const doughnut = document.getElementById('stat-doughnut');
+    if (doughnut) {
+        doughnut.style.background = `conic-gradient(var(--primary) 0% ${pctD}%, var(--secondary) ${pctD}% 100%)`;
+    }
+    setText('stat-doughnut-total', totalD + totalT);
+    setText('stat-duty-pct',     `${pctD}%`);
+    setText('stat-training-pct', `${pctT}%`);
+}
+
+/* ─── Event / Training Cards ─────────────────── */
 function renderQueueCards(type, containerId) {
     const container = document.getElementById(containerId);
+    if (!container) return;
     const list = type === 'training' ? window.trainings : window.events;
-    
-    if (list.length === 0) {
-        container.innerHTML = '<div class="col-12 text-center py-5 text-muted">ไม่พบข้อมูล</div>';
+
+    if (!list.length) {
+        container.innerHTML = '<div class="col-12 text-center py-5 text-muted">ยังไม่มีข้อมูล</div>';
         return;
     }
 
     container.innerHTML = list.map(item => {
-        const statusBadgeClass = item.status === 'assigned' ? 'badge-assigned' : (item.status === 'completed' ? 'badge-completed' : 'badge-pending');
-        const statusText = item.status === 'assigned' ? 'จัดคิวแล้ว' : (item.status === 'completed' ? 'สำเร็จ' : 'รอจัดคิว');
-        
-        return `
-            <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
-                <div class="card-premium h-100 bg-transparent animate-fade-in">
-                    <!-- Thumbnail Area (16:9) -->
-                    <div class="position-relative mb-3" style="aspect-ratio: 16/9; background: var(--surface); border-radius: var(--radius-lg); overflow: hidden;">
-                        <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
-                            <i class="fas ${type === 'duty' ? 'fa-calendar-alt' : 'fa-graduation-cap'} fa-3x opacity-25"></i>
-                        </div>
-                        <div class="position-absolute bottom-0 end-0 m-2 px-2 py-1 bg-dark text-white rounded-1 extra-small fw-bold opacity-75">
-                            ${item.time || '00:00'}
-                        </div>
-                        <div class="position-absolute top-0 start-0 m-2">
-                            <span class="badge-status ${statusBadgeClass}">${statusText}</span>
-                        </div>
-                    </div>
+        const name = getItemName(item);
+        const id   = getItemId(item);
+        const statusClass = item.status === 'assigned' ? 'badge-assigned' : item.status === 'completed' ? 'badge-completed' : 'badge-pending';
+        const statusText  = item.status === 'assigned' ? 'จัดคิวแล้ว' : item.status === 'completed' ? 'สำเร็จ' : 'รอจัดคิว';
+        const icon = type === 'duty' ? 'fa-calendar-alt' : 'fa-graduation-cap';
 
-                    <!-- Content -->
-                    <div class="d-flex gap-3 px-1">
-                        <div class="flex-shrink-0" style="width: 36px; height: 36px;">
-                            ${item.assignedTeachers?.length > 0 
-                                ? createTeacherAvatar(getTeacherById(item.assignedTeachers[0]))
-                                : '<div class="teacher-avatar" style="width:36px;height:36px;font-size:0.8rem;">?</div>'}
-                        </div>
-                        <div class="flex-grow-1 overflow-hidden">
-                            <h6 class="fw-bold mb-1 text-truncate-2" style="font-size: 14px; line-height: 20px;">${item.title}</h6>
-                            <div class="text-muted extra-small mb-2">
-                                <div>${item.location}</div>
-                                <div>${formatDateThai(item.date)}</div>
-                            </div>
-                            
-                            <div class="d-flex gap-2 admin-only mt-2">
-                                <button class="btn btn-premium btn-premium-secondary btn-sm flex-grow-1 px-1" onclick="editItem(${item.eventId || item.trainingId}, '${type}')" style="height:32px; font-size:12px;">แก้ไข</button>
-                                ${item.status === 'pending' 
-                                    ? `<button class="btn btn-premium btn-premium-accent btn-sm flex-grow-1 px-1" onclick="openAutoAssignModal(${item.eventId || item.trainingId}, '${type}')" style="height:32px; font-size:12px;">จัดคิว</button>`
-                                    : `<button class="btn btn-premium btn-premium-secondary btn-sm flex-grow-1 px-1" onclick="openSubstitutionModal(${item.eventId || item.trainingId}, '${type}')" style="height:32px; font-size:12px;">แทนคน</button>`
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        const firstTeacher = (item.assignedTeachers || [])[0];
+        const teacher = firstTeacher ? getTeacherById(firstTeacher) : null;
+        const avatarHtml = teacher
+            ? createTeacherAvatar(teacher)
+            : `<div class="teacher-avatar teacher-avatar-sm bg-secondary text-white d-flex align-items-center justify-content-center" style="width:36px;height:36px;font-size:12px;border-radius:50%;">?</div>`;
+
+        return `
+        <div class="col-sm-6 col-lg-4 col-xl-3 mb-2">
+          <div class="event-card animate-fade-in">
+            <div class="event-card-thumb">
+              <div class="thumb-icon"><i class="fas ${icon}"></i></div>
+              ${item.time ? `<div class="thumb-time">${item.time}</div>` : ''}
+              <div class="thumb-badge"><span class="badge-status ${statusClass}">${statusText}</span></div>
             </div>
-        `;
+            <div class="event-card-body">
+              <div style="width:36px;height:36px;flex-shrink:0;">${avatarHtml}</div>
+              <div class="event-card-meta">
+                <div class="event-card-title">${name}</div>
+                <div class="event-card-detail">
+                  <div>${item.location || '-'}</div>
+                  <div>${formatDateThai(item.date)}</div>
+                </div>
+              </div>
+            </div>
+            <div class="event-card-actions admin-only">
+              <button class="btn-rb btn-rb-ghost btn-sm flex-grow-1" onclick="editItem(${id}, '${type}')">แก้ไข</button>
+              ${item.status === 'pending'
+                ? `<button class="btn-rb btn-rb-red btn-sm flex-grow-1" onclick="openAutoAssignModal(${id}, '${type}')">จัดคิว</button>`
+                : `<button class="btn-rb btn-rb-ghost btn-sm flex-grow-1" onclick="openSubstitutionModal(${id}, '${type}')">แทนคน</button>`}
+            </div>
+          </div>
+        </div>`;
     }).join('');
 }
 
+/* ─── Teachers Table ─────────────────────────── */
 function renderTeachersTable() {
     const tbody = document.getElementById('teachers-table-body');
-    const sorted = [...window.teachers].sort((a, b) => getTeacherQueueScore(a, 'duty') - getTeacherQueueScore(b, 'duty'));
-    
+    if (!tbody) return;
+    const sorted = [...window.teachers].sort((a, b) => getTeacherQueueScore(a,'duty') - getTeacherQueueScore(b,'duty'));
+
+    if (!sorted.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-muted">ยังไม่มีข้อมูลบุคลากร</td></tr>';
+        return;
+    }
+
     tbody.innerHTML = sorted.map((t, i) => `
-        <tr onclick="showTeacherDetail(${t.teacherId})" style="cursor: pointer" class="align-middle">
-            <td class="text-muted small">${i+1}</td>
-            <td>
-                <div class="d-flex align-items-center gap-3">
-                    <div style="width: 40px; height: 40px;">${createTeacherAvatar(t)}</div>
-                    <div>
-                        <div class="fw-bold">${t.name}</div>
-                        <div class="text-muted extra-small">${t.position}</div>
-                    </div>
-                </div>
-            </td>
-            <td class="text-center"><span class="fw-bold text-primary">${getTeacherQueueScore(t, 'duty')}</span></td>
-            <td class="text-center"><span class="fw-bold text-secondary">${getTeacherQueueScore(t, 'training')}</span></td>
-            <td class="text-center small">${t.totalDuties || 0} ครั้ง</td>
-            <td class="text-end admin-only">
-                <button class="btn btn-premium btn-premium-secondary btn-sm" onclick="editTeacher(${t.teacherId})"><i class="fas fa-edit"></i></button>
-            </td>
-        </tr>
-    `).join('');
+      <tr onclick="showTeacherDetail(${t.teacherId})" style="cursor:pointer;">
+        <td class="text-muted">${i + 1}</td>
+        <td>
+          <div class="d-flex align-items-center gap-3">
+            <div style="width:44px;height:44px;">${createTeacherAvatar(t)}</div>
+            <div>
+              <div class="fw-bold">${t.name}</div>
+              <div class="extra-small text-muted">${t.position || '-'}</div>
+            </div>
+          </div>
+        </td>
+        <td class="text-center fw-bold text-danger">${getTeacherQueueScore(t,'duty')}</td>
+        <td class="text-center fw-bold" style="color:var(--secondary)">${getTeacherQueueScore(t,'training')}</td>
+        <td class="text-center text-muted">${t.totalDuties || 0} ครั้ง</td>
+        <td class="text-end admin-only">
+          <button class="btn-rb btn-rb-ghost btn-sm" onclick="editTeacher(${t.teacherId});event.stopPropagation();">
+            <i class="fas fa-edit"></i>
+          </button>
+        </td>
+      </tr>`).join('');
 }
 
+/* ─── History ────────────────────────────────── */
+function renderHistory() {
+    const logEl = document.getElementById('activity-log');
+    const log = window.activityLog || [];
+
+    if (logEl) {
+        if (!log.length) {
+            logEl.innerHTML = '<div class="text-muted text-center py-4">ยังไม่มีประวัติกิจกรรม</div>';
+        } else {
+            logEl.innerHTML = [...log].reverse().slice(0, 30).map(entry => `
+              <div class="d-flex gap-2 py-2 border-bottom">
+                <div class="text-muted extra-small" style="min-width:120px;">${formatDateThai(entry.timestamp) || '-'}</div>
+                <div class="small">${entry.message || JSON.stringify(entry)}</div>
+              </div>`).join('');
+        }
+    }
+
+    const statsEl = document.getElementById('substitution-stats');
+    if (statsEl) {
+        const subLogs = log.filter(e => e.type === 'substitution');
+        if (!subLogs.length) {
+            statsEl.innerHTML = '<div class="text-muted text-center py-4">ยังไม่มีข้อมูลการแทนงาน</div>';
+        } else {
+            const counts = {};
+            subLogs.forEach(e => { counts[e.teacherName] = (counts[e.teacherName] || 0) + 1; });
+            statsEl.innerHTML = Object.entries(counts).sort((a,b) => b[1]-a[1]).map(([name, c]) => `
+              <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="small fw-bold">${name}</span>
+                <span class="badge-status badge-assigned">${c} ครั้ง</span>
+              </div>`).join('');
+        }
+    }
+}
+
+/* ─── Status Toast ───────────────────────────── */
 function showFirebaseStatus(type, message, sticky = false) {
-    const banner = document.getElementById('status-toast');
-    if (!banner) return;
-    
-    banner.className = `alert alert-${type === 'error' ? 'danger' : (type === 'success' ? 'success' : 'info')} glass animate-fade-in`;
-    banner.innerHTML = `<i class="fas fa-info-circle mr-2"></i> ${message}`;
-    banner.style.display = 'block';
-
-    if (!sticky) {
-        setTimeout(() => banner.style.display = 'none', 5000);
-    }
+    const toast = document.getElementById('status-toast');
+    if (!toast) return;
+    const cls = type === 'error' ? 'danger' : type === 'success' ? 'success' : 'warning';
+    toast.className = `alert alert-${cls} mb-0`;
+    toast.innerHTML = `<i class="fas fa-info-circle me-2"></i>${message}`;
+    toast.style.display = 'block';
+    if (!sticky) setTimeout(() => { toast.style.display = 'none'; }, 4000);
 }
 
-// Modal Handlers
-const bootstrapModal = () => new bootstrap.Modal(document.getElementById('universalModal'));
+/* ─── Teacher Detail Modal ───────────────────── */
+function showTeacherDetail(teacherId) {
+    const t = getTeacherById(teacherId);
+    if (!t) return;
 
-function openEventModal(eventId = null) {
-    const modalTitle = document.getElementById('modalTitle');
-    const modalBody = document.getElementById('modalBody');
-    const event = eventId ? window.events.find(e => e.eventId === eventId) : null;
+    const myEvents = window.events.filter(e => e.assignedTeachers?.includes(teacherId));
+    const myTrainings = window.trainings.filter(e => e.assignedTeachers?.includes(teacherId));
 
-    modalTitle.textContent = event ? 'แก้ไขข้อมูลงาน' : 'เพิ่มงานใหม่';
-    modalBody.innerHTML = `
-        <form id="modal-form">
-            <div class="mb-3">
-                <label class="form-label small font-weight-bold">ชื่องาน</label>
-                <input type="text" class="form-control" id="f-name" value="${event?.eventName || ''}" required>
-            </div>
-            <div class="row mb-3">
-                <div class="col-6">
-                    <label class="form-label small font-weight-bold">วันที่</label>
-                    <input type="date" class="form-control" id="f-date" value="${event?.date || ''}" required>
-                </div>
-                <div class="col-6">
-                    <label class="form-label small font-weight-bold">จำนวนครูที่ต้องการ</label>
-                    <input type="number" class="form-control" id="f-quota" value="${event?.requiredQuota || ''}" required>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label small font-weight-bold">สถานที่</label>
-                <input type="text" class="form-control" id="f-location" value="${event?.location || ''}" required>
-            </div>
-            <div class="text-right mt-4">
-                <button type="button" class="btn btn-light mr-2" data-bs-dismiss="modal">ยกเลิก</button>
-                <button type="submit" class="btn btn-premium-primary">บันทึกข้อมูล</button>
-            </div>
-        </form>
-    `;
-
-    const myModal = bootstrapModal();
-    myModal.show();
-
-    document.getElementById('modal-form').onsubmit = (e) => {
-        e.preventDefault();
-        saveEvent(eventId);
-        myModal.hide();
-    };
-}
-
-function openAutoAssignModal(eventId, type) {
-    const event = type === 'duty' ? window.events.find(e => e.eventId === eventId) : window.trainings.find(e => e.trainingId === eventId);
-    const modalTitle = document.getElementById('modalTitle');
-    const modalBody = document.getElementById('modalBody');
-
-    modalTitle.textContent = `จัดคิวอัตโนมัติ: ${event.eventName || event.trainingName}`;
-    
-    const suggested = getNextQueueTeachers(event.requiredQuota, type);
-    
-    modalBody.innerHTML = `
-        <div class="alert alert-info small mb-4">
-            ระบบแนะนำบุคลากรที่มีคะแนนสะสมน้อยที่สุดเพื่อความยุติธรรม
+    const body = `
+      <div class="text-center mb-4">
+        <div class="mx-auto mb-3" style="width:80px;height:80px;">${createTeacherAvatar(t, true)}</div>
+        <h4 class="fw-bold">${t.name}</h4>
+        <div class="text-muted">${t.position || '-'}</div>
+      </div>
+      <div class="row g-3 mb-4">
+        <div class="col-4 text-center">
+          <div class="stat-card">
+            <div class="stat-label">คิวออกงาน</div>
+            <div class="stat-value text-danger">${getTeacherQueueScore(t,'duty')}</div>
+          </div>
         </div>
-        <div class="list-group mb-4">
-            ${suggested.map(t => `
-                <div class="list-group-item d-flex align-items-center">
-                    ${createTeacherAvatar(t)}
-                    <div class="ml-3">
-                        <h6 class="mb-0">${t.name}</h6>
-                        <small class="text-muted">${t.position} | คะแนน: ${getTeacherQueueScore(t, type)}</small>
-                    </div>
-                    <div class="ml-auto text-success"><i class="fas fa-check-circle"></i></div>
-                </div>
-            `).join('')}
+        <div class="col-4 text-center">
+          <div class="stat-card">
+            <div class="stat-label">คิวอบรม</div>
+            <div class="stat-value" style="color:var(--secondary)">${getTeacherQueueScore(t,'training')}</div>
+          </div>
         </div>
-        <div class="text-right">
-            <button class="btn btn-light mr-2" data-bs-dismiss="modal">ยกเลิก</button>
-            <button class="btn btn-premium-primary" id="confirm-assign">ยืนยันการจัดคิว</button>
+        <div class="col-4 text-center">
+          <div class="stat-card">
+            <div class="stat-label">รวมงาน</div>
+            <div class="stat-value">${t.totalDuties || 0}</div>
+          </div>
         </div>
-    `;
+      </div>
+      <h6 class="fw-bold mb-2">งานออกเวรที่ได้รับมอบหมาย (${myEvents.length} งาน)</h6>
+      ${myEvents.slice(0, 5).map(e => `
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom small">
+          <div class="fw-bold">${getItemName(e)}</div>
+          <div class="text-muted">${formatDateThai(e.date)}</div>
+        </div>`).join('') || '<div class="text-muted small py-2">ไม่มีงานออกเวร</div>'}
+      <h6 class="fw-bold mt-3 mb-2">งานอบรมที่ได้รับมอบหมาย (${myTrainings.length} งาน)</h6>
+      ${myTrainings.slice(0, 5).map(e => `
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom small">
+          <div class="fw-bold">${getItemName(e)}</div>
+          <div class="text-muted">${formatDateThai(e.date)}</div>
+        </div>`).join('') || '<div class="text-muted small py-2">ไม่มีงานอบรม</div>'}`;
 
-    const myModal = bootstrapModal();
-    myModal.show();
-
-    document.getElementById('confirm-assign').onclick = () => {
-        confirmAssignment(eventId, suggested, type);
-        myModal.hide();
-    };
+    document.getElementById('modalTitle').textContent = t.name;
+    document.getElementById('modalBody').innerHTML = body;
+    new bootstrap.Modal(document.getElementById('universalModal')).show();
 }
 
-function confirmAssignment(eventId, teachers, type) {
-    const list = type === 'duty' ? window.events : window.trainings;
-    const item = list.find(e => (e.eventId || e.trainingId) === eventId);
-    
-    item.status = 'assigned';
-    item.assignedTeachers = teachers.map(t => t.teacherId);
-    
-    // Update scores
-    teachers.forEach(t => {
-        if (type === 'duty') t.dutyQueueScore = (t.dutyQueueScore || 0) + 15;
-        else t.trainingQueueScore = (t.trainingQueueScore || 0) + 15;
-    });
-
-    persistAllData();
-    showView(type === 'duty' ? 'events' : 'trainings');
-    showFirebaseStatus('success', 'จัดคิวเรียบร้อยแล้ว');
-}
-
-function saveEvent(eventId) {
-    const data = {
-        eventName: document.getElementById('f-name').value,
-        date: document.getElementById('f-date').value,
-        requiredQuota: parseInt(document.getElementById('f-quota').value),
-        location: document.getElementById('f-location').value,
-        status: 'pending'
-    };
-
-    if (eventId) {
-        const index = window.events.findIndex(e => e.eventId === eventId);
-        window.events[index] = { ...window.events[index], ...data };
-    } else {
-        data.eventId = Date.now();
-        window.events.push(data);
-    }
-
-    persistAllData();
-    showView('events');
-}
+/* ─── Stub functions (prevent errors) ──────── */
+function openEventModal()          { showFirebaseStatus('info', 'ฟังก์ชันเพิ่มงานกำลังพัฒนา'); }
+function openTrainingModal()       { showFirebaseStatus('info', 'ฟังก์ชันเพิ่มอบรมกำลังพัฒนา'); }
+function openTeacherModal()        { showFirebaseStatus('info', 'ฟังก์ชันเพิ่มครูกำลังพัฒนา'); }
+function editItem(id, type)        { showFirebaseStatus('info', `แก้ไข ${type} #${id}`); }
+function editTeacher(id)           { showFirebaseStatus('info', `แก้ไขครู #${id}`); }
+function openAutoAssignModal(id, type)   { showFirebaseStatus('info', `จัดคิว ${type} #${id} (กำลังพัฒนา)`); }
+function openSubstitutionModal(id, type) { showFirebaseStatus('info', `แทนงาน ${type} #${id} (กำลังพัฒนา)`); }
+function handleTeacherClick(id)    { showTeacherDetail(id); }
