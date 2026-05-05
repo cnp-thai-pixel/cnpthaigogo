@@ -22,8 +22,12 @@ function showView(viewName) {
 
 function renderDashboard() {
     document.getElementById('total-events').textContent = window.events.length;
-    document.getElementById('assigned-events').textContent = window.events.filter(e => e.status === 'assigned').length;
-    document.getElementById('pending-events').textContent = window.events.filter(e => e.status === 'pending').length;
+    document.getElementById('total-trainings').textContent = window.trainings.length;
+    
+    const pendingEvents = window.events.filter(e => e.status === 'pending').length;
+    const pendingTrainings = window.trainings.filter(e => e.status === 'pending').length;
+    
+    document.getElementById('pending-events').textContent = pendingEvents + pendingTrainings;
     document.getElementById('total-teachers').textContent = window.teachers.length;
 
     renderNextQueue();
