@@ -239,6 +239,17 @@ body:not(.admin-mode) .admin-only {
 }
 
 /* Responsive fixes */
+.table th, .table td {
+    padding: 1.25rem 1rem;
+    vertical-align: middle;
+}
+
+.table th {
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
 @media (max-width: 991px) {
     .d-flex.min-vh-100 {
         flex-direction: column !important;

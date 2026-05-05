@@ -32,6 +32,69 @@ function renderDashboard() {
 
     renderNextQueue();
     renderUrgentEvents();
+    renderDashboardStats();
+}
+
+function renderDashboardStats() {
+    // Top 5 Teachers (Based on assigned events + trainings)
+    const teacherWorkloads = window.teachers.map(t => {
+        const dutyCount = window.events.filter(e => e.status === 'assigned' && e.assignedTeachers?.includes(t.teacherId)).length;
+        const trainingCount = window.trainings.filter(e => e.status === 'assigned' && e.assignedTeachers?.includes(t.teacherId)).length;
+        return {
+            name: `${t.prefix || ''}${t.firstName} ${t.lastName}`,
+            total: dutyCount + trainingCount,
+            dutyCount,
+            trainingCount,
+            avatarUrl: createTeacherAvatar(t)
+        };
+    }).sort((a, b) => b.total - a.total).slice(0, 5);
+
+    const maxTotal = teacherWorkloads.length > 0 ? Math.max(...teacherWorkloads.map(t => t.total), 1) : 1;
+    
+    const topTeachersContainer = document.getElementById('top-teachers-chart');
+    if (!topTeachersContainer) return;
+    
+    if (teacherWorkloads.length === 0 || teacherWorkloads.every(t => t.total === 0)) {
+        topTeachersContainer.innerHTML = '<div class="text-muted text-center py-4">ยังไม่มีข้อมูลการออกงาน</div>';
+    } else {
+        topTeachersContainer.innerHTML = teacherWorkloads.map(t => {
+            const width = (t.total / maxTotal) * 100;
+            return `
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="d-flex align-items-center gap-2">
+                            ${t.avatarUrl.includes('div') ? t.avatarUrl.replace('teacher-avatar', 'teacher-avatar shadow-sm border border-light').replace('style="', 'style="width:28px;height:28px;font-size:0.75rem;') : `<img src="${t.avatarUrl}" class="rounded-circle shadow-sm" style="width:28px;height:28px;object-fit:cover;">`}
+                            <span class="small font-weight-bold text-dark">${t.name}</span>
+                        </div>
+                        <span class="font-weight-bold small text-primary">${t.total} <span class="text-muted fw-normal">งาน</span></span>
+                    </div>
+                    <div class="progress" style="height: 8px; border-radius: 4px; background-color: var(--border);">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: ${width}%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Proportion Stats
+    const totalD = window.events.length;
+    const totalT = window.trainings.length;
+    const totalAll = totalD + totalT || 1; // Prevent div by zero
+    
+    const pctD = Math.round((totalD / totalAll) * 100);
+    const pctT = Math.round((totalT / totalAll) * 100);
+
+    const statDutyBar = document.getElementById('stat-duty-bar');
+    const statTrainingBar = document.getElementById('stat-training-bar');
+    if(statDutyBar && statTrainingBar) {
+        statDutyBar.style.width = `${pctD}%`;
+        statTrainingBar.style.width = `${pctT}%`;
+        
+        document.getElementById('stat-duty-percent').textContent = `(${pctD}%)`;
+        document.getElementById('stat-training-percent').textContent = `(${pctT}%)`;
+        document.getElementById('stat-duty-count').innerHTML = `<strong class="text-dark">${totalD}</strong> งานออกเวร`;
+        document.getElementById('stat-training-count').innerHTML = `<strong class="text-dark">${totalT}</strong> งานอบรม`;
+    }
 }
 
 function renderNextQueue() {

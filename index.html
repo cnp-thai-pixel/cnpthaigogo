@@ -214,12 +214,11 @@
                     </div>
                 </div>
 
-                <div class="row g-4">
+                    <div class="row g-4 mb-4">
                     <!-- Next Queue Summary -->
                     <div class="col-lg-8">
-                        <div class="card-premium p-4 h-100">
-                            <h5 class="font-weight-bold mb-4"><i class="fas fa-list-ol mr-2 text-primary"></i>
-                                ลำดับคิวถัดไป</h5>
+                        <div class="card-premium p-4 h-100 border-0 shadow-sm">
+                            <h5 class="font-weight-bold mb-4"><i class="fas fa-list-ol me-2 text-primary"></i> ลำดับคิวถัดไป</h5>
 
                             <p class="small text-muted font-weight-bold mb-2">คิวออกงาน (Duty Queue)</p>
                             <div id="next-queue-duty" class="queue-grid mb-4"></div>
@@ -231,11 +230,43 @@
 
                     <!-- Urgent Events -->
                     <div class="col-lg-4">
-                        <div class="card-premium p-4 h-100">
-                            <h5 class="font-weight-bold mb-4"><i
-                                    class="fas fa-exclamation-circle mr-2 text-warning"></i> งานที่ต้องเร่งจัดคิว</h5>
+                        <div class="card-premium p-4 h-100 border-0 shadow-sm">
+                            <h5 class="font-weight-bold mb-4"><i class="fas fa-exclamation-circle me-2 text-warning"></i> งานที่ต้องเร่งจัดคิว</h5>
                             <div id="urgent-events" class="d-flex flex-column gap-3">
                                 <!-- Dynamic Content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Analytics Row -->
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card-premium p-4 h-100 border-0 shadow-sm">
+                            <h5 class="font-weight-bold mb-4"><i class="fas fa-chart-bar me-2 text-accent"></i> บุคลากรที่ออกงานบ่อยที่สุด (Top 5)</h5>
+                            <div id="top-teachers-chart" class="d-flex flex-column justify-content-center h-100 mt-2">
+                                <!-- Bars populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card-premium p-4 h-100 border-0 shadow-sm">
+                            <h5 class="font-weight-bold mb-4"><i class="fas fa-chart-pie me-2 text-info"></i> สัดส่วนประเภทงาน (ทั้งหมด)</h5>
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <div class="w-100">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-primary font-weight-bold"><i class="fas fa-calendar-alt me-1"></i> งานออกเวร <span id="stat-duty-percent">(0%)</span></span>
+                                        <span class="text-accent font-weight-bold"><span id="stat-training-percent">(0%)</span> <i class="fas fa-graduation-cap ms-1"></i> งานอบรม</span>
+                                    </div>
+                                    <div class="progress" style="height: 24px; border-radius: 12px; background-color: var(--border);">
+                                        <div id="stat-duty-bar" class="progress-bar bg-primary" role="progressbar" style="width: 50%"></div>
+                                        <div id="stat-training-bar" class="progress-bar bg-accent" role="progressbar" style="width: 50%"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-3 text-muted small">
+                                        <span id="stat-duty-count">0 งาน</span>
+                                        <span id="stat-training-count">0 งาน</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
