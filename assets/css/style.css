@@ -2,23 +2,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary: #FF3366; /* Vibrant Bright Pink */
-    --primary-light: #FFE5EC;
+    /* Pink-Gold Theme inspired by Flip7 design system */
+    --primary: #FF477E; /* Vibrant Coral Pink */
+    --primary-light: #FF8BA7;
+    --primary-dark: #D91C5C;
     --secondary: #1E293B; /* Modern Slate Dark */
-    --accent: #FFB3C6;
-    --success: #10B981; /* Vibrant Emerald Green */
+    --accent: #FFD23F; /* Accent Gold */
+    --success: #27AE60; 
     --warning: #F59E0B;
-    --danger: #EF4444;
-    --surface: #ffffff;
-    --background: #F8FAFC;
-    --text: #334155;
+    --danger: #EF6C4A; /* BOOM Coral */
+    --surface: #FFFFFF; /* Surface Card */
+    --background: #FFF5F7; /* Soft pink tinted background */
+    --text: #2c1720;
     --text-muted: #64748B;
-    --glass: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(255, 51, 102, 0.15);
-    --shadow-sm: 0 2px 4px 0 rgba(30, 41, 59, 0.05);
-    --shadow: 0 4px 6px -1px rgba(30, 41, 59, 0.08), 0 2px 4px -1px rgba(30, 41, 59, 0.04);
-    --shadow-lg: 0 10px 15px -3px rgba(30, 41, 59, 0.1), 0 4px 6px -2px rgba(30, 41, 59, 0.05);
-    --radius: 16px;
+    --glass: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(255, 71, 126, 0.15);
+    
+    /* Glow Elevation System */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+    --shadow-card: 0 4px 20px rgba(255, 71, 126, 0.10);
+    --shadow-pink-glow: 0 4px 20px rgba(255, 71, 126, 0.35);
+    --shadow-gold-glow: 0 4px 20px rgba(255, 210, 63, 0.40);
+    --radius: 24px; /* Flip7 lg radius */
 }
 
 body {
@@ -31,6 +38,8 @@ body {
 
 h1, h2, h3, h4, h5, h6, .font-outfit {
     font-family: 'Noto Sans Thai', 'Google Sans', sans-serif;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px;
 }
 
 /* Glassmorphism */
@@ -74,48 +83,54 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
 .card-premium {
     background: var(--surface);
     border-radius: var(--radius);
-    border: 1px solid rgba(137, 77, 91, 0.08);
-    box-shadow: var(--shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-left: 6px solid var(--primary-light);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
     overflow: hidden;
 }
 
 .card-premium:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-pink-glow);
+    border-left-color: var(--primary);
 }
 
 /* Buttons */
 .btn-premium {
-    border-radius: 12px;
-    padding: 0.6rem 1.5rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    border-radius: 999px; /* Pill shape */
+    padding: 0.6rem 1.8rem;
+    font-weight: 700;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     border: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    min-height: 44px;
 }
 
 .btn-premium-primary {
-    background: var(--secondary);
+    background: var(--primary);
     color: white;
+    box-shadow: var(--shadow-pink-glow);
 }
 
 .btn-premium-primary:hover {
-    background: #5a4038;
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(125, 90, 80, 0.3);
+    background: var(--primary-dark);
+    transform: scale(0.95);
+    box-shadow: 0 2px 10px rgba(255, 71, 126, 0.2);
 }
 
 .btn-premium-secondary {
-    background: var(--primary-light);
-    color: var(--primary);
+    background: var(--accent);
+    color: #4A3A00;
+    box-shadow: var(--shadow-gold-glow);
 }
 
 .btn-premium-secondary:hover {
-    background: #d9a6b7;
+    background: #E6B800;
+    transform: scale(0.95);
 }
 
 /* Avatars */
@@ -195,17 +210,19 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
 .queue-item-mini {
     text-align: center;
     padding: 1rem;
-    border-radius: var(--radius);
+    border-radius: 16px;
     background: white;
-    border: 1px solid rgba(0,0,0,0.05);
-    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     cursor: pointer;
 }
 
 .queue-item-mini.active {
     border-color: var(--primary);
-    background: rgba(137, 77, 91, 0.05);
-    box-shadow: 0 0 0 2px var(--primary-light);
+    background: var(--glass);
+    box-shadow: var(--shadow-pink-glow);
+    transform: scale(1.05);
 }
 
 /* Modal Styling */

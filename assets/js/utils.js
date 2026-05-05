@@ -55,8 +55,17 @@ const teacherPhotos = {
 
 function createTeacherAvatar(teacher, large = false) {
     const name = teacher?.name || '';
-    const photo = teacherPhotos[name];
     const sizeClass = large ? 'teacher-avatar teacher-avatar-large' : 'teacher-avatar';
+    
+    // Find the correct photo by checking if the teacher's name contains the key
+    let photoKey = null;
+    for (const key of Object.keys(teacherPhotos)) {
+        if (name.includes(key)) {
+            photoKey = key;
+            break;
+        }
+    }
+    const photo = photoKey ? teacherPhotos[photoKey] : null;
     
     if (photo) {
         return `<img src="${photo}" class="${sizeClass}" alt="${name}" onerror="this.outerHTML='<div class=\'${sizeClass}\'>${name.charAt(0)}</div>'">`;
