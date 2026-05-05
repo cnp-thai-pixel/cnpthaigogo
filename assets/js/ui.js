@@ -58,19 +58,12 @@ function renderDashboardStats() {
         topTeachersContainer.innerHTML = '<div class="text-muted text-center py-4">ยังไม่มีข้อมูลการออกงาน</div>';
     } else {
         topTeachersContainer.innerHTML = teacherWorkloads.map(t => {
-            const width = (t.total / maxTotal) * 100;
+            const height = (t.total / maxTotal) * 100;
             return `
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div class="d-flex align-items-center gap-2">
-                            ${t.avatarUrl.includes('div') ? t.avatarUrl.replace('teacher-avatar', 'teacher-avatar shadow-sm border border-light').replace('style="', 'style="width:28px;height:28px;font-size:0.75rem;') : `<img src="${t.avatarUrl}" class="rounded-circle shadow-sm" style="width:28px;height:28px;object-fit:cover;">`}
-                            <span class="small font-weight-bold text-dark">${t.name}</span>
-                        </div>
-                        <span class="font-weight-bold small text-primary">${t.total} <span class="text-muted fw-normal">งาน</span></span>
-                    </div>
-                    <div class="progress" style="height: 8px; border-radius: 4px; background-color: var(--border);">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: ${width}%; border-radius: 4px;"></div>
-                    </div>
+                <div class="vertical-bar-group">
+                    <span class="small font-weight-bold text-muted">${t.total}</span>
+                    <div class="vertical-bar" style="height: ${height}%;"></div>
+                    ${t.avatarUrl.includes('div') ? t.avatarUrl.replace('teacher-avatar', 'teacher-avatar shadow-sm border border-light').replace('style="', 'style="width:36px;height:36px;font-size:0.9rem;') : `<img src="${t.avatarUrl}" class="rounded-circle shadow-sm" style="width:36px;height:36px;object-fit:cover;">`}
                 </div>
             `;
         }).join('');
@@ -82,18 +75,51 @@ function renderDashboardStats() {
     const totalAll = totalD + totalT || 1; // Prevent div by zero
     
     const pctD = Math.round((totalD / totalAll) * 100);
-    const pctT = Math.round((totalT / totalAll) * 100);
+    const pctT = totalAll > 1 ? Math.round((totalT / totalAll) * 100) : 0;
 
-    const statDutyBar = document.getElementById('stat-duty-bar');
-    const statTrainingBar = document.getElementById('stat-training-bar');
-    if(statDutyBar && statTrainingBar) {
-        statDutyBar.style.width = `${pctD}%`;
-        statTrainingBar.style.width = `${pctT}%`;
+    const statDoughnut = document.getElementById('stat-doughnut');
+    if(statDoughnut) {
+        statDoughnut.style.background = `conic-gradient(var(--primary) 0% ${pctD}%, var(--secondary) ${pctD}% ${pctD + pctT}%, var(--surface-hover) ${pctD + pctT}% 100%)`;
+        document.getElementById('stat-total-center').textContent = totalAll;
+        document.getElementById('stat-duty-percent').textContent = `${pctD}%`;
+        document.getElementById('stat-training-percent').textContent = `${pctT}%`;
+    }
+
+    // Recent Transactions (Updates)
+    const recentList = document.getElementById('recent-transactions-list');
+    if (recentList) {
+        const allEvents = [...window.events.map(e => ({...e, type: 'duty'})), ...window.trainings.map(e => ({...e, type: 'training'}))];
+        allEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const recent = allEvents.slice(0, 5);
         
-        document.getElementById('stat-duty-percent').textContent = `(${pctD}%)`;
-        document.getElementById('stat-training-percent').textContent = `(${pctT}%)`;
-        document.getElementById('stat-duty-count').innerHTML = `<strong class="text-dark">${totalD}</strong> งานออกเวร`;
-        document.getElementById('stat-training-count').innerHTML = `<strong class="text-dark">${totalT}</strong> งานอบรม`;
+        if (recent.length === 0) {
+            recentList.innerHTML = '<div class="text-muted text-center py-3">ยังไม่มีรายการ</div>';
+        } else {
+            recentList.innerHTML = recent.map(r => {
+                const isDuty = r.type === 'duty';
+                const statusBadgeClass = r.status === 'assigned' ? 'badge-assigned' : (r.status === 'completed' ? 'badge-completed' : 'badge-pending');
+                const statusText = r.status === 'assigned' ? 'SUCCESS' : (r.status === 'completed' ? 'COMPLETED' : 'PENDING');
+                return `
+                    <div class="d-flex align-items-center justify-content-between border-bottom py-3" style="border-color: var(--border) !important;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-ring">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary" style="width:40px;height:40px;">
+                                    <i class="fas ${isDuty ? 'fa-calendar-check' : 'fa-graduation-cap'}"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold text-dark">${r.title}</div>
+                                <div class="small text-muted">${formatDateThai(r.date)} &middot; ${isDuty ? 'งานออกเวร' : 'งานอบรม'}</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-4">
+                            <span class="badge-status ${statusBadgeClass}">${statusText}</span>
+                            <span class="font-weight-bold d-none d-md-block text-truncate" style="max-width: 150px;">${r.location || '-'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
     }
 }
 
