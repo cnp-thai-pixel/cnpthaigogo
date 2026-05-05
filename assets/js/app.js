@@ -43,15 +43,15 @@ function updateAdminUI() {
         document.body.classList.add('admin-mode');
         if (btn) {
             btn.innerHTML = '<i class="fas fa-unlock me-1"></i> ออกจากระบบ Admin';
-            btn.classList.replace('btn-outline-light', 'btn-light');
-            btn.classList.add('text-danger');
+            btn.classList.replace('btn-outline-danger', 'btn-danger');
+            btn.classList.add('text-white');
         }
     } else {
         document.body.classList.remove('admin-mode');
         if (btn) {
             btn.innerHTML = '<i class="fas fa-lock me-1"></i> เข้าสู่ระบบ Admin';
-            btn.classList.replace('btn-light', 'btn-outline-light');
-            btn.classList.remove('text-danger');
+            btn.classList.replace('btn-danger', 'btn-outline-danger');
+            btn.classList.remove('text-white');
         }
     }
 }

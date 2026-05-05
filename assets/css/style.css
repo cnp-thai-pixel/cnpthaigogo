@@ -52,31 +52,37 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
 
 /* Top Navbar */
 .top-navbar {
-    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
+    background: var(--surface);
+    border-bottom: 3px dashed var(--primary-light);
+    color: var(--text);
+}
+
+.top-navbar .navbar-brand .brand-text {
+    color: var(--primary-dark);
 }
 
 .nav-link-custom {
     display: flex;
     align-items: center;
     padding: 0.5rem 1rem !important;
-    color: rgba(255, 255, 255, 0.8) !important;
-    border-radius: 99px;
+    color: var(--text-muted) !important;
+    border-radius: 999px;
     transition: all 0.3s ease;
     text-decoration: none;
     font-size: 0.95rem;
+    font-weight: 600;
 }
 
 .nav-link-custom:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: white !important;
+    background: var(--background);
+    color: var(--primary) !important;
 }
 
 .nav-link-custom.active {
-    background: white;
-    color: var(--secondary) !important;
-    font-weight: 600;
-    box-shadow: var(--shadow-sm);
+    background: var(--accent);
+    color: #4A3A00 !important;
+    font-weight: 800;
+    box-shadow: var(--shadow-gold-glow);
 }
 
 /* Cards */
@@ -250,5 +256,16 @@ body:not(.admin-mode) .admin-only {
 @media (max-width: 991px) {
     .nav-links {
         padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .nav-link-custom {
+        margin-bottom: 0.5rem;
+        justify-content: center;
+    }
+
+    #admin-btn {
+        width: 100%;
+        margin-top: 0.5rem;
     }
 }
