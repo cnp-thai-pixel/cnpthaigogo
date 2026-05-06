@@ -3,6 +3,8 @@
  * Fixed: undefined fields, new IDs, sidebar toggle
  */
 
+export {}; // Mark as module to allow global augmentation
+
 declare global {
     interface Window {
         events: any[];

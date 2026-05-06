@@ -2,6 +2,8 @@
  * Main Application Logic & State Management
  */
 
+export {}; // Mark as module to allow global augmentation
+
 declare global {
     interface Window {
         systemConfig: any;

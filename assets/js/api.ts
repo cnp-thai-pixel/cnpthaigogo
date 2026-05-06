@@ -2,6 +2,8 @@
  * API & Data Synchronization Layer
  */
 
+export { }; // Mark as module to allow global augmentation
+
 declare global {
     interface Window {
         firebaseAppConfig: any;
@@ -18,7 +20,7 @@ declare global {
         trainings: any[];
         activityLog: any[];
         firebaseWriteErrorNotified: boolean;
-        showFirebaseStatus?: (type: string, message: string, sticky?: boolean) => void;
+        showFirebaseStatus: (type: string, message: string, sticky?: boolean) => void;
     }
 }
 
@@ -45,7 +47,7 @@ window.notifyFirebaseReady = function (app: any, database: any, helpers: any) {
         window.firebaseDbApi = helpers;
     }
     if (typeof window.__resolveFirebaseReady === 'function') {
-        window.__resolveFirebaseReady({ app, database });
+        window.__resolveFirebaseReady!({ app, database });
         window.__resolveFirebaseReady = null;
     }
 };
@@ -103,7 +105,7 @@ async function persistAllData(): Promise<void> {
         activityLog: window.activityLog
     };
 
-    const tasks = Object.entries(payload).map(([key, value]) => 
+    const tasks = Object.entries(payload).map(([key, value]) =>
         firebaseFetch(key, {
             method: 'PUT',
             body: JSON.stringify(value)
@@ -127,7 +129,7 @@ async function persistAllData(): Promise<void> {
 async function fetchInitialDataDirect(): Promise<any> {
     const keys = ['config', 'teachers', 'events', 'trainings', 'activityLog'];
     const results = await Promise.all(keys.map(key => firebaseFetch(key)));
-    
+
     return {
         config: results[0] || {},
         teachers: normalizeFirebaseList(results[1]),
