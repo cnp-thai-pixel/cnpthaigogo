@@ -107,40 +107,36 @@ function renderLatestAssignedJob() {
         return;
     }
 
-    let html = '<div class="row g-3">';
-    
     const renderSubCard = (job, label, icon, isDuty) => {
-        if (!job) return `
-            <div class="col-md-6">
-                <div class="h-100 p-4 border border-dashed rounded d-flex align-items-center justify-content-center text-muted extra-small">
-                    ยังไม่มีข้อมูลงาน${label}ล่าสุด
-                </div>
-            </div>`;
+        if (!job) return '';
         
         const teachers = (job.assignedTeachers || []).map(id => getTeacherById(id)).filter(Boolean);
         const accentColor = isDuty ? 'var(--primary)' : 'var(--secondary)';
 
         return `
-        <div class="col-md-6">
-            <div class="p-3 rounded h-100 bg-white" style="border: 1px solid var(--border-light); border-left: 5px solid ${accentColor} !important;">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" 
-                         style="width:44px;height:44px;background:#F8F8F8;color:${accentColor};flex-shrink:0;">
-                        <i class="fas ${icon} fa-lg"></i>
+        <div class="col-12 mb-3">
+            <div class="p-3 rounded bg-white shadow-sm" style="border: 1px solid var(--border-light); border-left: 6px solid ${accentColor} !important;">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width:48px;height:48px;background:#F0F0F0;color:${accentColor};flex-shrink:0;">
+                            <i class="fas ${icon} fa-lg"></i>
+                        </div>
+                        <div>
+                            <div class="extra-small fw-bold text-muted text-uppercase">${label}ล่าสุด</div>
+                            <div class="fw-bold h6 mb-0">${getItemName(job)}</div>
+                        </div>
                     </div>
-                    <div class="min-width-0">
-                        <div class="extra-small fw-bold text-muted text-uppercase mb-1">${label}ล่าสุด</div>
-                        <div class="fw-bold text-truncate" title="${getItemName(job)}">${getItemName(job)}</div>
+                    <div class="text-end">
+                        <div class="extra-small text-muted"><i class="fas fa-calendar-day me-1"></i>${formatDateThai(job.date)}</div>
+                        <div class="extra-small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${job.location || '-'}</div>
                     </div>
                 </div>
-                <div class="extra-small text-muted mb-3">
-                    <div class="mb-1"><i class="fas fa-calendar-day me-2"></i>${formatDateThai(job.date)}</div>
-                    <div class="mb-1"><i class="fas fa-map-marker-alt me-2 text-truncate d-inline-block" style="max-width:200px;"></i> ${job.location || '-'}</div>
-                </div>
-                <div class="d-flex flex-wrap gap-1">
+                <div class="d-flex flex-wrap gap-2 pt-2 border-top">
                     ${teachers.map(t => `
-                        <div style="width:28px;height:28px;" title="${t.name}">
-                            ${createTeacherAvatar(t)}
+                        <div class="d-flex align-items-center gap-2 p-1 pe-2 rounded-pill bg-light" style="border:1px solid #EEE;">
+                            <div style="width:32px;height:32px;">${createTeacherAvatar(t)}</div>
+                            <span class="extra-small fw-bold">${t.name}</span>
                         </div>
                     `).join('') || '<span class="extra-small text-muted">ยังไม่ได้ระบุคน</span>'}
                 </div>
