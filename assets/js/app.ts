@@ -2,6 +2,23 @@
  * Main Application Logic & State Management
  */
 
+declare global {
+    interface Window {
+        systemConfig: any;
+        teachers: any[];
+        events: any[];
+        trainings: any[];
+        activityLog: any[];
+        dataInitialized: boolean;
+        isAdmin: boolean;
+        firebaseReadyPromise: Promise<any>;
+        firebaseDbApi: any;
+        showView: (view: string) => void;
+        renderDashboard: () => void;
+        updateHeader: () => void;
+    }
+}
+
 // Global State
 window.systemConfig = { system_title: "ระบบจัดการออกงานครู", school_name: "กลุ่มสาระการเรียนรู้ภาษาไทย" };
 window.teachers = [];
@@ -34,7 +51,10 @@ function toggleAdmin() {
         }
     }
     updateAdminUI();
-    showView(document.querySelector('.nav-link-custom.active').getAttribute('data-view'));
+    const activeLink = document.querySelector('.nav-link-custom.active');
+    if (activeLink) {
+        window.showView(activeLink.getAttribute('data-view') || 'dashboard');
+    }
 }
 
 function updateAdminUI() {
@@ -68,8 +88,10 @@ async function loadInitialData() {
             console.warn('Firebase timeout or unavailable — using fallback data.');
         }
 
-        if (canUseDirectFirebase()) {
+        // @ts-ignore
+        if (typeof canUseDirectFirebase === 'function' && canUseDirectFirebase()) {
             try {
+                // @ts-ignore
                 const data = await fetchInitialDataDirect();
                 applyInitialData(data);
             } catch (fetchErr) {
@@ -93,24 +115,26 @@ async function loadInitialData() {
         clearTimeout(safetyTimer);
         toggleLoading(false);
         window.dataInitialized = true;
-        try { showView('dashboard'); } catch(e) { console.error('showView error:', e); }
+        try { window.showView('dashboard'); } catch(e) { console.error('showView error:', e); }
     }
 }
 
-function applyInitialData(data) {
+function applyInitialData(data: any) {
     window.systemConfig = { ...window.systemConfig, ...data.config };
     window.teachers = data.teachers || [];
     window.events = data.events || [];
     window.trainings = data.trainings || [];
     window.activityLog = data.activityLog || [];
     
-    updateHeader();
-    renderDashboard();
+    window.updateHeader();
+    window.renderDashboard();
 }
 
-function updateHeader() {
-    document.getElementById('brand-title').textContent = window.systemConfig.system_title;
-    document.getElementById('brand-subtitle').textContent = window.systemConfig.school_name;
+window.updateHeader = function() {
+    const title = document.getElementById('brand-title');
+    const subtitle = document.getElementById('brand-subtitle');
+    if (title) title.textContent = window.systemConfig.system_title;
+    if (subtitle) subtitle.textContent = window.systemConfig.school_name;
 }
 
 function setupEventListeners() {
@@ -118,12 +142,12 @@ function setupEventListeners() {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const view = link.getAttribute('data-view');
-            showView(view);
+            if (view) window.showView(view);
         });
     });
 }
 
-function toggleLoading(show) {
+function toggleLoading(show: boolean) {
     const loader = document.getElementById('loading-overlay');
     if (!loader) return;
     if (show) {
@@ -135,45 +159,61 @@ function toggleLoading(show) {
     }
 }
 
-// createTeacherAvatar is defined in utils.js — no override needed here
-
 // Logic Helpers
-function getTeacherById(id) {
+/**
+ * @param {number} id 
+ */
+function getTeacherById(id: number) {
     return window.teachers.find(t => t.teacherId === id);
 }
 
-function getTeacherQueueScore(teacher, type) {
+/**
+ * @param {any} teacher 
+ * @param {string} type 
+ */
+function getTeacherQueueScore(teacher: any, type: string) {
     return type === 'training' ? (teacher.trainingQueueScore || 0) : (teacher.dutyQueueScore || 0);
 }
 
-function getTeacherCombinedScore(teacher) {
+/**
+ * @param {any} teacher 
+ */
+function getTeacherCombinedScore(teacher: any) {
     return (teacher.dutyQueueScore || 0) + (teacher.trainingQueueScore || 0);
 }
 
-function sortTeachers(teachers, type = 'duty') {
+/**
+ * @param {any[]} teachers 
+ * @param {string} type 
+ */
+function sortTeachers(teachers: any[], type = 'duty') {
     return [...teachers].sort((a, b) => {
         const scoreA = type === 'combined' ? getTeacherCombinedScore(a) : getTeacherQueueScore(a, type);
         const scoreB = type === 'combined' ? getTeacherCombinedScore(b) : getTeacherQueueScore(b, type);
         
         if (scoreA !== scoreB) return scoreA - scoreB;
         
-        // Tie breaker: last event date (oldest first)
-        // If type is combined, we check both dates and take the most recent one as the marker?
-        // Or just check duty date for combined. Let's use duty date as primary tie-breaker.
-        const dateA = new Date((type === 'training' ? a.lastTrainingDate : a.lastDutyDate) || 0);
-        const dateB = new Date((type === 'training' ? b.lastTrainingDate : b.lastDutyDate) || 0);
+        const dateA = new Date((type === 'training' ? a.lastTrainingDate : a.lastDutyDate) || 0).getTime();
+        const dateB = new Date((type === 'training' ? b.lastTrainingDate : b.lastDutyDate) || 0).getTime();
         return dateA - dateB;
     });
 }
 
-function getNextQueueTeachers(limit, type) {
+/**
+ * @param {number} limit 
+ * @param {string} type 
+ */
+function getNextQueueTeachers(limit: number, type: string) {
     return sortTeachers(window.teachers, type).slice(0, limit);
 }
 
-function getEventAssignmentSlots(event) {
+/**
+ * @param {any} event 
+ */
+function getEventAssignmentSlots(event: any) {
     if (!event) return [];
     if (!event.assignmentSlots) {
-        event.assignmentSlots = (event.assignedTeachers || []).map(id => ({
+        event.assignmentSlots = (event.assignedTeachers || []).map((id: number) => ({
             originalTeacherId: id,
             currentTeacherId: id,
             substitutionType: 'none'
@@ -182,7 +222,7 @@ function getEventAssignmentSlots(event) {
     return event.assignmentSlots;
 }
 
-// Mock Data Creators (for fallback)
+// Mock Data Creators
 function createDefaultTeachers() {
     return [
         { teacherId: 1, name: 'พรรวินท์', position: 'ครูชำนาญการ', dutyQueueScore: 30, trainingQueueScore: 0, totalDuties: 2 },

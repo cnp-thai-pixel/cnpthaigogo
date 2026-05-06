@@ -6,7 +6,7 @@
  * @param {any} input 
  * @returns {string|null}
  */
-function normalizeDateString(input) {
+function normalizeDateString(input: any): string | null {
     if (!input) return null;
     if (input instanceof Date && !isNaN(input.getTime())) return input.toISOString().slice(0, 10);
 
@@ -28,7 +28,7 @@ function normalizeDateString(input) {
  * @param {string|null|undefined} dateStr 
  * @returns {string}
  */
-function formatDateThai(dateStr) {
+function formatDateThai(dateStr: string | null | undefined): string {
     if (!dateStr) return '-';
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return '-';
@@ -43,7 +43,7 @@ function formatDateThai(dateStr) {
  * @param {any} endDate 
  * @returns {string}
  */
-function formatDateRangeThai(startDate, endDate) {
+function formatDateRangeThai(startDate: any, endDate: any): string {
     const s = normalizeDateString(startDate), e = normalizeDateString(endDate);
     if (!s && !e) return '-';
     if (s === e) return formatDateThai(s);
@@ -51,7 +51,7 @@ function formatDateRangeThai(startDate, endDate) {
 }
 
 /** @type {Record<string, string>} */
-const teacherPhotos = {
+const teacherPhotos: Record<string, string> = {
     'กฤษณีนาท': 'assets/img/techerpic/กฤษณีนาท.png',
     'ขวัญนาค': 'assets/img/techerpic/ขวัญนาค.png',
     'นัชนันท์': 'assets/img/techerpic/นัชนันท์.png',
@@ -72,14 +72,15 @@ const teacherPhotos = {
  * @param {boolean} [large] 
  * @returns {string}
  */
-function createTeacherAvatar(teacher, large = false) {
+function createTeacherAvatar(teacher: any, large: boolean = false): string {
     const name = teacher?.name || '';
     const size = large ? 'width:80px;height:80px;font-size:28px;' : 'width:100%;height:100%;font-size:16px;';
     const cls  = 'teacher-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold';
 
     // Find matching photo key
     let photoKey = null;
-    for (const key of Object.keys(teacherPhotos)) {
+    const keys = Object.keys(teacherPhotos);
+    for (const key of keys) {
         if (name.includes(key)) { photoKey = key; break; }
     }
     const photo = photoKey ? teacherPhotos[photoKey] : null;
@@ -96,7 +97,7 @@ function createTeacherAvatar(teacher, large = false) {
  * @param {any} value 
  * @returns {Date|null}
  */
-function safeDate(value) {
+function safeDate(value: any): Date | null {
     const n = normalizeDateString(value);
     return n ? new Date(n) : null;
 }
@@ -106,10 +107,11 @@ function safeDate(value) {
  * @param {any} dateB 
  * @returns {string|null}
  */
-function latestDateString(dateA, dateB) {
+function latestDateString(dateA: any, dateB: any): string | null {
     const a = safeDate(dateA), b = safeDate(dateB);
     if (!a && !b) return null;
-    if (!a) return b.toISOString().slice(0, 10);
-    if (!b) return a.toISOString().slice(0, 10);
-    return (a > b ? a : b).toISOString().slice(0, 10);
+    if (!a && b) return b.toISOString().slice(0, 10);
+    if (!b && a) return a.toISOString().slice(0, 10);
+    if (a && b) return (a > b ? a : b).toISOString().slice(0, 10);
+    return null;
 }
