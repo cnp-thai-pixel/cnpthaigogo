@@ -1,10 +1,12 @@
+import { Teacher } from './types';
+
 /**
  * Utility Functions & Helpers
  */
 
-function normalizeDateString(input) {
+export function normalizeDateString(input: any): string | null {
     if (!input) return null;
-    if (input instanceof Date && !isNaN(input)) return input.toISOString().slice(0, 10);
+    if (input instanceof Date && !isNaN(input.getTime())) return input.toISOString().slice(0, 10);
 
     const str = String(input).trim();
     const direct = new Date(str);
@@ -20,7 +22,7 @@ function normalizeDateString(input) {
     return null;
 }
 
-function formatDateThai(dateStr) {
+export function formatDateThai(dateStr: string | null | undefined): string {
     if (!dateStr) return '-';
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return '-';
@@ -30,14 +32,14 @@ function formatDateThai(dateStr) {
     return `${date.getDate()} ${months[date.getMonth()]} ${buddhistYear}`;
 }
 
-function formatDateRangeThai(startDate, endDate) {
+export function formatDateRangeThai(startDate: any, endDate: any): string {
     const s = normalizeDateString(startDate), e = normalizeDateString(endDate);
     if (!s && !e) return '-';
     if (s === e) return formatDateThai(s);
     return `${formatDateThai(s)} - ${formatDateThai(e)}`;
 }
 
-const teacherPhotos = {
+const teacherPhotos: Record<string, string> = {
     'กฤษณีนาท': 'assets/img/techerpic/กฤษณีนาท.png',
     'ขวัญนาค': 'assets/img/techerpic/ขวัญนาค.png',
     'นัชนันท์': 'assets/img/techerpic/นัชนันท์.png',
@@ -53,13 +55,13 @@ const teacherPhotos = {
     'ภาณุวัฒน์': 'assets/img/techerpic/ภาณุวัฒน์.jpg'
 };
 
-function createTeacherAvatar(teacher, large = false) {
+export function createTeacherAvatar(teacher: Teacher | null | undefined, large = false): string {
     const name = teacher?.name || '';
     const size = large ? 'width:80px;height:80px;font-size:28px;' : 'width:100%;height:100%;font-size:16px;';
     const cls  = 'teacher-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold';
 
     // Find matching photo key
-    let photoKey = null;
+    let photoKey: string | null = null;
     for (const key of Object.keys(teacherPhotos)) {
         if (name.includes(key)) { photoKey = key; break; }
     }
@@ -73,15 +75,16 @@ function createTeacherAvatar(teacher, large = false) {
     return `<div class="${cls}" style="${size}background:#0F0F0F;color:#fff;flex-shrink:0;">${name ? name.charAt(0) : '?'}</div>`;
 }
 
-function safeDate(value) {
+export function safeDate(value: any): Date | null {
     const n = normalizeDateString(value);
     return n ? new Date(n) : null;
 }
 
-function latestDateString(dateA, dateB) {
+export function latestDateString(dateA: any, dateB: any): string | null {
     const a = safeDate(dateA), b = safeDate(dateB);
     if (!a && !b) return null;
-    if (!a) return b.toISOString().slice(0, 10);
-    if (!b) return a.toISOString().slice(0, 10);
+    if (!a) return b!.toISOString().slice(0, 10);
+    if (!b) return a!.toISOString().slice(0, 10);
     return (a > b ? a : b).toISOString().slice(0, 10);
 }
+

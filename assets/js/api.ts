@@ -1,6 +1,27 @@
+import { Teacher, EventItem, TrainingItem, ActivityLog, SystemConfig } from './types';
+
 /**
  * API & Data Synchronization Layer
  */
+
+declare global {
+    interface Window {
+        firebaseAppConfig: any;
+        firebaseReadyPromise: Promise<any>;
+        __resolveFirebaseReady: ((value: any) => void) | null;
+        __rejectFirebaseReady: ((reason?: any) => void) | null;
+        notifyFirebaseReady: (app: any, database: any, helpers: any) => void;
+        firebaseApp: any;
+        firebaseDatabase: any;
+        firebaseDbApi: any;
+        systemConfig: SystemConfig;
+        teachers: Teacher[];
+        events: EventItem[];
+        trainings: TrainingItem[];
+        activityLog: ActivityLog[];
+        firebaseWriteErrorNotified: boolean;
+    }
+}
 
 window.firebaseAppConfig = window.firebaseAppConfig || {
     apiKey: "AIzaSyDv--hw2BWKE-NTFrCMpTNz9LEzGK8l5PE",
@@ -18,7 +39,7 @@ window.firebaseReadyPromise = window.firebaseReadyPromise || new Promise((resolv
     window.__rejectFirebaseReady = reject;
 });
 
-window.notifyFirebaseReady = function (app, database, helpers) {
+window.notifyFirebaseReady = function (app: any, database: any, helpers: any) {
     window.firebaseApp = app;
     window.firebaseDatabase = database;
     if (helpers) {
@@ -30,7 +51,7 @@ window.notifyFirebaseReady = function (app, database, helpers) {
     }
 };
 
-async function firebaseFetch(path, options = {}) {
+export async function firebaseFetch(path: string, options: any = {}): Promise<any> {
     if (!canUseDirectFirebase()) {
         throw new Error('Firebase database is not ready');
     }
@@ -57,11 +78,11 @@ async function firebaseFetch(path, options = {}) {
     throw new Error(`Unsupported Firebase method: ${method}`);
 }
 
-function canUseDirectFirebase() {
+export function canUseDirectFirebase(): boolean {
     return !!(window.firebaseDatabase && window.firebaseDbApi && typeof window.firebaseDbApi.get === 'function');
 }
 
-async function persistAllData() {
+export async function persistAllData(): Promise<void> {
     if (!canUseDirectFirebase()) return Promise.resolve();
 
     const payload = {
@@ -84,13 +105,15 @@ async function persistAllData() {
         window.firebaseWriteErrorNotified = false;
     } catch (error) {
         console.error('Firebase Save Error:', error);
+        // @ts-ignore
         if (typeof showFirebaseStatus === 'function') {
+            // @ts-ignore
             showFirebaseStatus('warning', 'ไม่สามารถซิงค์ข้อมูลไปยังคลาวด์ได้ในขณะนี้', true);
         }
     }
 }
 
-async function fetchInitialDataDirect() {
+export async function fetchInitialDataDirect(): Promise<any> {
     const keys = ['config', 'teachers', 'events', 'trainings', 'activityLog'];
     const results = await Promise.all(keys.map(key => firebaseFetch(key)));
     
@@ -103,7 +126,7 @@ async function fetchInitialDataDirect() {
     };
 }
 
-function normalizeFirebaseList(value) {
+export function normalizeFirebaseList(value: any): any[] {
     if (Array.isArray(value)) return value.filter(item => item !== null);
     if (value && typeof value === 'object') {
         return Object.keys(value)
@@ -115,3 +138,4 @@ function normalizeFirebaseList(value) {
     }
     return [];
 }
+
