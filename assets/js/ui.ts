@@ -144,6 +144,7 @@ function renderLatestAssignedJob() {
         </div>`;
     };
 
+    let html = '<div class="row">';
     html += renderSubCard(latestDuty, 'ออกเวร', 'fa-calendar-check', true);
     html += renderSubCard(latestTraining, 'อบรม', 'fa-graduation-cap', false);
     html += '</div>';
@@ -253,29 +254,22 @@ function renderTeacherQueueStrips() {
     // Duty Queue
     const dutySorted = sortTeachers(teachers, 'duty');
     dutyStrip.innerHTML = dutySorted.map((t, i) => `
-        <div class="teacher-queue-card ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})">
+        <div class="teacher-queue-card-compact ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})" title="${t.name} (คิว: ${getTeacherQueueScore(t, 'duty')})">
             <div class="rank-badge">${i + 1}</div>
-            <div style="width:32px;height:32px;">${createTeacherAvatar(t)}</div>
-            <div class="info">
-                <div class="name">${t.name}</div>
-                <div class="score"><span class="score-label">คะแนน:</span> ${getTeacherQueueScore(t, 'duty')}</div>
-            </div>
+            <div class="avatar-container">${createTeacherAvatar(t)}</div>
         </div>
     `).join('');
 
     // Training Queue
     const trainingSorted = sortTeachers(teachers, 'training');
     trainingStrip.innerHTML = trainingSorted.map((t, i) => `
-        <div class="teacher-queue-card ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})" style="border-left: 4px solid var(--secondary);">
-            <div class="rank-badge">${i + 1}</div>
-            <div style="width:32px;height:32px;">${createTeacherAvatar(t)}</div>
-            <div class="info">
-                <div class="name">${t.name}</div>
-                <div class="score"><span class="score-label">คะแนน:</span> ${getTeacherQueueScore(t, 'training')}</div>
-            </div>
+        <div class="teacher-queue-card-compact ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})" style="border-color: var(--secondary);" title="${t.name} (คิว: ${getTeacherQueueScore(t, 'training')})">
+            <div class="rank-badge" style="background: var(--secondary);">${i + 1}</div>
+            <div class="avatar-container">${createTeacherAvatar(t)}</div>
         </div>
     `).join('');
 }
+
 
 /* ─── Event / Training Cards ─────────────────── */
 function renderQueueCards(type, containerId) {
