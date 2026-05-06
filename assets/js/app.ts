@@ -2,25 +2,6 @@
  * Main Application Logic & State Management
  */
 
-export {}; // Mark as module to allow global augmentation
-
-declare global {
-    interface Window {
-        systemConfig: any;
-        teachers: any[];
-        events: any[];
-        trainings: any[];
-        activityLog: any[];
-        dataInitialized: boolean;
-        isAdmin: boolean;
-        firebaseReadyPromise: Promise<any>;
-        firebaseDbApi: any;
-        showView: (view: string) => void;
-        renderDashboard: () => void;
-        updateHeader: () => void;
-    }
-}
-
 // Global State
 window.systemConfig = { system_title: "ระบบจัดการออกงานครู", school_name: "กลุ่มสาระการเรียนรู้ภาษาไทย" };
 window.teachers = [];
@@ -90,10 +71,8 @@ async function loadInitialData() {
             console.warn('Firebase timeout or unavailable — using fallback data.');
         }
 
-        // @ts-ignore
         if (typeof canUseDirectFirebase === 'function' && canUseDirectFirebase()) {
             try {
-                // @ts-ignore
                 const data = await fetchInitialDataDirect();
                 applyInitialData(data);
             } catch (fetchErr) {

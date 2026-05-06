@@ -2,28 +2,6 @@
  * API & Data Synchronization Layer
  */
 
-export { }; // Mark as module to allow global augmentation
-
-declare global {
-    interface Window {
-        firebaseAppConfig: any;
-        firebaseReadyPromise: Promise<any>;
-        __resolveFirebaseReady: ((value: any) => void) | null;
-        __rejectFirebaseReady: ((reason?: any) => void) | null;
-        notifyFirebaseReady: (app: any, database: any, helpers: any) => void;
-        firebaseApp: any;
-        firebaseDatabase: any;
-        firebaseDbApi: any;
-        systemConfig: any;
-        teachers: any[];
-        events: any[];
-        trainings: any[];
-        activityLog: any[];
-        firebaseWriteErrorNotified: boolean;
-        showFirebaseStatus: (type: string, message: string, sticky?: boolean) => void;
-    }
-}
-
 window.firebaseAppConfig = window.firebaseAppConfig || {
     apiKey: "AIzaSyDv--hw2BWKE-NTFrCMpTNz9LEzGK8l5PE",
     authDomain: "thaigogo-e9112.firebaseapp.com",
@@ -105,7 +83,7 @@ async function persistAllData(): Promise<void> {
         activityLog: window.activityLog
     };
 
-    const tasks = Object.entries(payload).map(([key, value]) =>
+    const tasks = Object.entries(payload).map(([key, value]) => 
         firebaseFetch(key, {
             method: 'PUT',
             body: JSON.stringify(value)
@@ -129,7 +107,7 @@ async function persistAllData(): Promise<void> {
 async function fetchInitialDataDirect(): Promise<any> {
     const keys = ['config', 'teachers', 'events', 'trainings', 'activityLog'];
     const results = await Promise.all(keys.map(key => firebaseFetch(key)));
-
+    
     return {
         config: results[0] || {},
         teachers: normalizeFirebaseList(results[1]),

@@ -3,27 +3,7 @@
  * Fixed: undefined fields, new IDs, sidebar toggle
  */
 
-export {}; // Mark as module to allow global augmentation
 
-declare global {
-    interface Window {
-        events: any[];
-        trainings: any[];
-        teachers: any[];
-        activityLog: any[];
-        systemConfig: any;
-        showView: (view: string) => void;
-        renderDashboard: () => void;
-        updateHeader: () => void;
-        showTeacherDetail: (id: number) => void;
-        openAutoAssignModal: (id: number, type: string) => void;
-        openSubstitutionModal: (id: number, type: string) => void;
-        editItem: (id: number, type: string) => void;
-        deleteItem: (id: number, type: string) => void;
-        editTeacher: (id: number) => void;
-        showFirebaseStatus: (type: string, message: string, sticky?: boolean) => void;
-    }
-}
 
 /* ─── Helpers ─────────────────────────────── */
 function getItemName(item: any): string {
