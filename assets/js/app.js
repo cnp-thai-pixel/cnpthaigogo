@@ -146,17 +146,28 @@ function getTeacherQueueScore(teacher, type) {
     return type === 'training' ? (teacher.trainingQueueScore || 0) : (teacher.dutyQueueScore || 0);
 }
 
-function getNextQueueTeachers(limit, type) {
-    return [...window.teachers].sort((a, b) => {
-        const scoreA = getTeacherQueueScore(a, type);
-        const scoreB = getTeacherQueueScore(b, type);
+function getTeacherCombinedScore(teacher) {
+    return (teacher.dutyQueueScore || 0) + (teacher.trainingQueueScore || 0);
+}
+
+function sortTeachers(teachers, type = 'duty') {
+    return [...teachers].sort((a, b) => {
+        const scoreA = type === 'combined' ? getTeacherCombinedScore(a) : getTeacherQueueScore(a, type);
+        const scoreB = type === 'combined' ? getTeacherCombinedScore(b) : getTeacherQueueScore(b, type);
+        
         if (scoreA !== scoreB) return scoreA - scoreB;
         
-        // Tie breaker: last event date
-        const dateA = new Date(type === 'duty' ? a.lastDutyDate : a.lastTrainingDate || 0);
-        const dateB = new Date(type === 'duty' ? b.lastDutyDate : b.lastTrainingDate || 0);
+        // Tie breaker: last event date (oldest first)
+        // If type is combined, we check both dates and take the most recent one as the marker?
+        // Or just check duty date for combined. Let's use duty date as primary tie-breaker.
+        const dateA = new Date((type === 'training' ? a.lastTrainingDate : a.lastDutyDate) || 0);
+        const dateB = new Date((type === 'training' ? b.lastTrainingDate : b.lastDutyDate) || 0);
         return dateA - dateB;
-    }).slice(0, limit);
+    });
+}
+
+function getNextQueueTeachers(limit, type) {
+    return sortTeachers(window.teachers, type).slice(0, limit);
 }
 
 function getEventAssignmentSlots(event) {

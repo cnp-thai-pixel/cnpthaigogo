@@ -1,0 +1,3047 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>à¸£à¸°à¸šà¸šà¸ˆà¸±à¸”à¸à¸²à¸£à¸­à¸­à¸à¸‡à¸²à¸™à¸„à¸£à¸¹ | à¸à¸¥à¸¸à¹ˆà¸¡à¸ªà¸²à¸£à¸°à¸ à¸²à¸©à¸²à¹„à¸—à¸¢</title>
+
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase SDK (Firestore Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap');
+
+/* ========================================
+   RED BROADCAST DESIGN SYSTEM
+   ======================================== */
+:root {
+    --primary: #FF0000;
+    --primary-hover: #CC0000;
+    --secondary: #065FD4;
+    --neutral: #606060;
+    --bg: #F9F9F9;
+    --surface: #FFFFFF;
+    --surface-alt: #F2F2F2;
+    --text-primary: #0F0F0F;
+    --text-secondary: #606060;
+    --border: #E5E5E5;
+    --success: #2BA640;
+    --warning: #FB8C00;
+    --sidebar-w: 260px;
+    --sidebar-bg: #FFFFFF;
+    --header-h: 56px;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15);
+
+    --radius-sm: 4px;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --radius-pill: 9999px;
+}
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', 'Noto Sans Thai', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--bg);
+    overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Roboto', 'Noto Sans Thai', sans-serif;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+a {
+    color: var(--secondary);
+}
+
+/* ========================================
+   APP SHELL LAYOUT
+   ======================================== */
+#app-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ========================================
+   SIDEBAR
+   ======================================== */
+#sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1050;
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+}
+
+#sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1045;
+}
+
+#sidebar-overlay.show {
+    display: block;
+}
+
+.sidebar-brand {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    min-height: var(--header-h);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-logo {
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.sidebar-brand-text {
+    overflow: hidden;
+}
+
+.sidebar-brand-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.sidebar-brand-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.sidebar-nav {
+    padding: 8px;
+    flex: 1;
+}
+
+.nav-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    padding: 12px 12px 4px;
+}
+
+.nav-link-custom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    color: var(--text-secondary) !important;
+    text-decoration: none !important;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
+.nav-link-custom .nav-icon {
+    width: 20px;
+    text-align: center;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.nav-link-custom:hover {
+    background: var(--surface-alt);
+    color: var(--text-primary) !important;
+}
+
+.nav-link-custom.active {
+    background: #FFF0F0;
+    color: var(--primary) !important;
+    font-weight: 700;
+}
+
+.nav-link-custom.active .nav-icon {
+    color: var(--primary);
+}
+
+.sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid var(--border);
+}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+#main-content {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: margin-left 0.25s ease;
+}
+
+/* ========================================
+   TOP BAR
+   ======================================== */
+#top-bar {
+    height: var(--header-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    box-shadow: var(--shadow-sm);
+}
+
+#hamburger-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+
+#hamburger-btn:hover {
+    background: var(--surface-alt);
+}
+
+#top-bar-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+/* ========================================
+   PAGE CONTENT
+   ======================================== */
+#page-content {
+    flex: 1;
+    padding: 20px 24px 48px;
+    width: 100%;
+    min-width: 0;
+}
+
+.view-header {
+    margin-bottom: 24px;
+}
+
+.view-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.view-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   CARDS
+   ======================================== */
+.card-flat {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.card-flat .card-header-flat {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.card-flat .card-body-flat {
+    padding: 20px;
+}
+
+/* ========================================
+   STAT CARDS
+   ======================================== */
+.stat-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.stat-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.stat-badge.up {
+    background: #E8F5E9;
+    color: var(--success);
+}
+
+.stat-badge.down {
+    background: #FFEBEE;
+    color: var(--primary);
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+.btn-rb {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    height: 36px;
+    border-radius: var(--radius-pill);
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-rb:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-rb-dark {
+    background: var(--text-primary);
+    color: #fff;
+}
+
+.btn-rb-dark:hover {
+    background: #272727;
+    color: #fff;
+}
+
+.btn-rb-red {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-rb-red:hover {
+    background: var(--primary-hover);
+    color: #fff;
+}
+
+.btn-rb-ghost {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.btn-rb-ghost:hover {
+    background: var(--surface-alt);
+}
+
+.btn-rb-blue {
+    background: var(--secondary);
+    color: #fff;
+}
+
+.btn-rb-blue:hover {
+    background: #0456bc;
+    color: #fff;
+}
+
+.btn-rb.btn-sm {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+}
+
+/* ========================================
+   LEGACY COMPATIBILITY (for existing JS)
+   ======================================== */
+.btn-premium {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    height: 36px;
+    border-radius: var(--radius-pill);
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+}
+
+.btn-premium-primary {
+    background: var(--text-primary);
+    color: #fff;
+}
+
+.btn-premium-primary:hover {
+    background: #272727;
+    color: #fff;
+}
+
+.btn-premium-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.btn-premium-secondary:hover {
+    background: var(--surface-alt);
+}
+
+.btn-premium-accent {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-premium-accent:hover {
+    background: var(--primary-hover);
+    color: #fff;
+}
+
+.card-premium {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+/* ========================================
+   TEACHER AVATARS
+   ======================================== */
+.teacher-avatar {
+    border-radius: 50%;
+    background: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    overflow: hidden;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.teacher-avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+}
+
+.teacher-avatar-md {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+}
+
+.teacher-avatar-lg {
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+}
+
+.teacher-avatar-xl {
+    width: 80px;
+    height: 80px;
+    font-size: 28px;
+}
+
+/* ========================================
+   STATUS BADGES
+   ======================================== */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-pending {
+    background: transparent;
+    color: var(--warning);
+    border: 1px solid var(--warning);
+}
+
+.badge-assigned {
+    background: transparent;
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.badge-completed {
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   EVENT CARDS (Video-style)
+   ======================================== */
+.event-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.event-card-thumb {
+    aspect-ratio: 16/9;
+    background: var(--surface-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.event-card-thumb .thumb-icon {
+    font-size: 40px;
+    color: var(--border);
+}
+
+.event-card-thumb .thumb-time {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 2px;
+}
+
+.event-card-thumb .thumb-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+
+.event-card-body {
+    padding: 10px 12px 14px;
+    display: flex;
+    gap: 10px;
+}
+
+.event-card-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.event-card-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-primary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.event-card-detail {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.event-card-actions {
+    display: flex;
+    gap: 6px;
+    padding: 0 12px 12px;
+}
+
+/* ========================================
+   TABLES
+   ======================================== */
+.table-rb {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-rb thead th {
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.table-rb tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.table-rb tbody tr:hover {
+    background: #FAFAFA;
+}
+
+.table-rb tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ========================================
+   DASHBOARD CHARTS
+   ======================================== */
+.doughnut-chart {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.doughnut-chart::after {
+    content: '';
+    position: absolute;
+    width: 112px;
+    height: 112px;
+    background: var(--surface);
+    border-radius: 50%;
+}
+
+.doughnut-chart-text {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.vertical-bar-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 180px;
+}
+
+.vertical-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    gap: 6px;
+    min-width: 0;
+}
+
+.vertical-bar {
+    width: 100%;
+    max-width: 36px;
+    background: var(--primary);
+    border-radius: 3px 3px 0 0;
+    min-height: 4px;
+    transition: height 0.4s ease;
+}
+
+/* ========================================
+   QUEUE LIST (Dashboard)
+   ======================================== */
+.queue-teacher-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.queue-teacher-row:last-child {
+    border-bottom: none;
+}
+
+.queue-rank {
+    width: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.queue-score {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-left: auto;
+}
+
+/* ========================================
+   URGENT EVENTS
+   ======================================== */
+.urgent-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--surface-alt);
+    border-radius: var(--radius);
+    border-left: 3px solid var(--warning);
+    margin-bottom: 8px;
+}
+
+.urgent-row:last-child {
+    margin-bottom: 0;
+}
+
+/* ========================================
+   LATEST JOB CARD
+   ======================================== */
+.latest-job-card {
+    background: var(--surface-alt);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+}
+
+/* ========================================
+   TOAST / STATUS
+   ======================================== */
+#status-toast {
+    position: fixed;
+    top: calc(var(--header-h) + 12px);
+    right: 16px;
+    max-width: 360px;
+    z-index: 2000;
+    border-radius: var(--radius);
+    font-size: 13px;
+    box-shadow: var(--shadow-md);
+    display: none;
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal-content {
+    border-radius: var(--radius-lg) !important;
+    border: none !important;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border);
+    padding: 12px 20px;
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.25s ease forwards;
+}
+
+/* ========================================
+   UTILITIES
+   ======================================== */
+.extra-small {
+    font-size: 11px;
+}
+
+.activity-history-small {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #FAFAFA;
+    border-radius: var(--radius);
+    padding: 10px;
+    border: 1px solid var(--border-light);
+}
+
+.activity-history-small .border-bottom:last-child {
+    border-bottom: none !important;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+}
+
+/* ========================================
+   ADMIN-ONLY ELEMENTS
+   ======================================== */
+body:not(.admin-mode) .admin-only {
+    display: none !important;
+}
+
+/* ========================================
+   RESPONSIVE â€” MOBILE
+   ======================================== */
+@media (max-width: 991px) {
+    #sidebar {
+        display: none; /* Hide sidebar completely on mobile in favor of bottom nav */
+    }
+
+    #main-content {
+        margin-left: 0;
+        width: 100%;
+        padding-bottom: 64px; /* Space for bottom nav */
+    }
+
+    #top-bar {
+        padding: 0 16px;
+    }
+
+    #page-content {
+        padding: 16px 16px 80px; /* Extra padding for bottom nav */
+    }
+
+    .view-title {
+        font-size: 18px;
+    }
+
+    .stat-card {
+        padding: 12px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+    }
+
+    /* Bottom Navigation */
+    #bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: var(--surface);
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        z-index: 1050;
+        border-top: 1px solid var(--border);
+        justify-content: space-around;
+        align-items: center;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    #bottom-nav .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        flex: 1;
+        height: 100%;
+        transition: all 0.2s;
+    }
+
+    #bottom-nav .nav-item i {
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+
+    #bottom-nav .nav-item span {
+        font-size: 10px;
+        font-weight: 500;
+    }
+
+    #bottom-nav .nav-item.active {
+        color: var(--primary);
+    }
+    
+    #sidebar-toggle {
+        display: none !important;
+    }
+    .table-rb thead {
+        display: none;
+    }
+    .table-rb tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 12px;
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+    }
+    .table-rb tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+        padding: 8px 4px;
+        text-align: right;
+    }
+    .table-rb tbody td:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .table-rb tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-align: left;
+        margin-right: auto;
+    }
+    .table-rb tbody td > div.d-flex.align-items-center.gap-3 {
+        width: 100%;
+        margin-top: 4px;
+    }
+    .table-rb tbody td[data-label="à¸Šà¸·à¹ˆà¸­-à¸™à¸²à¸¡à¸ªà¸à¸¸à¸¥"]::before {
+        display: none;
+    }
+    .table-rb tbody td[data-label="à¸Šà¸·à¹ˆà¸­-à¸™à¸²à¸¡à¸ªà¸à¸¸à¸¥"] {
+        justify-content: flex-start;
+        text-align: left;
+    }
+    .table-rb tbody td.admin-only {
+        justify-content: flex-end;
+    }
+    .table-rb tbody td.admin-only::before {
+        display: none;
+    }
+}
+
+@media (max-width: 575px) {
+    .card-header-flat {
+        padding: 12px 16px;
+    }
+    .card-body-flat {
+        padding: 16px;
+    }
+    .btn-rb {
+        padding: 0 12px;
+        font-size: 13px;
+    }
+}
+
+/* ========================================
+   PRINT
+   ======================================== */
+@media print {
+
+    #sidebar,
+    #top-bar,
+    .admin-only,
+    .btn-rb,
+    .btn-premium {
+        display: none !important;
+    }
+
+    #main-content {
+        margin-left: 0 !important;
+    }
+
+    body {
+        background: white;
+    }
+}
+</style>
+    <style>
+/* ========================================
+   TEACHER QUEUE STRIPS (Dashboard)
+   ======================================== */
+.queue-strip-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.queue-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0; /* Critical for flex child scrolling */
+}
+
+.queue-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 12px 4px;
+    flex: 1;
+    min-width: 0;
+    scrollbar-width: none; /* Firefox */
+    -webkit-overflow-scrolling: touch;
+}
+
+.queue-strip::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.queue-strip-label {
+    min-width: 40px;
+    height: 70px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: #F0F0F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    border: 1px solid var(--border-light);
+    white-space: nowrap;
+}
+
+@media (max-width: 575px) {
+    .queue-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .queue-strip-label {
+        writing-mode: horizontal-tb;
+        transform: none;
+        width: 100%;
+        height: auto;
+        padding: 4px 12px;
+        justify-content: flex-start;
+    }
+    .queue-strip {
+        width: 100%;
+    }
+}
+
+.teacher-queue-card {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 180px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.teacher-queue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--primary);
+    background: #fff;
+}
+
+.teacher-queue-card .rank-badge {
+    width: 24px;
+    height: 24px;
+    background: #EEE;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #999;
+    flex-shrink: 0;
+}
+
+.teacher-queue-card.top-rank .rank-badge {
+    background: var(--primary);
+    color: white;
+}
+
+.teacher-queue-card .info {
+    flex: 1;
+    min-width: 0;
+}
+
+.teacher-queue-card .name {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 1px;
+    color: var(--text-primary);
+}
+
+.teacher-queue-card .score {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--secondary);
+}
+
+.teacher-queue-card .score-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+
+</style>
+    <style>
+/* ========================================
+   DETAILED EVENT CARDS (à¸­à¸­à¸à¸‡à¸²à¸™)
+   ======================================== */
+.event-card-detailed {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.event-card-detailed:hover {
+    box-shadow: var(--shadow);
+}
+
+.event-card-detailed .card-top {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.event-card-detailed .card-status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.event-card-detailed .card-title-main {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.event-card-detailed .info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.event-card-detailed .info-item i {
+    color: var(--primary);
+    width: 14px;
+    text-align: center;
+}
+
+.event-card-detailed .assigned-section {
+    padding: 16px 20px;
+    background: #FAFAFA;
+    flex-grow: 1;
+}
+
+.event-card-detailed .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.event-card-detailed .teacher-list-small {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.event-card-detailed .teacher-item-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+}
+
+.event-card-detailed .teacher-name-mini {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-card-detailed .card-bottom-actions {
+    display: flex;
+    border-top: 1px solid var(--border-light);
+}
+
+.event-card-detailed .card-bottom-actions button {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.event-card-detailed .card-bottom-actions button:not(:last-child) {
+    border-right: 1px solid var(--border-light);
+}
+
+.event-card-detailed .card-bottom-actions button:hover {
+    background: var(--surface-alt);
+}
+
+.event-card-detailed .card-bottom-actions .btn-edit { color: #606060; }
+.event-card-detailed .card-bottom-actions .btn-assign { color: var(--secondary); }
+.event-card-detailed .card-bottom-actions .btn-delete { color: var(--primary); }
+
+/* Special Event Styling */
+.event-card-detailed.special-event {
+    border: 2px solid #FFD700; /* Gold */
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15);
+}
+
+.event-card-detailed.special-event .card-top {
+    background: linear-gradient(to bottom right, #FFFDF0, #FFFFFF);
+}
+
+.event-card-detailed.special-event .card-title-main {
+    color: #B8860B; /* Dark Goldenrod */
+}
+
+</style>
+</head>
+
+<body>
+    <!-- Firebase Init -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof firebase !== 'undefined') {
+                const app = firebase.initializeApp(window.firebaseAppConfig);
+                const db = firebase.firestore();
+                const auth = firebase.auth();
+                auth.signInAnonymously().then(() => {
+                    const helpers = {
+                        get: async (path) => {
+                            try {
+                                if (path === 'config') {
+                                    const doc = await db.collection('config').doc('main').get();
+                                    return doc.exists ? doc.data() : null;
+                                }
+                                const snap = await db.collection(path).get();
+                                const data = [];
+                                snap.forEach(doc => data.push(doc.data()));
+                                return data.length > 0 ? data : null;
+                            } catch (e) { console.error('Firestore Get Error:', e); return null; }
+                        },
+                        put: async (path, data) => {
+                            try {
+                                if (path === 'config') return db.collection('config').doc('main').set(data);
+                                if (Array.isArray(data)) {
+                                    const batch = db.batch();
+                                    data.forEach((item, i) => {
+                                        if (!item) return;
+                                        let docId = null;
+                                        if (path === 'teachers' && item.teacherId) docId = String(item.teacherId);
+                                        else if (path === 'events' && item.eventId) docId = String(item.eventId);
+                                        else if (path === 'trainings' && item.trainingId) docId = String(item.trainingId);
+                                        else if (path === 'activityLog') docId = item.timestamp ? String(item.timestamp) : String(Date.now() + i);
+                                        else docId = String(Date.now() + i);
+                                        batch.set(db.collection(path).doc(docId), item);
+                                    });
+                                    return batch.commit();
+                                } else {
+                                    return db.collection('appData').doc(path).set(data);
+                                }
+                            } catch (e) { console.error('Firestore Put Error:', e); throw e; }
+                        },
+                        patch: async (path, data) => helpers.put(path, data)
+                    };
+                    if (window.notifyFirebaseReady) window.notifyFirebaseReady(app, db, helpers);
+                }).catch(err => {
+                    console.error('Auth Error:', err);
+                    if (window.notifyFirebaseReady) window.notifyFirebaseReady(null, null, null);
+                });
+            }
+        });
+    </script>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="position-fixed w-100 h-100 bg-white d-flex flex-column align-items-center justify-content-center" style="z-index: 9999;">
+        <div class="spinner-border text-danger mb-3" role="status" style="width:3rem;height:3rem;"></div>
+        <p class="fw-bold text-secondary">à¸à¸³à¸¥à¸±à¸‡à¹‚à¸«à¸¥à¸”à¸‚à¹‰à¸­à¸¡à¸¹à¸¥...</p>
+    </div>
+
+    <!-- STATUS TOAST -->
+    <div id="status-toast" class="alert mb-0"></div>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+         APP SHELL
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <div id="app-shell">
+
+        <!-- Sidebar Overlay (Mobile) -->
+        <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+        <!-- â”€â”€â”€ SIDEBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+        <aside id="sidebar">
+            <!-- Brand -->
+            <div class="sidebar-brand">
+                <div class="sidebar-logo"><i class="fas fa-users-class"></i></div>
+                <div class="sidebar-brand-text">
+                    <div class="sidebar-brand-title" id="brand-title">Thai Queue Pro</div>
+                    <div class="sidebar-brand-sub" id="brand-subtitle">à¸à¸¥à¸¸à¹ˆà¸¡à¸ªà¸²à¸£à¸°à¸ à¸²à¸©à¸²à¹„à¸—à¸¢</div>
+                </div>
+            </div>
+
+            <!-- Nav -->
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">à¹€à¸¡à¸™à¸¹à¸«à¸¥à¸±à¸</div>
+                <a href="#" class="nav-link-custom active" data-view="dashboard">
+                    <span class="nav-icon"><i class="fas fa-home"></i></span>
+                    <span>à¸«à¸™à¹‰à¸²à¸«à¸¥à¸±à¸</span>
+                </a>
+                <a href="#" class="nav-link-custom" data-view="events">
+                    <span class="nav-icon"><i class="fas fa-calendar-check"></i></span>
+                    <span>à¸ˆà¸±à¸”à¸à¸²à¸£à¸­à¸­à¸à¸‡à¸²à¸™</span>
+                </a>
+                <a href="#" class="nav-link-custom" data-view="trainings">
+                    <span class="nav-icon"><i class="fas fa-graduation-cap"></i></span>
+                    <span>à¸ˆà¸±à¸”à¸à¸²à¸£à¸­à¸šà¸£à¸¡</span>
+                </a>
+                <div class="nav-section-label">à¸‚à¹‰à¸­à¸¡à¸¹à¸¥</div>
+                <a href="#" class="nav-link-custom" data-view="teachers">
+                    <span class="nav-icon"><i class="fas fa-users"></i></span>
+                    <span>à¸šà¸¸à¸„à¸¥à¸²à¸à¸£</span>
+                </a>
+                <a href="#" class="nav-link-custom" data-view="history">
+                    <span class="nav-icon"><i class="fas fa-history"></i></span>
+                    <span>à¸šà¸±à¸™à¸—à¸¶à¸à¹à¸¥à¸°à¸›à¸£à¸°à¸§à¸±à¸•à¸´</span>
+                </a>
+            </nav>
+
+            <!-- Footer -->
+            <div class="sidebar-footer d-flex flex-column gap-2">
+                <button class="btn-rb btn-rb-ghost w-100 justify-content-center" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i> à¸£à¸µà¹€à¸Ÿà¸£à¸Šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥
+                </button>
+                <button class="btn-rb btn-rb-red w-100 justify-content-center" onclick="toggleAdmin()" id="admin-btn">
+                    <i class="fas fa-lock"></i> Admin (à¸¥à¹‡à¸­à¸)
+                </button>
+            </div>
+        </aside>
+
+        <!-- â”€â”€â”€ MAIN CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+        <main id="main-content">
+
+            <!-- Top Bar -->
+            <header id="top-bar">
+                <button id="hamburger-btn" onclick="toggleSidebar()" title="à¹€à¸›à¸´à¸”/à¸›à¸´à¸”à¹€à¸¡à¸™à¸¹">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+                <div id="top-bar-title">à¸«à¸™à¹‰à¸²à¸«à¸¥à¸±à¸</div>
+                <div class="ms-auto d-flex align-items-center gap-2">
+                    <button class="btn-rb btn-rb-ghost btn-sm admin-only" onclick="openEventModal()">
+                        <i class="fas fa-plus"></i> à¹€à¸žà¸´à¹ˆà¸¡à¸‡à¸²à¸™
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div id="page-content">
+
+                <!-- â•â•â•â•â• DASHBOARD VIEW â•â•â•â•â• -->
+                <div id="dashboard-view" class="view animate-fade-in">
+                    <div class="view-header">
+                        <div class="view-title">à¸«à¸™à¹‰à¸²à¸«à¸¥à¸±à¸</div>
+                        <div class="view-subtitle">à¸ à¸²à¸žà¸£à¸§à¸¡à¸à¸²à¸£à¸ˆà¸±à¸”à¸à¸²à¸£à¸­à¸­à¸à¸‡à¸²à¸™à¹à¸¥à¸°à¸­à¸šà¸£à¸¡</div>
+                    </div>
+
+                    <!-- Teacher Queue Strips -->
+                    <div class="queue-strip-container animate-fade-in">
+                        <div class="queue-row">
+                            <div class="queue-strip-label"><i class="fas fa-calendar-alt me-2"></i>à¸„à¸´à¸§à¸­à¸­à¸à¸‡à¸²à¸™</div>
+                            <div id="duty-queue-strip" class="queue-strip">
+                                <!-- Rendered JS -->
+                            </div>
+                        </div>
+                        <div class="queue-row">
+                            <div class="queue-strip-label"><i class="fas fa-graduation-cap me-2"></i>à¸„à¸´à¸§à¸­à¸šà¸£à¸¡</div>
+                            <div id="training-queue-strip" class="queue-strip">
+                                <!-- Rendered JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stat Cards -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-xl-3">
+                            <div class="stat-card">
+                                <div class="stat-label">à¸‡à¸²à¸™à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”</div>
+                                <div class="stat-value" id="stat-total">0</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-xl-3">
+                            <div class="stat-card">
+                                <div class="stat-label">à¸ˆà¸±à¸”à¸„à¸´à¸§à¹à¸¥à¹‰à¸§</div>
+                                <div class="stat-value" id="stat-assigned" style="color:var(--success)">0</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-xl-3">
+                            <div class="stat-card">
+                                <div class="stat-label">à¸£à¸­à¸ˆà¸±à¸”à¸„à¸´à¸§</div>
+                                <div class="stat-value" id="stat-pending" style="color:var(--primary)">0</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-xl-3">
+                            <div class="stat-card">
+                                <div class="stat-label">à¸šà¸¸à¸„à¸¥à¸²à¸à¸£à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”</div>
+                                <div class="stat-value" id="stat-teachers" style="color:var(--secondary)">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Latest Assigned Job -->
+                    <div class="card-flat mb-4">
+                        <div class="card-header-flat">
+                            <h6 class="mb-0 fw-bold"><i class="fas fa-star text-warning me-2"></i>à¸‡à¸²à¸™à¸¥à¹ˆà¸²à¸ªà¸¸à¸”à¸—à¸µà¹ˆà¸ˆà¸±à¸”à¸„à¸´à¸§à¹à¸¥à¹‰à¸§</h6>
+                        </div>
+                        <div class="card-body-flat">
+                            <div id="latest-assigned-job">
+                                <div class="text-center py-4 text-muted">à¸à¸³à¸¥à¸±à¸‡à¹‚à¸«à¸¥à¸”...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <!-- Urgent Events -->
+                        <div class="col-lg-6">
+                            <div class="card-flat h-100">
+                                <div class="card-header-flat">
+                                    <h6 class="mb-0 fw-bold"><i class="fas fa-bolt text-warning me-2"></i>à¸‡à¸²à¸™à¸—à¸µà¹ˆà¸•à¹‰à¸­à¸‡à¸ˆà¸±à¸”à¸„à¸´à¸§à¹€à¸£à¹ˆà¸‡à¸”à¹ˆà¸§à¸™</h6>
+                                </div>
+                                <div class="card-body-flat">
+                                    <div id="urgent-events-list">
+                                        <div class="text-center py-3 text-muted small">à¹„à¸¡à¹ˆà¸¡à¸µà¸‡à¸²à¸™à¹€à¸£à¹ˆà¸‡à¸”à¹ˆà¸§à¸™</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Next in Queue -->
+                        <div class="col-lg-6">
+                            <div class="card-flat h-100">
+                                <div class="card-header-flat">
+                                    <h6 class="mb-0 fw-bold"><i class="fas fa-sort-amount-up text-primary me-2"></i>à¸„à¸£à¸¹à¸—à¸µà¹ˆà¸„à¸§à¸£à¸­à¸­à¸à¸‡à¸²à¸™à¸–à¸±à¸”à¹„à¸›</h6>
+                                    <a href="#" class="text-secondary extra-small" onclick="showView('teachers');return false;">à¸”à¸¹à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”</a>
+                                </div>
+                                <div class="card-body-flat p-0">
+                                    <div id="next-teachers-queue" class="px-4 py-2">
+                                        <div class="text-center py-3 text-muted small">à¸à¸³à¸¥à¸±à¸‡à¹‚à¸«à¸¥à¸”...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Row -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-lg-7">
+                            <div class="card-flat">
+                                <div class="card-header-flat">
+                                    <h6 class="mb-0 fw-bold">à¸„à¸§à¸²à¸¡à¸–à¸µà¹ˆà¸à¸²à¸£à¸£à¸±à¸šà¸‡à¸²à¸™ Top 5</h6>
+                                </div>
+                                <div class="card-body-flat">
+                                    <div id="top-teachers-chart" class="vertical-bar-container">
+                                        <div class="text-center w-100 text-muted small py-4">à¸à¸³à¸¥à¸±à¸‡à¹‚à¸«à¸¥à¸”...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="card-flat">
+                                <div class="card-header-flat">
+                                    <h6 class="mb-0 fw-bold">à¸ªà¸±à¸”à¸ªà¹ˆà¸§à¸™à¸›à¸£à¸°à¹€à¸ à¸—à¸‡à¸²à¸™</h6>
+                                </div>
+                                <div class="card-body-flat d-flex flex-column align-items-center">
+                                    <div id="stat-doughnut" class="doughnut-chart mb-3"
+                                         style="background: conic-gradient(var(--primary) 0% 50%, var(--secondary) 50% 100%);">
+                                        <div class="doughnut-chart-text">
+                                            <div id="stat-doughnut-total" class="fw-bold" style="font-size:20px;">0</div>
+                                            <div class="extra-small text-muted">à¸‡à¸²à¸™</div>
+                                        </div>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="d-flex justify-content-between mb-2 small">
+                                            <span><i class="fas fa-circle me-2" style="color:var(--primary);font-size:9px;"></i>à¸‡à¸²à¸™à¸­à¸­à¸à¹€à¸§à¸£</span>
+                                            <strong id="stat-duty-pct">0%</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between small">
+                                            <span><i class="fas fa-circle me-2" style="color:var(--secondary);font-size:9px;"></i>à¸‡à¸²à¸™à¸­à¸šà¸£à¸¡</span>
+                                            <strong id="stat-training-pct">0%</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Methodology Footer -->
+                    <div class="card-flat mb-4" style="background: #FFF9F9; border: 1px solid #FFE0E0;">
+                        <div class="card-header-flat py-2" style="background: var(--primary); color: white; border: none;">
+                            <h6 class="mb-0 fw-bold small"><i class="fas fa-balance-scale me-2"></i>à¸£à¸°à¸šà¸šà¸„à¸°à¹à¸™à¸™à¸„à¸§à¸²à¸¡à¹€à¸›à¹‡à¸™à¸˜à¸£à¸£à¸¡ - à¸§à¸´à¸˜à¸µà¸à¸²à¸£à¸—à¸³à¸‡à¸²à¸™</h6>
+                        </div>
+                        <div class="card-body-flat p-4">
+                            <div class="row g-4">
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:32px;height:32px;">ðŸ</div>
+                                        <h6 class="fw-bold mb-0">à¸«à¸¥à¸±à¸à¸à¸²à¸£à¹€à¸£à¸´à¹ˆà¸¡à¸•à¹‰à¸™</h6>
+                                    </div>
+                                    <ul class="extra-small text-muted ps-3 mb-0">
+                                        <li class="mb-1">à¸„à¸£à¸¹à¹€à¸£à¸´à¹ˆà¸¡à¸•à¹‰à¸™à¸”à¹‰à¸§à¸¢ 0 à¸„à¸°à¹à¸™à¸™</li>
+                                        <li class="mb-1">à¸„à¸°à¹à¸™à¸™à¸™à¹‰à¸­à¸¢ = à¹‚à¸­à¸à¸²à¸ªà¹„à¸”à¹‰à¸‡à¸²à¸™à¸¡à¸²à¸</li>
+                                        <li class="mb-1">à¸£à¸°à¸šà¸šà¹€à¸¥à¸·à¸­à¸à¸„à¸£à¸¹à¸—à¸µà¹ˆà¸¡à¸µà¸„à¸°à¹à¸™à¸™à¸•à¹ˆà¸³à¸ªà¸¸à¸”à¸à¹ˆà¸­à¸™</li>
+                                        <li>à¸¢à¸´à¹ˆà¸‡à¸­à¸­à¸à¸‡à¸²à¸™à¸™à¹‰à¸­à¸¢ à¸¢à¸´à¹ˆà¸‡à¹„à¸”à¹‰à¹‚à¸­à¸à¸²à¸ªà¸¡à¸²à¸</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:32px;height:32px;">ðŸ“ˆ</div>
+                                        <h6 class="fw-bold mb-0">à¸à¸²à¸£à¹„à¸”à¹‰à¸„à¸°à¹à¸™à¸™</h6>
+                                    </div>
+                                    <ul class="extra-small text-muted ps-3 mb-0">
+                                        <li class="mb-1">à¸­à¸­à¸à¸‡à¸²à¸™ 1 à¸„à¸£à¸±à¹‰à¸‡ = <strong>+15 à¸„à¸°à¹à¸™à¸™</strong></li>
+                                        <li class="mb-1">à¹à¸—à¸™à¸„à¸™à¸­à¸·à¹ˆà¸™ = <strong>+25 à¸„à¸°à¹à¸™à¸™</strong></li>
+                                        <li class="mb-1">à¸‡à¸²à¸™à¸ªà¸³à¸„à¸±à¸à¸žà¸´à¹€à¸¨à¸© = <strong>+20 à¸„à¸°à¹à¸™à¸™</strong></li>
+                                        <li>à¸„à¸°à¹à¸™à¸™à¸ªà¸°à¸ªà¸¡à¸•à¸¥à¸­à¸”à¸›à¸µà¸à¸²à¸£à¸¨à¸¶à¸à¸©à¸²</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:32px;height:32px;">âš–ï¸</div>
+                                        <h6 class="fw-bold mb-0">à¸„à¸§à¸²à¸¡à¸¢à¸¸à¸•à¸´à¸˜à¸£à¸£à¸¡</h6>
+                                    </div>
+                                    <ul class="extra-small text-muted ps-3 mb-0">
+                                        <li class="mb-1">à¸ˆà¸±à¸”à¸„à¸´à¸§à¸­à¸±à¸•à¹‚à¸™à¸¡à¸±à¸•à¸´à¸•à¸²à¸¡à¸„à¸°à¹à¸™à¸™à¸•à¹ˆà¸³à¸ªà¸¸à¸”</li>
+                                        <li class="mb-1">à¸à¸£à¸°à¸ˆà¸²à¸¢à¸ à¸²à¸£à¸°à¸‡à¸²à¸™à¸­à¸¢à¹ˆà¸²à¸‡à¹€à¸—à¹ˆà¸²à¹€à¸—à¸µà¸¢à¸¡</li>
+                                        <li class="mb-1">à¸›à¹‰à¸­à¸‡à¸à¸±à¸™à¸à¸²à¸£à¸­à¸­à¸à¸‡à¸²à¸™à¸‹à¹‰à¸³à¸„à¸™à¹€à¸”à¸´à¸¡</li>
+                                        <li>à¹‚à¸›à¸£à¹ˆà¸‡à¹ƒà¸ª à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸šà¹„à¸”à¹‰à¸—à¸¸à¸à¸‚à¸±à¹‰à¸™à¸•à¸­à¸™</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 rounded bg-white border border-light text-center">
+                                <div class="small fw-bold text-danger">
+                                    <i class="fas fa-lightbulb me-2 text-warning"></i>à¸«à¸¥à¸±à¸à¸ªà¸³à¸„à¸±à¸: à¸„à¸£à¸¹à¸—à¸µà¹ˆà¸¡à¸µà¸„à¸°à¹à¸™à¸™à¸™à¹‰à¸­à¸¢à¸—à¸µà¹ˆà¸ªà¸¸à¸”à¸ˆà¸°à¹„à¸”à¹‰à¸£à¸±à¸šà¹‚à¸­à¸à¸²à¸ªà¸­à¸­à¸à¸‡à¸²à¸™à¸à¹ˆà¸­à¸™ à¹€à¸žà¸·à¹ˆà¸­à¸„à¸§à¸²à¸¡à¹€à¸›à¹‡à¸™à¸˜à¸£à¸£à¸¡à¹ƒà¸™à¸à¸²à¸£à¸à¸£à¸°à¸ˆà¸²à¸¢à¸ à¸²à¸£à¸°à¸‡à¸²à¸™
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- â•â•â•â•â• EVENTS VIEW â•â•â•â•â• -->
+                <div id="events-view" class="view d-none animate-fade-in">
+                    <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+                        <div class="view-header mb-0">
+                            <div class="view-title">à¸ˆà¸±à¸”à¸à¸²à¸£à¸­à¸­à¸à¸‡à¸²à¸™</div>
+                            <div class="view-subtitle">à¸£à¸²à¸¢à¸à¸²à¸£à¸‡à¸²à¸™à¸­à¸­à¸à¹€à¸§à¸£à¹à¸¥à¸°à¸ à¸²à¸£à¸à¸´à¸ˆà¸•à¹ˆà¸²à¸‡à¹†</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn-rb btn-rb-ghost" onclick="window.print()"><i class="fas fa-print"></i> à¸žà¸´à¸¡à¸žà¹Œ</button>
+                            <button class="btn-rb btn-rb-red admin-only" onclick="openEventModal()"><i class="fas fa-plus"></i> à¹€à¸žà¸´à¹ˆà¸¡à¸‡à¸²à¸™à¹ƒà¸«à¸¡à¹ˆ</button>
+                        </div>
+                    </div>
+                    <div id="events-cards" class="row g-3"></div>
+                </div>
+
+                <!-- â•â•â•â•â• TRAININGS VIEW â•â•â•â•â• -->
+                <div id="trainings-view" class="view d-none animate-fade-in">
+                    <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+                        <div class="view-header mb-0">
+                            <div class="view-title">à¸ˆà¸±à¸”à¸à¸²à¸£à¸­à¸šà¸£à¸¡</div>
+                            <div class="view-subtitle">à¸£à¸²à¸¢à¸à¸²à¸£à¸‡à¸²à¸™à¸­à¸šà¸£à¸¡à¹à¸¥à¸°à¸žà¸±à¸’à¸™à¸²à¸šà¸¸à¸„à¸¥à¸²à¸à¸£</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn-rb btn-rb-ghost" onclick="window.print()"><i class="fas fa-print"></i> à¸žà¸´à¸¡à¸žà¹Œ</button>
+                            <button class="btn-rb btn-rb-red admin-only" onclick="openTrainingModal()"><i class="fas fa-plus"></i> à¹€à¸žà¸´à¹ˆà¸¡à¸­à¸šà¸£à¸¡à¹ƒà¸«à¸¡à¹ˆ</button>
+                        </div>
+                    </div>
+                    <div id="trainings-cards" class="row g-3"></div>
+                </div>
+
+                <!-- â•â•â•â•â• TEACHERS VIEW â•â•â•â•â• -->
+                <div id="teachers-view" class="view d-none animate-fade-in">
+                    <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+                        <div class="view-header mb-0">
+                            <div class="view-title">à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­à¸šà¸¸à¸„à¸¥à¸²à¸à¸£</div>
+                            <div class="view-subtitle">à¸ˆà¸±à¸”à¸¥à¸³à¸”à¸±à¸šà¸•à¸²à¸¡à¸„à¸´à¸§à¸—à¸µà¹ˆà¸„à¸§à¸£à¸­à¸­à¸à¸‡à¸²à¸™</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn-rb btn-rb-ghost admin-only" onclick="reconcileScores()">
+                                <i class="fas fa-sync-alt"></i> à¸„à¸³à¸™à¸§à¸“à¸„à¸°à¹à¸™à¸™à¹ƒà¸«à¸¡à¹ˆ
+                            </button>
+                            <button class="btn-rb btn-rb-ghost" onclick="window.print()"><i class="fas fa-print"></i> à¸žà¸´à¸¡à¸žà¹Œ</button>
+                            <button class="btn-rb btn-rb-red admin-only" onclick="openTeacherModal()"><i class="fas fa-user-plus"></i> à¹€à¸žà¸´à¹ˆà¸¡à¸„à¸£à¸¹</button>
+                        </div>
+                    </div>
+                    <div class="card-flat overflow-hidden">
+                        <div class="table-responsive">
+                            <table class="table-rb w-100">
+                                <thead>
+                                    <tr>
+                                        <th style="width:40px;">#</th>
+                                        <th>à¸Šà¸·à¹ˆà¸­-à¸™à¸²à¸¡à¸ªà¸à¸¸à¸¥</th>
+                                        <th class="text-center">à¸„à¸´à¸§à¸­à¸­à¸à¸‡à¸²à¸™</th>
+                                        <th class="text-center">à¸„à¸´à¸§à¸­à¸šà¸£à¸¡</th>
+                                        <th class="text-center">à¸£à¸§à¸¡à¸‡à¸²à¸™</th>
+                                        <th class="text-end admin-only">à¸ˆà¸±à¸”à¸à¸²à¸£</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teachers-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- â•â•â•â•â• HISTORY VIEW â•â•â•â•â• -->
+                <div id="history-view" class="view d-none animate-fade-in">
+                    <div class="view-header">
+                        <div class="view-title">à¸šà¸±à¸™à¸—à¸¶à¸à¹à¸¥à¸°à¸›à¸£à¸°à¸§à¸±à¸•à¸´</div>
+                        <div class="view-subtitle">à¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸à¸²à¸£à¸­à¸­à¸à¸‡à¸²à¸™à¹à¸¥à¸°à¸à¸²à¸£à¹à¸—à¸™à¸‡à¸²à¸™</div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="card-flat">
+                                <div class="card-header-flat">
+                                    <h6 class="mb-0 fw-bold">à¸šà¸±à¸™à¸—à¸¶à¸à¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¸¥à¹ˆà¸²à¸ªà¸¸à¸”</h6>
+                                </div>
+                                <div class="card-body-flat">
+                                    <div id="activity-log" class="small"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card-flat">
+                                <div class="card-header-flat">
+                                    <h6 class="mb-0 fw-bold">à¸ªà¸£à¸¸à¸›à¸ªà¸–à¸´à¸•à¸´à¸à¸²à¸£à¹à¸—à¸™à¸‡à¸²à¸™</h6>
+                                </div>
+                                <div class="card-body-flat">
+                                    <div id="substitution-stats"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /page-content -->
+        </main><!-- /main-content -->
+
+        <!-- Bottom Navigation for Mobile -->
+        <nav id="bottom-nav" class="d-md-none">
+            <a href="#" class="nav-item active" onclick="showView('dashboard'); return false;">
+                <i class="fas fa-home"></i>
+                <span>à¸«à¸™à¹‰à¸²à¸«à¸¥à¸±à¸</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showView('events'); return false;">
+                <i class="fas fa-calendar-alt"></i>
+                <span>à¸­à¸­à¸à¸‡à¸²à¸™</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showView('trainings'); return false;">
+                <i class="fas fa-graduation-cap"></i>
+                <span>à¸­à¸šà¸£à¸¡</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showView('teachers'); return false;">
+                <i class="fas fa-users"></i>
+                <span>à¸šà¸¸à¸„à¸¥à¸²à¸à¸£</span>
+            </a>
+        </nav>
+    </div><!-- /app-shell -->
+
+    <!-- â•â•â•â•â• MODAL â•â•â•â•â• -->
+    <div class="modal fade" id="universalModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="modalTitle">à¸‚à¹‰à¸­à¸¡à¸¹à¸¥</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+                <div class="modal-footer" id="modalFooter"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script>
+/**
+ * API & Data Synchronization Layer
+ */
+
+window.firebaseAppConfig = window.firebaseAppConfig || {
+    apiKey: "AIzaSyDv--hw2BWKE-NTFrCMpTNz9LEzGK8l5PE",
+    authDomain: "thaigogo-e9112.firebaseapp.com",
+    databaseURL: "https://thaigogo-e9112-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "thaigogo-e9112",
+    storageBucket: "thaigogo-e9112.firebasestorage.app",
+    messagingSenderId: "820257616141",
+    appId: "1:820257616141:web:c92cf50ae5e05491fb4044",
+    measurementId: "G-4FX435MNDC"
+};
+
+window.firebaseReadyPromise = window.firebaseReadyPromise || new Promise((resolve, reject) => {
+    window.__resolveFirebaseReady = resolve;
+    window.__rejectFirebaseReady = reject;
+});
+
+window.notifyFirebaseReady = function (app, database, helpers) {
+    window.firebaseApp = app;
+    window.firebaseDatabase = database;
+    if (helpers) {
+        window.firebaseDbApi = helpers;
+    }
+    if (typeof window.__resolveFirebaseReady === 'function') {
+        window.__resolveFirebaseReady({ app, database });
+        window.__resolveFirebaseReady = null;
+    }
+};
+
+async function firebaseFetch(path, options = {}) {
+    if (!canUseDirectFirebase()) {
+        throw new Error('Firebase database is not ready');
+    }
+
+    const helpers = window.firebaseDbApi;
+    const method = (options.method || 'GET').toUpperCase();
+
+    if (method === 'GET') {
+        return helpers.get(path);
+    }
+
+    let payload = options.body;
+    if (typeof payload === 'string') {
+        try {
+            payload = JSON.parse(payload);
+        } catch (error) {
+            console.warn('Unable to parse Firebase payload string, sending raw value.');
+        }
+    }
+
+    if (method === 'PUT') return helpers.put(path, payload);
+    if (method === 'PATCH') return helpers.patch(path, payload);
+
+    throw new Error(`Unsupported Firebase method: ${method}`);
+}
+
+function canUseDirectFirebase() {
+    return !!(window.firebaseDatabase && window.firebaseDbApi && typeof window.firebaseDbApi.get === 'function');
+}
+
+async function persistAllData() {
+    if (!canUseDirectFirebase()) return Promise.resolve();
+
+    const payload = {
+        config: window.systemConfig,
+        teachers: window.teachers,
+        events: window.events,
+        trainings: window.trainings,
+        activityLog: window.activityLog
+    };
+
+    const tasks = Object.entries(payload).map(([key, value]) => 
+        firebaseFetch(key, {
+            method: 'PUT',
+            body: JSON.stringify(value)
+        })
+    );
+
+    try {
+        await Promise.all(tasks);
+        window.firebaseWriteErrorNotified = false;
+    } catch (error) {
+        console.error('Firebase Save Error:', error);
+        if (typeof showFirebaseStatus === 'function') {
+            showFirebaseStatus('warning', 'à¹„à¸¡à¹ˆà¸ªà¸²à¸¡à¸²à¸£à¸–à¸‹à¸´à¸‡à¸„à¹Œà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹„à¸›à¸¢à¸±à¸‡à¸„à¸¥à¸²à¸§à¸”à¹Œà¹„à¸”à¹‰à¹ƒà¸™à¸‚à¸“à¸°à¸™à¸µà¹‰', true);
+        }
+    }
+}
+
+async function fetchInitialDataDirect() {
+    const keys = ['config', 'teachers', 'events', 'trainings', 'activityLog'];
+    const results = await Promise.all(keys.map(key => firebaseFetch(key)));
+    
+    return {
+        config: results[0] || {},
+        teachers: normalizeFirebaseList(results[1]),
+        events: normalizeFirebaseList(results[2]),
+        trainings: normalizeFirebaseList(results[3]),
+        activityLog: normalizeFirebaseList(results[4])
+    };
+}
+
+function normalizeFirebaseList(value) {
+    if (Array.isArray(value)) return value.filter(item => item !== null);
+    if (value && typeof value === 'object') {
+        return Object.keys(value)
+            .sort((a, b) => {
+                const numA = Number(a), numB = Number(b);
+                return (!isNaN(numA) && !isNaN(numB)) ? numA - numB : a.localeCompare(b);
+            })
+            .map(key => value[key]);
+    }
+    return [];
+}
+
+</script>
+    <script>
+/**
+ * UI Rendering â€” Red Broadcast Design System
+ * Fixed: undefined fields, new IDs, sidebar toggle
+ */
+
+/* â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function getItemName(item) {
+    return item.title || item.eventName || item.trainingName || '(à¹„à¸¡à¹ˆà¸¡à¸µà¸Šà¸·à¹ˆà¸­)';
+}
+
+function getItemId(item) {
+    return item.eventId || item.trainingId || null;
+}
+
+/* â”€â”€â”€ Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+const VIEW_TITLES = {
+    dashboard: 'à¸«à¸™à¹‰à¸²à¸«à¸¥à¸±à¸',
+    events:    'à¸ˆà¸±à¸”à¸à¸²à¸£à¸­à¸­à¸à¸‡à¸²à¸™',
+    trainings: 'à¸ˆà¸±à¸”à¸à¸²à¸£à¸­à¸šà¸£à¸¡',
+    teachers:  'à¸šà¸¸à¸„à¸¥à¸²à¸à¸£',
+    history:   'à¸šà¸±à¸™à¸—à¸¶à¸à¹à¸¥à¸°à¸›à¸£à¸°à¸§à¸±à¸•à¸´',
+};
+
+function showView(viewName) {
+    document.querySelectorAll('.view').forEach(v => v.classList.add('d-none'));
+    const target = document.getElementById(`${viewName}-view`);
+    if (target) { target.classList.remove('d-none'); target.classList.add('animate-fade-in'); }
+
+    document.querySelectorAll('.nav-link-custom').forEach(l => {
+        l.classList.toggle('active', l.getAttribute('data-view') === viewName);
+    });
+
+    // Update bottom nav active state
+    document.querySelectorAll('#bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+    const bottomNavLink = document.querySelector(`#bottom-nav .nav-item[onclick*="${viewName}"]`);
+    if (bottomNavLink) bottomNavLink.classList.add('active');
+
+    const titleEl = document.getElementById('top-bar-title');
+    if (titleEl) titleEl.textContent = VIEW_TITLES[viewName] || viewName;
+
+    if (viewName === 'dashboard') renderDashboard();
+    if (viewName === 'events')    renderQueueCards('duty', 'events-cards');
+    if (viewName === 'trainings') renderQueueCards('training', 'trainings-cards');
+    if (viewName === 'teachers')  renderTeachersTable();
+    if (viewName === 'history')   renderHistory();
+
+    // Close sidebar on mobile
+    if (window.innerWidth <= 991) closeSidebar();
+}
+
+/* â”€â”€â”€ Sidebar Toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (!sidebar) return;
+    if (window.innerWidth <= 991) {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+    }
+}
+
+function closeSidebar() {
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('sidebar-overlay')?.classList.remove('show');
+}
+
+/* â”€â”€â”€ Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function renderDashboard() {
+    const totalD   = window.events.length;
+    const totalT   = window.trainings.length;
+    const pendingD = window.events.filter(e => e.status === 'pending').length;
+    const pendingT = window.trainings.filter(e => e.status === 'pending').length;
+    const assignedD= window.events.filter(e => e.status === 'assigned').length;
+    const assignedT= window.trainings.filter(e => e.status === 'assigned').length;
+
+    setText('stat-total',    totalD + totalT);
+    setText('stat-assigned', assignedD + assignedT);
+    setText('stat-pending',  pendingD + pendingT);
+    setText('stat-teachers', window.teachers.length);
+
+    renderLatestAssignedJob();
+    renderUrgentEvents();
+    renderNextQueue();
+    renderTeacherQueueStrips(); // New
+    renderDashboardStats();
+}
+
+function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+}
+
+function renderLatestAssignedJob() {
+    const container = document.getElementById('latest-assigned-job');
+    if (!container) return;
+
+    const latestDuty = window.events
+        .filter(e => e.status === 'assigned')
+        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    
+    const latestTraining = window.trainings
+        .filter(e => e.status === 'assigned')
+        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+
+    if (!latestDuty && !latestTraining) {
+        container.innerHTML = '<div class="text-center py-4 text-muted">à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸‡à¸²à¸™à¸—à¸µà¹ˆà¸ˆà¸±à¸”à¸„à¸´à¸§à¹à¸¥à¹‰à¸§</div>';
+        return;
+    }
+
+    let html = '<div class="row g-3">';
+    
+    const renderSubCard = (job, label, icon, isDuty) => {
+        if (!job) return `
+            <div class="col-md-6">
+                <div class="h-100 p-4 border border-dashed rounded d-flex align-items-center justify-content-center text-muted extra-small">
+                    à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸‡à¸²à¸™${label}à¸¥à¹ˆà¸²à¸ªà¸¸à¸”
+                </div>
+            </div>`;
+        
+        const teachers = (job.assignedTeachers || []).map(id => getTeacherById(id)).filter(Boolean);
+        const accentColor = isDuty ? 'var(--primary)' : 'var(--secondary)';
+
+        return `
+        <div class="col-md-6">
+            <div class="p-3 rounded h-100 bg-white" style="border: 1px solid var(--border-light); border-left: 5px solid ${accentColor} !important;">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                         style="width:44px;height:44px;background:#F8F8F8;color:${accentColor};flex-shrink:0;">
+                        <i class="fas ${icon} fa-lg"></i>
+                    </div>
+                    <div class="min-width-0">
+                        <div class="extra-small fw-bold text-muted text-uppercase mb-1">${label}à¸¥à¹ˆà¸²à¸ªà¸¸à¸”</div>
+                        <div class="fw-bold text-truncate" title="${getItemName(job)}">${getItemName(job)}</div>
+                    </div>
+                </div>
+                <div class="extra-small text-muted mb-3">
+                    <div class="mb-1"><i class="fas fa-calendar-day me-2"></i>${formatDateThai(job.date)}</div>
+                    <div class="mb-1"><i class="fas fa-map-marker-alt me-2 text-truncate d-inline-block" style="max-width:200px;"></i> ${job.location || '-'}</div>
+                </div>
+                <div class="d-flex flex-wrap gap-1">
+                    ${teachers.map(t => `
+                        <div style="width:28px;height:28px;" title="${t.name}">
+                            ${createTeacherAvatar(t)}
+                        </div>
+                    `).join('') || '<span class="extra-small text-muted">à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¸£à¸°à¸šà¸¸à¸„à¸™</span>'}
+                </div>
+            </div>
+        </div>`;
+    };
+
+    html += renderSubCard(latestDuty, 'à¸­à¸­à¸à¹€à¸§à¸£', 'fa-calendar-check', true);
+    html += renderSubCard(latestTraining, 'à¸­à¸šà¸£à¸¡', 'fa-graduation-cap', false);
+    html += '</div>';
+
+    container.innerHTML = html;
+}
+
+function renderUrgentEvents() {
+    const container = document.getElementById('urgent-events-list');
+    if (!container) return;
+
+    const urgent = [
+        ...window.events.filter(e => e.status === 'pending').map(e => ({ ...e, _type: 'duty' })),
+        ...window.trainings.filter(e => e.status === 'pending').map(e => ({ ...e, _type: 'training' }))
+    ].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 6);
+
+    if (!urgent.length) {
+        container.innerHTML = '<div class="text-center py-4 text-muted small">à¹„à¸¡à¹ˆà¸¡à¸µà¸‡à¸²à¸™à¸—à¸µà¹ˆà¸•à¹‰à¸­à¸‡à¸ˆà¸±à¸”à¸„à¸´à¸§à¹€à¸£à¹ˆà¸‡à¸”à¹ˆà¸§à¸™ âœ“</div>';
+        return;
+    }
+
+    container.innerHTML = urgent.map((e, i) => `
+      <div class="urgent-row animate-fade-in" style="animation-delay:${i * 0.05}s">
+        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center text-warning" style="width:34px;height:34px;flex-shrink:0;">
+          <i class="fas fa-clock small"></i>
+        </div>
+        <div class="flex-grow-1 min-width-0">
+          <div class="fw-bold small text-truncate">${getItemName(e)}</div>
+          <div class="extra-small text-muted">${formatDateThai(e.date)} Â· ${e.location || '-'}</div>
+        </div>
+        <button class="btn-rb btn-rb-red btn-sm admin-only" onclick="openAutoAssignModal(${getItemId(e)}, '${e._type}')">à¸ˆà¸±à¸”à¸„à¸´à¸§</button>
+      </div>`).join('');
+}
+
+function renderNextQueue() {
+    const container = document.getElementById('next-teachers-queue');
+    if (!container) return;
+
+    const sorted = sortTeachers(window.teachers, 'combined').slice(0, 7);
+
+    if (!sorted.length) {
+        container.innerHTML = '<div class="text-center py-4 text-muted small">à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸šà¸¸à¸„à¸¥à¸²à¸à¸£</div>';
+        return;
+    }
+
+    container.innerHTML = sorted.map((t, i) => `
+      <div class="queue-teacher-row animate-fade-in" style="animation-delay:${i * 0.04}s">
+        <div class="queue-rank">${i + 1}</div>
+        <div style="width:40px;height:40px;">${createTeacherAvatar(t)}</div>
+        <div class="flex-grow-1 min-width-0">
+          <div class="fw-bold small text-truncate">${t.name}</div>
+          <div class="extra-small text-muted text-truncate">${t.position || '-'}</div>
+        </div>
+        <div class="queue-score">${getTeacherQueueScore(t,'duty') + getTeacherQueueScore(t,'training')}</div>
+      </div>`).join('');
+}
+
+function renderDashboardStats() {
+    // Vertical Bar Chart
+    const workloads = window.teachers.map(t => ({
+        name: t.name,
+        total: window.events.filter(e => e.assignedTeachers?.includes(t.teacherId)).length
+             + window.trainings.filter(e => e.assignedTeachers?.includes(t.teacherId)).length,
+        avatar: createTeacherAvatar(t),
+    })).sort((a, b) => b.total - a.total).slice(0, 5);
+
+    const maxVal = Math.max(...workloads.map(w => w.total), 1);
+    const chartEl = document.getElementById('top-teachers-chart');
+    if (chartEl) {
+        if (!workloads.length || workloads.every(w => w.total === 0)) {
+            chartEl.innerHTML = '<div class="text-center w-100 text-muted small py-4">à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸à¸²à¸£à¸­à¸­à¸à¸‡à¸²à¸™</div>';
+        } else {
+            chartEl.innerHTML = workloads.map(w => {
+                const h = Math.round((w.total / maxVal) * 100);
+                return `<div class="vertical-bar-group">
+                  <span class="extra-small fw-bold text-muted">${w.total}</span>
+                  <div class="vertical-bar" style="height:${h}%;"></div>
+                  <div style="width:36px;height:36px;">${w.avatar}</div>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    // Doughnut Chart
+    const totalD = window.events.length;
+    const totalT = window.trainings.length;
+    const total  = totalD + totalT || 1;
+    const pctD   = Math.round((totalD / total) * 100);
+    const pctT   = 100 - pctD;
+
+    const doughnut = document.getElementById('stat-doughnut');
+    if (doughnut) {
+        doughnut.style.background = `conic-gradient(var(--primary) 0% ${pctD}%, var(--secondary) ${pctD}% 100%)`;
+    }
+    setText('stat-doughnut-total', totalD + totalT);
+    setText('stat-duty-pct',     `${pctD}%`);
+    setText('stat-training-pct', `${pctT}%`);
+}
+
+function renderTeacherQueueStrips() {
+    const dutyStrip = document.getElementById('duty-queue-strip');
+    const trainingStrip = document.getElementById('training-queue-strip');
+    if (!dutyStrip || !trainingStrip) return;
+
+    const teachers = window.teachers || [];
+    
+    // Duty Queue
+    const dutySorted = sortTeachers(teachers, 'duty');
+    dutyStrip.innerHTML = dutySorted.map((t, i) => `
+        <div class="teacher-queue-card ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})">
+            <div class="rank-badge">${i + 1}</div>
+            <div style="width:32px;height:32px;">${createTeacherAvatar(t)}</div>
+            <div class="info">
+                <div class="name">${t.name}</div>
+                <div class="score"><span class="score-label">à¸„à¸°à¹à¸™à¸™:</span> ${getTeacherQueueScore(t, 'duty')}</div>
+            </div>
+        </div>
+    `).join('');
+
+    // Training Queue
+    const trainingSorted = sortTeachers(teachers, 'training');
+    trainingStrip.innerHTML = trainingSorted.map((t, i) => `
+        <div class="teacher-queue-card ${i < 3 ? 'top-rank' : ''}" onclick="showTeacherDetail(${t.teacherId})" style="border-left: 4px solid var(--secondary);">
+            <div class="rank-badge">${i + 1}</div>
+            <div style="width:32px;height:32px;">${createTeacherAvatar(t)}</div>
+            <div class="info">
+                <div class="name">${t.name}</div>
+                <div class="score"><span class="score-label">à¸„à¸°à¹à¸™à¸™:</span> ${getTeacherQueueScore(t, 'training')}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+/* â”€â”€â”€ Event / Training Cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function renderQueueCards(type, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const list = type === 'training' ? window.trainings : window.events;
+
+    if (!list.length) {
+        container.innerHTML = '<div class="col-12 text-center py-5 text-muted">à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸‚à¹‰à¸­à¸¡à¸¹à¸¥</div>';
+        return;
+    }
+
+    container.innerHTML = list.map(item => {
+        const name = getItemName(item);
+        const id   = getItemId(item);
+        const statusClass = item.status === 'assigned' ? 'badge-assigned' : item.status === 'completed' ? 'badge-completed' : 'badge-pending';
+        const statusText  = item.status === 'assigned' ? 'à¸ˆà¸±à¸”à¸„à¸´à¸§à¹à¸¥à¹‰à¸§' : item.status === 'completed' ? 'à¸ªà¸³à¹€à¸£à¹‡à¸ˆ' : 'à¸à¸³à¸¥à¸±à¸‡à¸ˆà¸±à¸”à¸„à¸´à¸§';
+        
+        const assignedIds = item.assignedTeachers || [];
+        const teachers = assignedIds.map(tid => getTeacherById(tid)).filter(Boolean);
+        const isSpecial = !!item.isSpecial;
+
+        return `
+        <div class="col-12 col-lg-6 col-xl-4">
+          <div class="event-card-detailed animate-fade-in ${isSpecial ? 'special-event' : ''}">
+            <div class="card-top">
+              <div class="card-status-row">
+                <span class="badge-status ${statusClass}" style="font-size:10px;">à¸›à¸£à¸°à¹€à¸ à¸—à¸‡à¸²à¸™: ${type === 'training' ? 'à¸­à¸šà¸£à¸¡' : 'à¸­à¸­à¸à¹€à¸§à¸£'}</span>
+                ${isSpecial ? '<span class="badge-status bg-warning text-dark"><i class="fas fa-star me-1"></i>à¸‡à¸²à¸™à¸ªà¸³à¸„à¸±à¸à¸žà¸´à¹€à¸¨à¸©</span>' : ''}
+                <span class="badge-status ${statusClass}">${statusText}</span>
+              </div>
+              <div class="card-title-main">${name}</div>
+              <div class="info-item"><i class="fas fa-calendar-alt"></i> ${formatDateThai(item.date)}</div>
+              <div class="info-item"><i class="fas fa-clock"></i> ${item.time || 'à¹„à¸¡à¹ˆà¸£à¸°à¸šà¸¸à¹€à¸§à¸¥à¸²'}</div>
+              <div class="info-item"><i class="fas fa-map-marker-alt"></i> ${item.location || 'à¹„à¸¡à¹ˆà¸£à¸°à¸šà¸¸à¸ªà¸–à¸²à¸™à¸—à¸µà¹ˆ'}</div>
+            </div>
+            <div class="assigned-section">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="section-label">à¸„à¸£à¸¹à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸¡à¸­à¸šà¸«à¸¡à¸²à¸¢</div>
+                <div class="extra-small fw-bold text-muted">${teachers.length} / ${item.requiredQuota || 1} à¸„à¸™</div>
+              </div>
+              <div class="teacher-list-small">
+                ${teachers.map(t => `
+                  <div class="teacher-item-mini" onclick="showTeacherDetail(${t.teacherId})">
+                    <div style="width:24px;height:24px;">${createTeacherAvatar(t)}</div>
+                    <div class="teacher-name-mini">${t.name}</div>
+                  </div>
+                `).join('') || '<div class="text-muted extra-small py-2">à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸à¸²à¸£à¸ˆà¸±à¸”à¸„à¸´à¸§</div>'}
+              </div>
+            </div>
+            <div class="card-bottom-actions admin-only">
+              <div class="d-flex gap-1 w-100 mb-1">
+                <button class="btn-edit flex-grow-1" onclick="editItem(${id}, '${type}')">
+                  <i class="fas fa-edit"></i> à¹à¸à¹‰à¹„à¸‚
+                </button>
+                <button class="btn-assign flex-grow-1" onclick="openAutoAssignModal(${id}, '${type}')">
+                  <i class="fas fa-user-plus"></i> à¸ˆà¸±à¸”à¸„à¸´à¸§
+                </button>
+              </div>
+              <div class="d-flex gap-1 w-100">
+                <button class="btn-rb btn-rb-ghost btn-sm flex-grow-1 py-1" style="font-size:11px;" onclick="openSubstitutionModal(${id}, '${type}')" ${teachers.length === 0 ? 'disabled' : ''}>
+                  <i class="fas fa-exchange-alt"></i> à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸•à¸±à¸§
+                </button>
+                <button class="btn-delete flex-grow-1" onclick="deleteItem(${id}, '${type}')">
+                  <i class="fas fa-trash-alt"></i> à¸¥à¸š
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+}
+
+function deleteItem(id, type) {
+    if (!confirm('à¸„à¸¸à¸“à¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¸¥à¸šà¸£à¸²à¸¢à¸à¸²à¸£à¸™à¸µà¹‰à¹ƒà¸Šà¹ˆà¸«à¸£à¸·à¸­à¹„à¸¡à¹ˆ?')) return;
+    
+    if (type === 'training') {
+        window.trainings = window.trainings.filter(t => t.trainingId !== id);
+    } else {
+        window.events = window.events.filter(e => e.eventId !== id);
+    }
+    
+    persistAllData();
+    renderQueueCards(type, type === 'training' ? 'trainings-cards' : 'events-cards');
+    renderDashboard();
+    showFirebaseStatus('success', 'à¸¥à¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹€à¸£à¸µà¸¢à¸šà¸£à¹‰à¸­à¸¢à¹à¸¥à¹‰à¸§');
+}
+
+/* â”€â”€â”€ Teachers Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function renderTeachersTable() {
+    const tbody = document.getElementById('teachers-table-body');
+    if (!tbody) return;
+    const sorted = sortTeachers(window.teachers, 'duty');
+
+    if (!sorted.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-muted">à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸šà¸¸à¸„à¸¥à¸²à¸à¸£</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = sorted.map((t, i) => `
+      <tr onclick="showTeacherDetail(${t.teacherId})" style="cursor:pointer;">
+        <td class="text-muted d-none d-md-table-cell">${i + 1}</td>
+        <td data-label="à¸Šà¸·à¹ˆà¸­-à¸™à¸²à¸¡à¸ªà¸à¸¸à¸¥">
+          <div class="d-flex align-items-center gap-3">
+            <div style="width:44px;height:44px;">${createTeacherAvatar(t)}</div>
+            <div>
+              <div class="fw-bold">${t.name}</div>
+              <div class="extra-small text-muted">${t.position || '-'}</div>
+            </div>
+          </div>
+        </td>
+        <td data-label="à¸„à¸´à¸§à¸­à¸­à¸à¸‡à¸²à¸™" class="text-center fw-bold text-danger">${getTeacherQueueScore(t,'duty')}</td>
+        <td data-label="à¸„à¸´à¸§à¸­à¸šà¸£à¸¡" class="text-center fw-bold" style="color:var(--secondary)">${getTeacherQueueScore(t,'training')}</td>
+        <td data-label="à¸£à¸§à¸¡à¸‡à¸²à¸™" class="text-center text-muted">${t.totalDuties || 0} à¸„à¸£à¸±à¹‰à¸‡</td>
+        <td data-label="à¸ˆà¸±à¸”à¸à¸²à¸£" class="text-end admin-only">
+          <button class="btn-rb btn-rb-ghost btn-sm" onclick="editTeacher(${t.teacherId});event.stopPropagation();">
+            <i class="fas fa-edit"></i> à¹à¸à¹‰à¹„à¸‚
+          </button>
+        </td>
+      </tr>`).join('');
+}
+
+/* â”€â”€â”€ History â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function renderHistory() {
+    const logEl = document.getElementById('activity-log');
+    const log = window.activityLog || [];
+
+    if (logEl) {
+        if (!log.length) {
+            logEl.innerHTML = '<div class="text-muted text-center py-4">à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸à¸´à¸ˆà¸à¸£à¸£à¸¡</div>';
+        } else {
+            logEl.innerHTML = [...log].reverse().slice(0, 30).map(entry => `
+              <div class="d-flex gap-2 py-2 border-bottom">
+                <div class="text-muted extra-small" style="min-width:120px;">${formatDateThai(entry.timestamp) || '-'}</div>
+                <div class="small">${entry.message || JSON.stringify(entry)}</div>
+              </div>`).join('');
+        }
+    }
+
+    const statsEl = document.getElementById('substitution-stats');
+    if (statsEl) {
+        const subLogs = log.filter(e => e.type === 'substitution');
+        if (!subLogs.length) {
+            statsEl.innerHTML = '<div class="text-muted text-center py-4">à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸à¸²à¸£à¹à¸—à¸™à¸‡à¸²à¸™</div>';
+        } else {
+            const counts = {};
+            subLogs.forEach(e => { counts[e.teacherName] = (counts[e.teacherName] || 0) + 1; });
+            statsEl.innerHTML = Object.entries(counts).sort((a,b) => b[1]-a[1]).map(([name, c]) => `
+              <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="small fw-bold">${name}</span>
+                <span class="badge-status badge-assigned">${c} à¸„à¸£à¸±à¹‰à¸‡</span>
+              </div>`).join('');
+        }
+    }
+}
+
+/* â”€â”€â”€ Status Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function showFirebaseStatus(type, message, sticky = false) {
+    const toast = document.getElementById('status-toast');
+    if (!toast) return;
+    const cls = type === 'error' ? 'danger' : type === 'success' ? 'success' : 'warning';
+    toast.className = `alert alert-${cls} mb-0`;
+    toast.innerHTML = `<i class="fas fa-info-circle me-2"></i>${message}`;
+    toast.style.display = 'block';
+    if (!sticky) setTimeout(() => { toast.style.display = 'none'; }, 4000);
+}
+
+/* â”€â”€â”€ Teacher Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function showTeacherDetail(teacherId) {
+    const t = getTeacherById(teacherId);
+    if (!t) return;
+
+    const myEvents = window.events.filter(e => e.assignedTeachers?.includes(teacherId));
+    const myTrainings = window.trainings.filter(e => e.assignedTeachers?.includes(teacherId));
+
+    const body = `
+      <div class="text-center mb-4">
+        <div class="mx-auto mb-3" style="width:80px;height:80px;">${createTeacherAvatar(t, true)}</div>
+        <h4 class="fw-bold">${t.name}</h4>
+        <div class="text-muted">${t.position || '-'}</div>
+      </div>
+      <div class="row g-3 mb-4">
+        <div class="col-4 text-center">
+          <div class="stat-card">
+            <div class="stat-label">à¸„à¸´à¸§à¸­à¸­à¸à¸‡à¸²à¸™</div>
+            <div class="stat-value text-danger">${getTeacherQueueScore(t,'duty')}</div>
+          </div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="stat-card">
+            <div class="stat-label">à¸„à¸´à¸§à¸­à¸šà¸£à¸¡</div>
+            <div class="stat-value" style="color:var(--secondary)">${getTeacherQueueScore(t,'training')}</div>
+          </div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="stat-card">
+            <div class="stat-label">à¸£à¸§à¸¡à¸‡à¸²à¸™</div>
+            <div class="stat-value">${t.totalDuties || 0}</div>
+          </div>
+        </div>
+      </div>
+      <h6 class="fw-bold mb-2">à¸‡à¸²à¸™à¸­à¸­à¸à¹€à¸§à¸£à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸¡à¸­à¸šà¸«à¸¡à¸²à¸¢ (${myEvents.length} à¸‡à¸²à¸™)</h6>
+      ${myEvents.slice(0, 5).map(e => `
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom small">
+          <div class="fw-bold">${getItemName(e)}</div>
+          <div class="text-muted">${formatDateThai(e.date)}</div>
+        </div>`).join('') || '<div class="text-muted small py-2">à¹„à¸¡à¹ˆà¸¡à¸µà¸‡à¸²à¸™à¸­à¸­à¸à¹€à¸§à¸£</div>'}
+      <h6 class="fw-bold mt-3 mb-2">à¸‡à¸²à¸™à¸­à¸šà¸£à¸¡à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸¡à¸­à¸šà¸«à¸¡à¸²à¸¢ (${myTrainings.length} à¸‡à¸²à¸™)</h6>
+      ${myTrainings.slice(0, 5).map(e => `
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom small">
+          <div class="fw-bold">${getItemName(e)}</div>
+          <div class="text-muted">${formatDateThai(e.date)}</div>
+        </div>`).join('') || '<div class="text-muted small py-2">à¹„à¸¡à¹ˆà¸¡à¸µà¸‡à¸²à¸™à¸­à¸šà¸£à¸¡</div>'}
+        
+      <h6 class="fw-bold mt-3 mb-2">à¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸„à¸°à¹à¸™à¸™à¸¥à¹ˆà¸²à¸ªà¸¸à¸”</h6>
+      <div class="activity-history-small">
+        ${(window.activityLog || []).filter(log => log.teacherId === teacherId).reverse().slice(0, 5).map(log => `
+          <div class="d-flex justify-content-between py-1 border-bottom extra-small">
+            <span>${log.message}</span>
+            <span class="text-muted">${formatDateThai(log.timestamp)}</span>
+          </div>
+        `).join('') || '<div class="text-muted extra-small py-2">à¹„à¸¡à¹ˆà¸¡à¸µà¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸à¸´à¸ˆà¸à¸£à¸£à¸¡</div>'}
+      </div>`;
+
+    document.getElementById('modalTitle').textContent = t.name;
+    document.getElementById('modalBody').innerHTML = body;
+    new bootstrap.Modal(document.getElementById('universalModal')).show();
+}
+
+/* â”€â”€â”€ Modal Helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function showModal(title, bodyHtml, footerHtml) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = bodyHtml;
+    const foot = document.getElementById('modalFooter');
+    if (foot) foot.innerHTML = footerHtml || '';
+    new bootstrap.Modal(document.getElementById('universalModal')).show();
+}
+function hideModal() {
+    const m = bootstrap.Modal.getInstance(document.getElementById('universalModal'));
+    if (m) m.hide();
+}
+
+/* â”€â”€ Add/Edit Event â”€â”€ */
+function openEventModal(id) {
+    const ev = id ? window.events.find(e => e.eventId == id) : null;
+    showModal(ev ? 'à¹à¸à¹‰à¹„à¸‚à¸‡à¸²à¸™à¸­à¸­à¸à¹€à¸§à¸£' : 'à¹€à¸žà¸´à¹ˆà¸¡à¸‡à¸²à¸™à¸­à¸­à¸à¹€à¸§à¸£à¹ƒà¸«à¸¡à¹ˆ', `
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label fw-bold">à¸Šà¸·à¹ˆà¸­à¹‚à¸„à¸£à¸‡à¸à¸²à¸£ / à¸à¸´à¸ˆà¸à¸£à¸£à¸¡</label>
+          <input id="f-en" class="form-control" value="${ev ? getItemName(ev) : ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">à¸§à¸±à¸™à¸—à¸µà¹ˆ</label>
+          <input id="f-ed" type="date" class="form-control" value="${ev?.date || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">à¹€à¸§à¸¥à¸²</label>
+          <input id="f-et" class="form-control" placeholder="09:00-12:00" value="${ev?.time || ''}"></div>
+        <div class="col-12"><label class="form-label fw-bold">à¸ªà¸–à¸²à¸™à¸—à¸µà¹ˆ</label>
+          <input id="f-el" class="form-control" value="${ev?.location || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">à¸ˆà¸³à¸™à¸§à¸™à¸„à¸£à¸¹à¸—à¸µà¹ˆà¸•à¹‰à¸­à¸‡à¸à¸²à¸£</label>
+          <input id="f-eq" type="number" min="1" class="form-control" value="${ev?.requiredQuota || 1}"></div>
+        <div class="col-md-6 d-flex align-items-end">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="f-es" ${ev?.isSpecial ? 'checked' : ''}>
+            <label class="form-check-label fw-bold text-danger" for="f-es">à¸‡à¸²à¸™à¸ªà¸³à¸„à¸±à¸à¸žà¸´à¹€à¸¨à¸© (+20 à¸„à¸°à¹à¸™à¸™)</label>
+          </div>
+        </div>
+      </div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">à¸¢à¸à¹€à¸¥à¸´à¸</button>
+       <button class="btn btn-danger" onclick="saveEvent(${id || 'null'})">à¸šà¸±à¸™à¸—à¸¶à¸</button>`);
+}
+function saveEvent(id) {
+    const eventName = document.getElementById('f-en')?.value.trim();
+    if (!eventName) { alert('à¸à¸£à¸¸à¸“à¸²à¹ƒà¸ªà¹ˆà¸Šà¸·à¹ˆà¸­à¸à¸´à¸ˆà¸à¸£à¸£à¸¡'); return; }
+    const existing = id ? window.events.find(e => e.eventId == id) : null;
+    const isSpecial = document.getElementById('f-es')?.checked || false;
+    const data = { eventId: id || Date.now(), eventName, date: document.getElementById('f-ed')?.value,
+        time: document.getElementById('f-et')?.value, location: document.getElementById('f-el')?.value,
+        requiredQuota: parseInt(document.getElementById('f-eq')?.value) || 1,
+        isSpecial: isSpecial,
+        status: existing?.status || 'pending', assignedTeachers: existing?.assignedTeachers || [] };
+    if (id) { const i = window.events.findIndex(e => e.eventId == id); if (i >= 0) window.events[i] = data; }
+    else window.events.push(data);
+    persistAllData(); hideModal(); renderQueueCards('duty', 'events-cards');
+    showFirebaseStatus('success', 'à¸šà¸±à¸™à¸—à¸¶à¸à¸‡à¸²à¸™à¸ªà¸³à¹€à¸£à¹‡à¸ˆ');
+}
+function editItem(id, type) { type === 'training' ? openTrainingModal(id) : openEventModal(id); }
+
+/* â”€â”€ Add/Edit Training â”€â”€ */
+function openTrainingModal(id) {
+    const tr = id ? window.trainings.find(t => t.trainingId == id) : null;
+    showModal(tr ? 'à¹à¸à¹‰à¹„à¸‚à¸‡à¸²à¸™à¸­à¸šà¸£à¸¡' : 'à¹€à¸žà¸´à¹ˆà¸¡à¸‡à¸²à¸™à¸­à¸šà¸£à¸¡à¹ƒà¸«à¸¡à¹ˆ', `
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label fw-bold">à¸Šà¸·à¹ˆà¸­à¹‚à¸„à¸£à¸‡à¸à¸²à¸£ / à¸«à¸¥à¸±à¸à¸ªà¸¹à¸•à¸£</label>
+          <input id="f-tn" class="form-control" value="${tr ? getItemName(tr) : ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">à¸§à¸±à¸™à¸—à¸µà¹ˆ</label>
+          <input id="f-td" type="date" class="form-control" value="${tr?.date || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">à¹€à¸§à¸¥à¸²</label>
+          <input id="f-tt" class="form-control" placeholder="09:00-16:00" value="${tr?.time || ''}"></div>
+        <div class="col-12"><label class="form-label fw-bold">à¸ªà¸–à¸²à¸™à¸—à¸µà¹ˆ</label>
+          <input id="f-tl" class="form-control" value="${tr?.location || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">à¸ˆà¸³à¸™à¸§à¸™à¸„à¸£à¸¹à¸—à¸µà¹ˆà¸•à¹‰à¸­à¸‡à¸à¸²à¸£</label>
+          <input id="f-tq" type="number" min="1" class="form-control" value="${tr?.requiredQuota || 1}"></div>
+        <div class="col-md-6 d-flex align-items-end">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="f-ts" ${tr?.isSpecial ? 'checked' : ''}>
+            <label class="form-check-label fw-bold text-danger" for="f-ts">à¸‡à¸²à¸™à¸ªà¸³à¸„à¸±à¸à¸žà¸´à¹€à¸¨à¸© (+20 à¸„à¸°à¹à¸™à¸™)</label>
+          </div>
+        </div>
+      </div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">à¸¢à¸à¹€à¸¥à¸´à¸</button>
+       <button class="btn btn-danger" onclick="saveTraining(${id || 'null'})">à¸šà¸±à¸™à¸—à¸¶à¸</button>`);
+}
+function saveTraining(id) {
+    const trainingName = document.getElementById('f-tn')?.value.trim();
+    if (!trainingName) { alert('à¸à¸£à¸¸à¸“à¸²à¹ƒà¸ªà¹ˆà¸Šà¸·à¹ˆà¸­à¸à¸²à¸£à¸­à¸šà¸£à¸¡'); return; }
+    const existing = id ? window.trainings.find(t => t.trainingId == id) : null;
+    const isSpecial = document.getElementById('f-ts')?.checked || false;
+    const data = { trainingId: id || Date.now(), trainingName, date: document.getElementById('f-td')?.value,
+        time: document.getElementById('f-tt')?.value, location: document.getElementById('f-tl')?.value,
+        requiredQuota: parseInt(document.getElementById('f-tq')?.value) || 1,
+        isSpecial: isSpecial,
+        status: existing?.status || 'pending', assignedTeachers: existing?.assignedTeachers || [] };
+    if (id) { const i = window.trainings.findIndex(t => t.trainingId == id); if (i >= 0) window.trainings[i] = data; }
+    else window.trainings.push(data);
+    persistAllData(); hideModal(); renderQueueCards('training', 'trainings-cards');
+    showFirebaseStatus('success', 'à¸šà¸±à¸™à¸—à¸¶à¸à¸à¸²à¸£à¸­à¸šà¸£à¸¡à¸ªà¸³à¹€à¸£à¹‡à¸ˆ');
+}
+
+/* â”€â”€ Add/Edit Teacher â”€â”€ */
+function openTeacherModal(id) {
+    const t = id ? window.teachers.find(t => t.teacherId == id) : null;
+    showModal(t ? 'à¹à¸à¹‰à¹„à¸‚à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸„à¸£à¸¹' : 'à¹€à¸žà¸´à¹ˆà¸¡à¸„à¸£à¸¹à¹ƒà¸«à¸¡à¹ˆ', `
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label fw-bold">à¸Šà¸·à¹ˆà¸­-à¸™à¸²à¸¡à¸ªà¸à¸¸à¸¥</label>
+          <input id="f-rn" class="form-control" value="${t?.name || ''}"></div>
+        <div class="col-12"><label class="form-label fw-bold">à¸•à¸³à¹à¸«à¸™à¹ˆà¸‡</label>
+          <input id="f-rp" class="form-control" value="${t?.position || ''}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">à¸„à¸°à¹à¸™à¸™à¹€à¸£à¸´à¹ˆà¸¡à¸•à¹‰à¸™ (à¸­à¸­à¸à¸‡à¸²à¸™)</label>
+          <input id="f-rd" type="number" class="form-control" value="${t?.dutyQueueScore || 0}"></div>
+        <div class="col-md-6"><label class="form-label fw-bold">à¸„à¸°à¹à¸™à¸™à¹€à¸£à¸´à¹ˆà¸¡à¸•à¹‰à¸™ (à¸­à¸šà¸£à¸¡)</label>
+          <input id="f-rt" type="number" class="form-control" value="${t?.trainingQueueScore || 0}"></div>
+      </div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">à¸¢à¸à¹€à¸¥à¸´à¸</button>
+       <button class="btn btn-danger" onclick="saveTeacher(${id || 'null'})">à¸šà¸±à¸™à¸—à¸¶à¸</button>`);
+}
+function saveTeacher(id) {
+    const name = document.getElementById('f-rn')?.value.trim();
+    if (!name) { alert('à¸à¸£à¸¸à¸“à¸²à¹ƒà¸ªà¹ˆà¸Šà¸·à¹ˆà¸­à¸„à¸£à¸¹'); return; }
+    const existing = id ? window.teachers.find(t => t.teacherId == id) : null;
+    const data = { teacherId: id || Date.now(), name, position: document.getElementById('f-rp')?.value,
+        dutyQueueScore: parseInt(document.getElementById('f-rd')?.value) || 0,
+        trainingQueueScore: parseInt(document.getElementById('f-rt')?.value) || 0,
+        totalDuties: existing?.totalDuties || 0,
+        lastDutyDate: existing?.lastDutyDate || null,
+        lastTrainingDate: existing?.lastTrainingDate || null
+    };
+    if (id) { const i = window.teachers.findIndex(t => t.teacherId == id); if (i >= 0) window.teachers[i] = data; }
+    else window.teachers.push(data);
+    persistAllData(); hideModal(); renderTeachersTable();
+    showFirebaseStatus('success', 'à¸šà¸±à¸™à¸—à¸¶à¸à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸„à¸£à¸¹à¸ªà¸³à¹€à¸£à¹‡à¸ˆ');
+}
+function editTeacher(id) { openTeacherModal(id); }
+
+function reconcileScores() {
+    if (!confirm('à¸„à¸¸à¸“à¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¹ƒà¸«à¹‰à¸£à¸°à¸šà¸šà¸„à¸³à¸™à¸§à¸“à¸„à¸°à¹à¸™à¸™à¹ƒà¸«à¸¡à¹ˆà¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”à¸ˆà¸²à¸à¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸‡à¸²à¸™à¹ƒà¸Šà¹ˆà¸«à¸£à¸·à¸­à¹„à¸¡à¹ˆ? (à¸„à¸°à¹à¸™à¸™à¸—à¸µà¹ˆà¸žà¸´à¸¡à¸žà¹Œà¸¡à¸·à¸­à¹„à¸§à¹‰à¸­à¸²à¸ˆà¸«à¸²à¸¢à¹„à¸›)')) return;
+    
+    // 1. Reset all scores
+    window.teachers.forEach(t => {
+        t.dutyQueueScore = 0;
+        t.trainingQueueScore = 0;
+        t.totalDuties = 0;
+        t.lastDutyDate = null;
+        t.lastTrainingDate = null;
+    });
+
+    // 2. Process Events
+    window.events.forEach(ev => {
+        if (ev.status === 'assigned' || ev.status === 'completed') {
+            const points = ev.isSpecial ? 20 : 15;
+            (ev.assignedTeachers || []).forEach(tid => {
+                const t = getTeacherById(tid);
+                if (t) {
+                    t.dutyQueueScore = (t.dutyQueueScore || 0) + points;
+                    t.totalDuties = (t.totalDuties || 0) + 1;
+                    if (!t.lastDutyDate || ev.date > t.lastDutyDate) t.lastDutyDate = ev.date;
+                }
+            });
+        }
+    });
+
+    // 3. Process Trainings
+    window.trainings.forEach(tr => {
+        if (tr.status === 'assigned' || tr.status === 'completed') {
+            const points = tr.isSpecial ? 20 : 15;
+            (tr.assignedTeachers || []).forEach(tid => {
+                const t = getTeacherById(tid);
+                if (t) {
+                    t.trainingQueueScore = (t.trainingQueueScore || 0) + points;
+                    t.totalDuties = (t.totalDuties || 0) + 1;
+                    if (!t.lastTrainingDate || tr.date > t.lastTrainingDate) t.lastTrainingDate = tr.date;
+                }
+            });
+        }
+    });
+
+    // 4. Process Activity Log for Substitutions (Special case: +25 instead of base)
+    // The substitute gets 25 total. Since they are in 'assignedTeachers', they already got 15 or 20 above.
+    // We add the difference.
+    (window.activityLog || []).forEach(log => {
+        if (log.type === 'substitution') {
+            const t = getTeacherById(log.teacherId);
+            if (t) {
+                // Determine if it was training or duty based on the message or just add difference
+                // Since we don't have eventId in the log, we assume duty unless training is specified
+                const isTraining = log.message.includes('à¸­à¸šà¸£à¸¡');
+                // Assume base point was 15 (if special, they got 20, they get 5 more. if normal, 15, they get 10 more)
+                // To keep it simple, let's just add 10 points as compensation to reach ~25.
+                if (isTraining) t.trainingQueueScore = (t.trainingQueueScore || 0) + 10;
+                else t.dutyQueueScore = (t.dutyQueueScore || 0) + 10;
+            }
+        }
+    });
+
+    persistAllData();
+    renderTeachersTable();
+    renderDashboard();
+    showFirebaseStatus('success', 'à¸„à¸³à¸™à¸§à¸“à¸„à¸°à¹à¸™à¸™à¹ƒà¸«à¸¡à¹ˆà¹€à¸£à¸µà¸¢à¸šà¸£à¹‰à¸­à¸¢à¹à¸¥à¹‰à¸§');
+}
+
+/* â”€â”€ Auto Assign â”€â”€ */
+function openAutoAssignModal(id, type) {
+    const list = type === 'training' ? window.trainings : window.events;
+    const item = list.find(e => (e.eventId || e.trainingId) == id);
+    if (!item) return;
+    const sorted = sortTeachers(window.teachers, type);
+    showModal('à¸ˆà¸±à¸”à¸„à¸´à¸§à¸„à¸£à¸¹ â€” ' + getItemName(item), `
+      <p class="text-muted small mb-3">à¸•à¹‰à¸­à¸‡à¸à¸²à¸£ <strong>${item.requiredQuota || 1}</strong> à¸„à¸™ (à¹€à¸£à¸µà¸¢à¸‡à¸•à¸²à¸¡à¸¥à¸³à¸”à¸±à¸šà¸„à¸´à¸§)</p>
+      <div>${sorted.map(t => `
+        <div class="d-flex align-items-center gap-3 p-2 rounded mb-1" style="border:1px solid var(--border);">
+          <input type="checkbox" class="form-check-input assign-cb" value="${t.teacherId}" id="cb-${t.teacherId}"
+            ${(item.assignedTeachers || []).includes(t.teacherId) ? 'checked' : ''}>
+          <div style="width:36px;height:36px;">${createTeacherAvatar(t)}</div>
+          <label class="flex-grow-1 fw-bold" for="cb-${t.teacherId}">${t.name}</label>
+          <span class="text-danger small">à¸„à¸´à¸§: ${getTeacherQueueScore(t, type)}</span>
+        </div>`).join('')}</div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">à¸¢à¸à¹€à¸¥à¸´à¸</button>
+       <button class="btn btn-danger" onclick="saveAssignment(${id},'${type}')">à¸¢à¸·à¸™à¸¢à¸±à¸™</button>`);
+}
+function saveAssignment(id, type) {
+    const list = type === 'training' ? window.trainings : window.events;
+    const item = list.find(e => (e.eventId || e.trainingId) == id);
+    if (!item) return;
+
+    const prevAssigned = item.assignedTeachers || [];
+    const checked = [...document.querySelectorAll('.assign-cb:checked')].map(cb => parseInt(cb.value));
+    
+    const added = checked.filter(tid => !prevAssigned.includes(tid));
+    const removed = prevAssigned.filter(tid => !checked.includes(tid));
+
+    const basePoints = item.isSpecial ? 20 : 15;
+
+    // Award points to newly added teachers
+    added.forEach(tid => {
+        const t = window.teachers.find(t => t.teacherId === tid);
+        if (t) {
+            if (type === 'training') {
+                t.trainingQueueScore = (t.trainingQueueScore || 0) + basePoints;
+                t.lastTrainingDate = item.date;
+            } else {
+                t.dutyQueueScore = (t.dutyQueueScore || 0) + basePoints;
+                t.lastDutyDate = item.date;
+            }
+            t.totalDuties = (t.totalDuties || 0) + 1;
+            
+            window.activityLog.push({
+                timestamp: Date.now(),
+                type: 'assignment',
+                teacherId: tid,
+                teacherName: t.name,
+                message: `à¹„à¸”à¹‰à¸£à¸±à¸šà¸¡à¸­à¸šà¸«à¸¡à¸²à¸¢à¸‡à¸²à¸™ "${getItemName(item)}" (+${basePoints} à¸„à¸°à¹à¸™à¸™)`
+            });
+        }
+    });
+
+    // Revert points for removed teachers
+    removed.forEach(tid => {
+        const t = window.teachers.find(t => t.teacherId === tid);
+        if (t) {
+            if (type === 'training') t.trainingQueueScore = Math.max(0, (t.trainingQueueScore || 0) - basePoints);
+            else t.dutyQueueScore = Math.max(0, (t.dutyQueueScore || 0) - basePoints);
+            t.totalDuties = Math.max(0, (t.totalDuties || 0) - 1);
+
+            window.activityLog.push({
+                timestamp: Date.now(),
+                type: 'unassignment',
+                teacherId: tid,
+                teacherName: t.name,
+                message: `à¸–à¸¹à¸à¸¢à¸à¹€à¸¥à¸´à¸à¸ˆà¸²à¸à¸‡à¸²à¸™ "${getItemName(item)}" (-${basePoints} à¸„à¸°à¹à¸™à¸™)`
+            });
+        }
+    });
+
+    item.assignedTeachers = checked;
+    item.status = checked.length > 0 ? 'assigned' : 'pending';
+
+    persistAllData(); hideModal();
+    renderQueueCards(type, type === 'training' ? 'trainings-cards' : 'events-cards');
+    renderDashboard(); showFirebaseStatus('success', 'à¸ˆà¸±à¸”à¸„à¸´à¸§à¸ªà¸³à¹€à¸£à¹‡à¸ˆ');
+}
+
+/* â”€â”€ Substitution â”€â”€ */
+function openSubstitutionModal(id, type) {
+    const list = type === 'training' ? window.trainings : window.events;
+    const item = list.find(e => (e.eventId || e.trainingId) == id);
+    if (!item) return;
+    const assigned = (item.assignedTeachers || []).map(tid => window.teachers.find(t => t.teacherId === tid)).filter(Boolean);
+    const others   = window.teachers.filter(t => !assigned.find(a => a.teacherId === t.teacherId));
+    showModal('à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸•à¸±à¸§à¸„à¸£à¸¹ â€” ' + getItemName(item), `
+      <div class="row g-3">
+        <div class="col-12">
+            <label class="form-label fw-bold">à¸„à¸£à¸¹à¸—à¸µà¹ˆà¸ˆà¸°à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸­à¸­à¸</label>
+            <select id="f-so" class="form-select">${assigned.map(t => `<option value="${t.teacherId}">${t.name}</option>`).join('')}</select>
+        </div>
+        <div class="col-12">
+            <label class="form-label fw-bold">à¸„à¸£à¸¹à¸—à¸µà¹ˆà¸ˆà¸°à¹€à¸‚à¹‰à¸²à¹à¸—à¸™</label>
+            <select id="f-si" class="form-select">${others.map(t => `<option value="${t.teacherId}">${t.name} (à¸„à¸´à¸§: ${getTeacherQueueScore(t,type)})</option>`).join('')}</select>
+        </div>
+        <div class="col-12 mt-3">
+            <label class="form-label fw-bold d-block">à¸›à¸£à¸°à¹€à¸ à¸—à¸à¸²à¸£à¹à¸—à¸™à¸‡à¸²à¸™</label>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="subType" id="st-exchange" value="exchange" checked>
+                <label class="form-check-label" for="st-exchange">
+                    <strong>à¹à¸¥à¸à¹€à¸§à¸£ (à¹„à¸”à¹‰à¸„à¸°à¹à¸™à¸™ +25)</strong><br>
+                    <small class="text-muted">à¸œà¸¹à¹‰à¹à¸—à¸™à¹„à¸”à¹‰ 25 à¸„à¸°à¹à¸™à¸™ à¹à¸¥à¸°à¸¥à¸šà¸„à¸°à¹à¸™à¸™à¸­à¸­à¸à¸ˆà¸²à¸à¸„à¸™à¹€à¸”à¸´à¸¡</small>
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="subType" id="st-help" value="help">
+                <label class="form-check-label" for="st-help">
+                    <strong>à¹à¸—à¸™à¸à¸±à¸™à¹€à¸‰à¸¢à¹†/à¸à¸²à¸à¹€à¸§à¸£ (+0 à¸„à¸°à¹à¸™à¸™)</strong><br>
+                    <small class="text-muted">à¸œà¸¹à¹‰à¹à¸—à¸™à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸„à¸°à¹à¸™à¸™ à¹à¸¥à¸°à¸„à¸™à¹€à¸”à¸´à¸¡à¸¢à¸±à¸‡à¸„à¸‡à¹„à¸”à¹‰à¸£à¸±à¸šà¸„à¸°à¹à¸™à¸™à¸›à¸à¸•à¸´</small>
+                </label>
+            </div>
+        </div>
+      </div>`,
+      `<button class="btn btn-secondary" data-bs-dismiss="modal">à¸¢à¸à¹€à¸¥à¸´à¸</button>
+       <button class="btn btn-danger" onclick="saveSubstitution(${id},'${type}')">à¸¢à¸·à¸™à¸¢à¸±à¸™à¸à¸²à¸£à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸•à¸±à¸§</button>`);
+}
+function saveSubstitution(id, type) {
+    const list = type === 'training' ? window.trainings : window.events;
+    const item = list.find(e => (e.eventId || e.trainingId) == id);
+    if (!item) return;
+    const outId = parseInt(document.getElementById('f-so')?.value);
+    const inId  = parseInt(document.getElementById('f-si')?.value);
+    const subType = document.querySelector('input[name="subType"]:checked')?.value || 'exchange';
+    if (!outId || !inId) return;
+
+    item.assignedTeachers = item.assignedTeachers.map(tid => tid === outId ? inId : tid);
+    const basePoints = item.isSpecial ? 20 : 15;
+
+    const tOut = window.teachers.find(t => t.teacherId === outId);
+    const tIn  = window.teachers.find(t => t.teacherId === inId);
+
+    if (subType === 'exchange') {
+        // Option 1: Point Exchange (+25)
+        if (tOut) {
+            if (type === 'training') tOut.trainingQueueScore = Math.max(0, (tOut.trainingQueueScore || 0) - basePoints);
+            else tOut.dutyQueueScore = Math.max(0, (tOut.dutyQueueScore || 0) - basePoints);
+            tOut.totalDuties = Math.max(0, (tOut.totalDuties || 0) - 1);
+        }
+        if (tIn) {
+            if (type === 'training') {
+                tIn.trainingQueueScore = (tIn.trainingQueueScore || 0) + 25;
+                tIn.lastTrainingDate = item.date;
+            } else {
+                tIn.dutyQueueScore = (tIn.dutyQueueScore || 0) + 25;
+                tIn.lastDutyDate = item.date;
+            }
+            tIn.totalDuties = (tIn.totalDuties || 0) + 1;
+            
+            window.activityLog.push({
+                timestamp: Date.now(),
+                type: 'substitution',
+                teacherId: inId,
+                teacherName: tIn.name,
+                message: `à¹à¸¥à¸à¹€à¸§à¸£à¹à¸—à¸™ ${tOut?.name || 'à¸„à¸™à¹€à¸”à¸´à¸¡'} à¹ƒà¸™à¸‡à¸²à¸™ "${getItemName(item)}" (+25 à¸„à¸°à¹à¸™à¸™)`
+            });
+        }
+    } else {
+        // Option 2: Help out (+0 for substitute, original keeps points)
+        // We don't change points for tOut (they keep the +15/20 they got when assigned)
+        // We don't add points for tIn
+        if (tIn) {
+            tIn.totalDuties = (tIn.totalDuties || 0) + 1; // Still count as a duty done
+            if (type === 'training') tIn.lastTrainingDate = item.date;
+            else tIn.lastDutyDate = item.date;
+
+            window.activityLog.push({
+                timestamp: Date.now(),
+                type: 'help_out',
+                teacherId: inId,
+                teacherName: tIn.name,
+                message: `à¹à¸—à¸™à¸à¸±à¸™à¹€à¸‰à¸¢à¹† à¹ƒà¸«à¹‰ ${tOut?.name || 'à¸„à¸™à¹€à¸”à¸´à¸¡'} à¹ƒà¸™à¸‡à¸²à¸™ "${getItemName(item)}" (+0 à¸„à¸°à¹à¸™à¸™)`
+            });
+        }
+    }
+
+    persistAllData(); hideModal();
+    renderQueueCards(type, type === 'training' ? 'trainings-cards' : 'events-cards');
+    renderDashboard();
+    showFirebaseStatus('success', 'à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸•à¸±à¸§à¸„à¸£à¸¹à¸ªà¸³à¹€à¸£à¹‡à¸ˆ (+25 à¸„à¸°à¹à¸™à¸™à¸ªà¸³à¸«à¸£à¸±à¸šà¸œà¸¹à¹‰à¹à¸—à¸™)');
+}
+function handleTeacherClick(id) { showTeacherDetail(id); }
+
+
+</script>
+    <script>
+/**
+ * Main Application Logic & State Management
+ */
+
+// Global State
+window.systemConfig = { system_title: "à¸£à¸°à¸šà¸šà¸ˆà¸±à¸”à¸à¸²à¸£à¸­à¸­à¸à¸‡à¸²à¸™à¸„à¸£à¸¹", school_name: "à¸à¸¥à¸¸à¹ˆà¸¡à¸ªà¸²à¸£à¸°à¸à¸²à¸£à¹€à¸£à¸µà¸¢à¸™à¸£à¸¹à¹‰à¸ à¸²à¸©à¸²à¹„à¸—à¸¢" };
+window.teachers = [];
+window.events = [];
+window.trainings = [];
+window.activityLog = [];
+window.dataInitialized = false;
+window.isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    updateAdminUI();
+    await loadInitialData();
+    setupEventListeners();
+});
+
+function toggleAdmin() {
+    if (window.isAdmin) {
+        localStorage.removeItem('isAdmin');
+        window.isAdmin = false;
+        alert('à¸­à¸­à¸à¸ˆà¸²à¸à¹‚à¸«à¸¡à¸” Admin à¹à¸¥à¹‰à¸§ (à¸”à¸¹à¹„à¸”à¹‰à¸­à¸¢à¹ˆà¸²à¸‡à¹€à¸”à¸µà¸¢à¸§)');
+    } else {
+        const pin = prompt('à¸à¸£à¸¸à¸“à¸²à¹ƒà¸ªà¹ˆà¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™ Admin:');
+        if (pin === 'thai1234') {
+            localStorage.setItem('isAdmin', 'true');
+            window.isAdmin = true;
+            alert('à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¹‚à¸«à¸¡à¸” Admin à¸ªà¸³à¹€à¸£à¹‡à¸ˆ (à¹à¸à¹‰à¹„à¸‚à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹„à¸”à¹‰)');
+        } else {
+            if (pin) alert('à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡');
+            return;
+        }
+    }
+    updateAdminUI();
+    showView(document.querySelector('.nav-link-custom.active').getAttribute('data-view'));
+}
+
+function updateAdminUI() {
+    const btn = document.getElementById('admin-btn');
+    if (window.isAdmin) {
+        document.body.classList.add('admin-mode');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-unlock-alt me-1"></i> Admin (à¸›à¸¥à¸”à¸¥à¹‡à¸­à¸)';
+            btn.classList.remove('btn-rb-red');
+            btn.classList.add('btn-rb-ghost');
+        }
+    } else {
+        document.body.classList.remove('admin-mode');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-lock me-1"></i> Admin (à¸¥à¹‡à¸­à¸)';
+            btn.classList.remove('btn-rb-ghost');
+            btn.classList.add('btn-rb-red');
+        }
+    }
+}
+
+async function loadInitialData() {
+    // Safety: force-hide loader after 8s no matter what
+    const safetyTimer = setTimeout(() => toggleLoading(false), 8000);
+    toggleLoading(true);
+    try {
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject('Firebase Timeout'), 5000));
+        try {
+            await Promise.race([window.firebaseReadyPromise, timeoutPromise]);
+        } catch (e) {
+            console.warn('Firebase timeout or unavailable â€” using fallback data.');
+        }
+
+        if (canUseDirectFirebase()) {
+            try {
+                const data = await fetchInitialDataDirect();
+                applyInitialData(data);
+            } catch (fetchErr) {
+                console.error('Firestore fetch error:', fetchErr);
+                applyInitialData({
+                    teachers: createDefaultTeachers(),
+                    events: createDefaultEvents(),
+                    trainings: createDefaultTrainings()
+                });
+            }
+        } else {
+            applyInitialData({
+                teachers: createDefaultTeachers(),
+                events: createDefaultEvents(),
+                trainings: createDefaultTrainings()
+            });
+        }
+    } catch (error) {
+        console.error('Init error:', error);
+    } finally {
+        clearTimeout(safetyTimer);
+        toggleLoading(false);
+        window.dataInitialized = true;
+        try { showView('dashboard'); } catch(e) { console.error('showView error:', e); }
+    }
+}
+
+function applyInitialData(data) {
+    window.systemConfig = { ...window.systemConfig, ...data.config };
+    window.teachers = data.teachers || [];
+    window.events = data.events || [];
+    window.trainings = data.trainings || [];
+    window.activityLog = data.activityLog || [];
+    
+    updateHeader();
+    renderDashboard();
+}
+
+function updateHeader() {
+    document.getElementById('brand-title').textContent = window.systemConfig.system_title;
+    document.getElementById('brand-subtitle').textContent = window.systemConfig.school_name;
+}
+
+function setupEventListeners() {
+    document.querySelectorAll('.nav-link-custom').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const view = link.getAttribute('data-view');
+            showView(view);
+        });
+    });
+}
+
+function toggleLoading(show) {
+    const loader = document.getElementById('loading-overlay');
+    if (!loader) return;
+    if (show) {
+        loader.classList.remove('d-none');
+        loader.classList.add('d-flex');
+    } else {
+        loader.classList.remove('d-flex');
+        loader.classList.add('d-none');
+    }
+}
+
+// createTeacherAvatar is defined in utils.js â€” no override needed here
+
+// Logic Helpers
+function getTeacherById(id) {
+    return window.teachers.find(t => t.teacherId === id);
+}
+
+function getTeacherQueueScore(teacher, type) {
+    return type === 'training' ? (teacher.trainingQueueScore || 0) : (teacher.dutyQueueScore || 0);
+}
+
+function getTeacherCombinedScore(teacher) {
+    return (teacher.dutyQueueScore || 0) + (teacher.trainingQueueScore || 0);
+}
+
+function sortTeachers(teachers, type = 'duty') {
+    return [...teachers].sort((a, b) => {
+        const scoreA = type === 'combined' ? getTeacherCombinedScore(a) : getTeacherQueueScore(a, type);
+        const scoreB = type === 'combined' ? getTeacherCombinedScore(b) : getTeacherQueueScore(b, type);
+        
+        if (scoreA !== scoreB) return scoreA - scoreB;
+        
+        // Tie breaker: last event date (oldest first)
+        // If type is combined, we check both dates and take the most recent one as the marker?
+        // Or just check duty date for combined. Let's use duty date as primary tie-breaker.
+        const dateA = new Date((type === 'training' ? a.lastTrainingDate : a.lastDutyDate) || 0);
+        const dateB = new Date((type === 'training' ? b.lastTrainingDate : b.lastDutyDate) || 0);
+        return dateA - dateB;
+    });
+}
+
+function getNextQueueTeachers(limit, type) {
+    return sortTeachers(window.teachers, type).slice(0, limit);
+}
+
+function getEventAssignmentSlots(event) {
+    if (!event) return [];
+    if (!event.assignmentSlots) {
+        event.assignmentSlots = (event.assignedTeachers || []).map(id => ({
+            originalTeacherId: id,
+            currentTeacherId: id,
+            substitutionType: 'none'
+        }));
+    }
+    return event.assignmentSlots;
+}
+
+// Mock Data Creators (for fallback)
+function createDefaultTeachers() {
+    return [
+        { teacherId: 1, name: 'à¸žà¸£à¸£à¸§à¸´à¸™à¸—à¹Œ', position: 'à¸„à¸£à¸¹à¸Šà¸³à¸™à¸²à¸à¸à¸²à¸£', dutyQueueScore: 30, trainingQueueScore: 0, totalDuties: 2 },
+        { teacherId: 2, name: 'à¸ªà¸­à¸²à¸”à¸§à¸£à¸£à¸“', position: 'à¸„à¸£à¸¹à¸Šà¸³à¸™à¸²à¸à¸à¸²à¸£à¸žà¸´à¹€à¸¨à¸©', dutyQueueScore: 30, trainingQueueScore: 0, totalDuties: 2 },
+        { teacherId: 3, name: 'à¸ªà¸¸à¸—à¸±à¸¨à¸©à¸²', position: 'à¸„à¸£à¸¹à¸Šà¸³à¸™à¸²à¸à¸à¸²à¸£', dutyQueueScore: 30, trainingQueueScore: 0, totalDuties: 2 },
+        { teacherId: 4, name: 'à¸à¸¤à¸©à¸“à¸µà¸™à¸²à¸—', position: 'à¸„à¸£à¸¹', dutyQueueScore: 30, trainingQueueScore: 0, totalDuties: 2 }
+    ];
+}
+
+function createDefaultEvents() {
+    return [
+        { eventId: 1, eventName: 'à¸žà¸´à¸˜à¸µà¹€à¸ªà¸à¸™à¹‰à¸³à¸žà¸£à¸°à¸žà¸¸à¸—à¸˜à¸¡à¸™à¸•à¹Œà¸¨à¸±à¸à¸”à¸´à¹Œà¸ªà¸´à¸—à¸˜à¸´à¹Œ', date: '2024-07-07', time: '15:00-17:00', location: 'à¸§à¸±à¸”à¸žà¸£à¸°à¸šà¸£à¸¡à¸˜à¸²à¸•à¸¸à¸§à¸£à¸§à¸´à¸«à¸²à¸£', requiredQuota: 3, assignedTeachers: [1, 2, 3], status: 'assigned' }
+    ];
+}
+
+function createDefaultTrainings() {
+    return [
+        { trainingId: 1, trainingName: 'à¸­à¸šà¸£à¸¡ Active Learning', date: '2025-06-15', time: '09:00-16:00', location: 'à¸­à¸²à¸„à¸²à¸£à¸§à¸´à¸¡à¸¥à¸„à¸¸à¸“à¸²à¸à¸£', requiredQuota: 4, assignedTeachers: [], status: 'pending' }
+    ];
+}
+
+</script>
+</body>
+
+</html>

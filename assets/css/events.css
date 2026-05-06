@@ -119,3 +119,17 @@
 .event-card-detailed .card-bottom-actions .btn-edit { color: #606060; }
 .event-card-detailed .card-bottom-actions .btn-assign { color: var(--secondary); }
 .event-card-detailed .card-bottom-actions .btn-delete { color: var(--primary); }
+
+/* Special Event Styling */
+.event-card-detailed.special-event {
+    border: 2px solid #FFD700; /* Gold */
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15);
+}
+
+.event-card-detailed.special-event .card-top {
+    background: linear-gradient(to bottom right, #FFFDF0, #FFFFFF);
+}
+
+.event-card-detailed.special-event .card-title-main {
+    color: #B8860B; /* Dark Goldenrod */
+}

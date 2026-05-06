@@ -140,7 +140,7 @@
         </aside>
 
         <!-- ─── MAIN CONTENT ─────────────────── -->
-        <div id="main-content">
+        <main id="main-content">
 
             <!-- Top Bar -->
             <header id="top-bar">
@@ -167,13 +167,13 @@
 
                     <!-- Teacher Queue Strips -->
                     <div class="queue-strip-container animate-fade-in">
-                        <div class="d-flex align-items-center">
+                        <div class="queue-row">
                             <div class="queue-strip-label"><i class="fas fa-calendar-alt me-2"></i>คิวออกงาน</div>
                             <div id="duty-queue-strip" class="queue-strip">
                                 <!-- Rendered JS -->
                             </div>
                         </div>
-                        <div class="d-flex align-items-center">
+                        <div class="queue-row">
                             <div class="queue-strip-label"><i class="fas fa-graduation-cap me-2"></i>คิวอบรม</div>
                             <div id="training-queue-strip" class="queue-strip">
                                 <!-- Rendered JS -->
@@ -213,7 +213,6 @@
                     <div class="card-flat mb-4">
                         <div class="card-header-flat">
                             <h6 class="mb-0 fw-bold"><i class="fas fa-star text-warning me-2"></i>งานล่าสุดที่จัดคิวแล้ว</h6>
-                            <span class="badge-status badge-assigned">LATEST</span>
                         </div>
                         <div class="card-body-flat">
                             <div id="latest-assigned-job">
@@ -386,6 +385,9 @@
                             <div class="view-subtitle">จัดลำดับตามคิวที่ควรออกงาน</div>
                         </div>
                         <div class="d-flex gap-2">
+                            <button class="btn-rb btn-rb-ghost admin-only" onclick="reconcileScores()">
+                                <i class="fas fa-sync-alt"></i> คำนวณคะแนนใหม่
+                            </button>
                             <button class="btn-rb btn-rb-ghost" onclick="window.print()"><i class="fas fa-print"></i> พิมพ์</button>
                             <button class="btn-rb btn-rb-red admin-only" onclick="openTeacherModal()"><i class="fas fa-user-plus"></i> เพิ่มครู</button>
                         </div>
@@ -440,7 +442,27 @@
                 </div>
 
             </div><!-- /page-content -->
-        </div><!-- /main-content -->
+        </main><!-- /main-content -->
+
+        <!-- Bottom Navigation for Mobile -->
+        <nav id="bottom-nav" class="d-md-none">
+            <a href="#" class="nav-item active" onclick="showView('dashboard'); return false;">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showView('events'); return false;">
+                <i class="fas fa-calendar-alt"></i>
+                <span>ออกงาน</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showView('trainings'); return false;">
+                <i class="fas fa-graduation-cap"></i>
+                <span>อบรม</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showView('teachers'); return false;">
+                <i class="fas fa-users"></i>
+                <span>บุคลากร</span>
+            </a>
+        </nav>
     </div><!-- /app-shell -->
 
     <!-- ═════ MODAL ═════ -->
